@@ -6,7 +6,9 @@
     "noImplicitAny": false,
     "skipLibCheck": true,
     "strict": false,
-    "useUnknownInCatchVariables": false
+    "useUnknownInCatchVariables": false,
+    "noPropertyAccessFromIndexSignature": false,
+    "suppressExcessPropertyErrors": true
   },
   "include": ["src"],
   "exclude": ["src/__tests__"]
