@@ -4,7 +4,9 @@
     "outDir": "dist",
     "rootDir": "src",
     "noImplicitAny": false,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "strict": false,
+    "useUnknownInCatchVariables": false
   },
   "include": ["src"],
   "exclude": ["src/__tests__"]
