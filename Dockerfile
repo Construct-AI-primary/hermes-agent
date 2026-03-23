@@ -44,7 +44,6 @@ RUN npm install --global --omit=dev @anthropic-ai/claude-code@latest @openai/cod
 ENV NODE_ENV=production \
   HOME=/paperclip \
   HOST=0.0.0.0 \
-  PORT=3100 \
   SERVE_UI=true \
   PAPERCLIP_HOME=/paperclip \
   PAPERCLIP_INSTANCE_ID=default \
