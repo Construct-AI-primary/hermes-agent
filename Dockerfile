@@ -51,7 +51,8 @@ ENV NODE_ENV=production \
   PAPERCLIP_INSTANCE_ID=default \
   PAPERCLIP_CONFIG=/paperclip/instances/default/config.json \
   PAPERCLIP_DEPLOYMENT_MODE=authenticated \
-  PAPERCLIP_DEPLOYMENT_EXPOSURE=private
+  PAPERCLIP_DEPLOYMENT_EXPOSURE=private \
+  BETTER_AUTH_BASE_URL=https://paperclip-render.onrender.com
 
 VOLUME ["/paperclip"]
 EXPOSE 3100
