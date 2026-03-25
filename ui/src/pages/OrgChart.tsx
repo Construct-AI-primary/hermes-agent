@@ -355,8 +355,9 @@ export function OrgChart() {
                 key={`${parent.id}-${child.id}`}
                 d={`M ${x1} ${y1} L ${x1} ${midY} L ${x2} ${midY} L ${x2} ${y2}`}
                 fill="none"
-                stroke="var(--border)"
-                strokeWidth={1.5}
+                stroke="hsl(var(--foreground) / 0.3)"
+                strokeWidth={2}
+                strokeLinecap="round"
               />
             );
           })}
