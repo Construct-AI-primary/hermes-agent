@@ -618,8 +618,53 @@ export function agentService(db: Db) {
         .from(agents)
         .where(and(eq(agents.companyId, companyId), ne(agents.status, "terminated")));
       const normalizedRows = rows.map(normalizeAgentRow);
+      
+      // Extract authority_level from adapter_config for proper hierarchy ordering
+      const getAuthorityRank = (agent: typeof normalizedRows[0]): number => {
+        const authLevel = (agent.adapterConfig as Record<string, unknown>)?.authority_level as string | undefined;
+        switch (authLevel) {
+          case "ceo": return 1;
+          case "executive": return 2;
+          case "senior": return 3;
+          case "standard": return 4;
+          default: return 5;
+        }
+      };
+      
+      // Extract division for secondary ordering
+      const getDivisionRank = (agent: typeof normalizedRows[0]): number => {
+        const division = (agent.adapterConfig as Record<string, unknown>)?.division as string | undefined;
+        switch (division) {
+          case "executive": return 1;
+          case "engineering": return 2;
+          case "data": return 3;
+          case "security": return 4;
+          case "product": return 5;
+          case "growth": return 6;
+          case "strategy": return 7;
+          case "creative": return 8;
+          case "technical": return 9;
+          case "design": return 10;
+          case "content": return 11;
+          case "testing": return 12;
+          case "debugging": return 13;
+          case "coding": return 14;
+          case "quality": return 15;
+          default: return 99;
+        }
+      };
+      
+      // Sort agents by hierarchy: authority_level (ceo first), then division, then name
+      const sortedByHierarchy = [...normalizedRows].sort((a, b) => {
+        const authCompare = getAuthorityRank(a) - getAuthorityRank(b);
+        if (authCompare !== 0) return authCompare;
+        const divCompare = getDivisionRank(a) - getDivisionRank(b);
+        if (divCompare !== 0) return divCompare;
+        return a.name.localeCompare(b.name);
+      });
+      
       const byManager = new Map<string | null, typeof normalizedRows>();
-      for (const row of normalizedRows) {
+      for (const row of sortedByHierarchy) {
         const key = row.reportsTo ?? null;
         const group = byManager.get(key) ?? [];
         group.push(row);
