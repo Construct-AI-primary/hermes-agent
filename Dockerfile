@@ -28,6 +28,9 @@ FROM base AS build
 WORKDIR /app
 COPY --from=deps /app /app
 COPY . .
+ARG VITE_WS_BASE_URL
+ENV VITE_WS_BASE_URL=$VITE_WS_BASE_URL
+RUN echo "Building with VITE_WS_BASE_URL=${VITE_WS_BASE_URL}"
 RUN pnpm --filter @paperclipai/shared build
 RUN pnpm --filter @paperclipai/plugin-sdk build
 RUN pnpm --filter @paperclipai/ui build

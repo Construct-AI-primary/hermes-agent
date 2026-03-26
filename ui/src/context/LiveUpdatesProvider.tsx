@@ -552,6 +552,13 @@ export function LiveUpdatesProvider({ children }: { children: ReactNode }) {
       const protocol = window.location.protocol === "https:" ? "wss" : "ws";
       const wsHost = import.meta.env.VITE_WS_BASE_URL || window.location.host;
       const url = `${protocol}://${wsHost}/api/companies/${encodeURIComponent(selectedCompanyId)}/events/ws`;
+      console.log('[LiveUpdates] Connecting to WebSocket:', {
+        protocol,
+        wsHost,
+        envVar: import.meta.env.VITE_WS_BASE_URL,
+        fallback: window.location.host,
+        fullUrl: url
+      });
       socket = new WebSocket(url);
 
       socket.onopen = () => {
