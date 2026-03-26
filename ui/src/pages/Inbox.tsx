@@ -424,9 +424,9 @@ export function Inbox() {
     enabled: !!selectedCompanyId,
   });
 
-  const touchedIssues = useMemo(() => getRecentTouchedIssues(touchedIssuesRaw), [touchedIssuesRaw]);
+  const touchedIssues = useMemo(() => getRecentTouchedIssues(touchedIssuesRaw ?? []), [touchedIssuesRaw]);
   const unreadTouchedIssues = useMemo(
-    () => touchedIssues.filter((issue) => issue.isUnreadForMe),
+    () => (touchedIssues ?? []).filter((issue) => issue.isUnreadForMe),
     [touchedIssues],
   );
   const issuesToRender = useMemo(
@@ -638,7 +638,7 @@ export function Inbox() {
     !isRunsLoading;
 
   const showSeparatorBefore = (key: SectionKey) => visibleSections.indexOf(key) > 0;
-  const unreadIssueIds = unreadTouchedIssues
+  const unreadIssueIds = (unreadTouchedIssues ?? [])
     .filter((issue) => !fadingOutIssues.has(issue.id))
     .map((issue) => issue.id);
   const canMarkAllRead = unreadIssueIds.length > 0;
