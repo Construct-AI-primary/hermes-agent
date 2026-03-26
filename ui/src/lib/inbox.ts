@@ -108,7 +108,8 @@ export function sortIssuesByMostRecentActivity(a: Issue, b: Issue): number {
   return normalizeTimestamp(b.updatedAt) - normalizeTimestamp(a.updatedAt);
 }
 
-export function getRecentTouchedIssues(issues: Issue[]): Issue[] {
+export function getRecentTouchedIssues(issues: Issue[] | null | undefined): Issue[] {
+  if (!issues || !Array.isArray(issues)) return [];
   return [...issues].sort(sortIssuesByMostRecentActivity).slice(0, RECENT_ISSUES_LIMIT);
 }
 
