@@ -186,7 +186,7 @@ function FailedRunCard({
               {linkedAgentName ? (
                 <Identity name={linkedAgentName} size="sm" />
               ) : (
-                <span className="text-sm font-medium">Agent {run.agentId.slice(0, 8)}</span>
+                <span className="text-sm font-medium">Agent {run.agentId ? run.agentId.slice(0, 8) : "unknown"}</span>
               )}
               <StatusBadge status={run.status} />
             </div>
@@ -226,7 +226,7 @@ function FailedRunCard({
         </div>
 
         <div className="text-xs">
-          <span className="font-mono text-muted-foreground">run {run.id.slice(0, 8)}</span>
+          <span className="font-mono text-muted-foreground">run {run.id ? run.id.slice(0, 8) : "unknown"}</span>
         </div>
 
         {retryRun.isError && (
