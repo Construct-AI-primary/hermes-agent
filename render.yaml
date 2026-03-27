@@ -29,6 +29,8 @@ services:
         sync: false
       - key: BETTER_AUTH_BASE_URL
         value: https://paperclip-render.onrender.com
+      - key: VITE_WS_BASE_URL
+        value: paperclip-render.onrender.com
     disk:
       name: paperclip-data
       mountPath: /paperclip
