@@ -167,7 +167,7 @@ function FailedRunCard({
             className="block truncate text-sm font-medium transition-colors hover:text-foreground no-underline text-inherit"
           >
             <span className="font-mono text-muted-foreground mr-1.5">
-              {issue.identifier ?? issue.id.slice(0, 8)}
+              {issue.identifier ?? (issue.id ? issue.id.slice(0, 8) : "unknown")}
             </span>
             {issue.title}
           </Link>
@@ -768,7 +768,7 @@ export function Inbox() {
                           <StatusIcon status={issue.status} />
                         </span>
                         <span className="shrink-0 font-mono text-xs text-muted-foreground">
-                          {issue.identifier ?? issue.id.slice(0, 8)}
+                          {issue.identifier ?? (issue.id ? issue.id.slice(0, 8) : "unknown")}
                         </span>
                         {liveIssueIds.has(issue.id) && (
                           <span className="inline-flex items-center gap-1 rounded-full bg-blue-500/10 px-1.5 py-0.5 sm:gap-1.5 sm:px-2">
