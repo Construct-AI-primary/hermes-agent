@@ -181,6 +181,13 @@ export function OpenClawGatewayConfigFields({
             placeholder="OpenClaw gateway token"
           />
 
+          <SecretField
+            label="Gateway password"
+            value={eff("adapterConfig", "password", String(config.password ?? ""))}
+            onCommit={(v) => mark("adapterConfig", "password", v || undefined)}
+            placeholder="OpenClaw gateway password"
+          />
+
           <Field label="Role">
             <DraftInput
               value={eff("adapterConfig", "role", String(config.role ?? "operator"))}
