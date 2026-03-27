@@ -1081,6 +1081,11 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
     agentParams.agentId = configuredAgentId;
   }
 
+  const configuredProvider = nonEmpty(ctx.config.provider);
+  if (configuredProvider && !nonEmpty(agentParams.provider)) {
+    agentParams.provider = configuredProvider;
+  }
+
   if (typeof agentParams.timeout !== "number") {
     agentParams.timeout = waitTimeoutMs;
   }
