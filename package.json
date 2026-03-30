@@ -50,5 +50,10 @@
     "patchedDependencies": {
       "embedded-postgres@18.1.0-beta.16": "patches/embedded-postgres@18.1.0-beta.16.patch"
     }
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.101.0",
+    "dotenv": "^17.3.1",
+    "node-fetch": "^3.3.2"
   }
 }
