@@ -2,7 +2,7 @@
   "team": "domainforge",
   "team_name": "DomainForge AI",
   "description": "Civil Engineering domain expertise and project management",
-  "total_agents": 15,
+  "total_agents": 17,
   "divisions": {
     "executive": {
       "name": "Executive Leadership",
@@ -375,8 +375,8 @@
           }
         },
         {
-          "agent_id": "domainforge-water",
-          "name": "Water",
+          "agent_id": "domainforge-water-resources",
+          "name": "Water Resources",
           "division": "engineering",
           "role": "Water Resources Engineering Specialist",
           "description": "Water supply, wastewater, and hydraulic engineering",
@@ -434,6 +434,7 @@
             "max_tokens": 4096
           }
         },
+
         {
           "agent_id": "domainforge-environmental",
           "name": "Environmental",
