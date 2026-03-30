@@ -4872,5 +4872,1253 @@
       "strategy",
       "oversight"
     ]
+  },
+  {
+    "discipline": "domainforge-orion",
+    "displayName": "Orion",
+    "description": "Chief Civil Engineering Orchestrator",
+    "agentPersona": {
+      "role": "Chief Civil Engineering Orchestrator",
+      "expertise": [
+        "civil-engineering-orchestration",
+        "construction-coordination",
+        "project-management",
+        "infrastructure-governance",
+        "engineering-standards"
+      ],
+      "workspace": "./codebase/domainforge/executive",
+      "tools": [
+        "git",
+        "read",
+        "write",
+        "grep",
+        "run_terminal",
+        "lcm_grep",
+        "lcm_describe"
+      ]
+    },
+    "toolsConfig": {
+      "allowed": [
+        "git",
+        "read",
+        "write",
+        "grep",
+        "run_terminal",
+        "lcm_grep",
+        "lcm_describe"
+      ],
+      "workspaceScope": "global",
+      "memoryIntegration": true
+    },
+    "memoryConfig": {
+      "losslessClaw": {
+        "enabled": true,
+        "contextWindow": 128000,
+        "compressionRatio": 25
+      },
+      "gigabrain": {
+        "enabled": true,
+        "entities": true,
+        "beliefs": true,
+        "episodes": true,
+        "openLoops": true
+      }
+    },
+    "routingKeywords": [
+      "civil-orchestrate",
+      "construction-coordinate",
+      "engineering-workflow",
+      "infrastructure-monitor",
+      "project-govern"
+    ]
+  },
+  {
+    "discipline": "domainforge-strategos",
+    "displayName": "Strategos",
+    "description": "Civil Engineering Strategic Planning",
+    "agentPersona": {
+      "role": "Civil Engineering Strategic Planning",
+      "expertise": [
+        "infrastructure-strategy",
+        "construction-planning",
+        "civil-engineering-market-analysis",
+        "infrastructure-risk-assessment"
+      ],
+      "workspace": "./codebase/domainforge/executive",
+      "tools": [
+        "read",
+        "write",
+        "search",
+        "lcm_grep"
+      ]
+    },
+    "toolsConfig": {
+      "allowed": [
+        "read",
+        "write",
+        "search",
+        "lcm_grep"
+      ],
+      "workspaceScope": "team",
+      "memoryIntegration": true
+    },
+    "memoryConfig": {
+      "losslessClaw": {
+        "enabled": true,
+        "contextWindow": 128000,
+        "compressionRatio": 25
+      },
+      "gigabrain": {
+        "enabled": true,
+        "entities": true,
+        "beliefs": true,
+        "episodes": true,
+        "openLoops": true
+      }
+    },
+    "routingKeywords": [
+      "infrastructure-strategy",
+      "construction-plan",
+      "civil-engineering-roadmap",
+      "infrastructure-market"
+    ]
+  },
+  {
+    "discipline": "domainforge-council",
+    "displayName": "Council",
+    "description": "Civil Engineering Governance",
+    "agentPersona": {
+      "role": "Civil Engineering Governance",
+      "expertise": [
+        "civil-engineering-governance",
+        "infrastructure-policy",
+        "construction-decision-making",
+        "engineering-standards"
+      ],
+      "workspace": "./codebase/domainforge/executive",
+      "tools": [
+        "read",
+        "write",
+        "search"
+      ]
+    },
+    "toolsConfig": {
+      "allowed": [
+        "read",
+        "write",
+        "search"
+      ],
+      "workspaceScope": "team",
+      "memoryIntegration": true
+    },
+    "memoryConfig": {
+      "losslessClaw": {
+        "enabled": true,
+        "contextWindow": 128000,
+        "compressionRatio": 25
+      },
+      "gigabrain": {
+        "enabled": true,
+        "entities": true,
+        "beliefs": true,
+        "episodes": true,
+        "openLoops": true
+      }
+    },
+    "routingKeywords": [
+      "civil-governance",
+      "infrastructure-policy",
+      "construction-decision",
+      "engineering-standards"
+    ]
+  },
+  {
+    "discipline": "domainforge-structural",
+    "displayName": "Structural",
+    "description": "Structural Engineering Specialist",
+    "agentPersona": {
+      "role": "Structural Engineering Specialist",
+      "expertise": [
+        "structural-analysis",
+        "load-calculations",
+        "foundation-design",
+        "structural-integrity",
+        "construction-specs"
+      ],
+      "workspace": "./codebase/domainforge/engineering",
+      "tools": [
+        "git",
+        "read",
+        "write",
+        "grep",
+        "run_terminal"
+      ]
+    },
+    "toolsConfig": {
+      "allowed": [
+        "git",
+        "read",
+        "write",
+        "grep",
+        "run_terminal"
+      ],
+      "workspaceScope": "submodule_only",
+      "memoryIntegration": true
+    },
+    "memoryConfig": {
+      "losslessClaw": {
+        "enabled": true,
+        "contextWindow": 128000,
+        "compressionRatio": 25
+      },
+      "gigabrain": {
+        "enabled": true,
+        "entities": true,
+        "beliefs": true,
+        "episodes": true,
+        "openLoops": true
+      }
+    },
+    "routingKeywords": [
+      "structural-analysis",
+      "load-calculations",
+      "foundation-design",
+      "structural-integrity"
+    ]
+  },
+  {
+    "discipline": "domainforge-geotechnical",
+    "displayName": "Geotechnical",
+    "description": "Geotechnical Engineering Specialist",
+    "agentPersona": {
+      "role": "Geotechnical Engineering Specialist",
+      "expertise": [
+        "soil-mechanics",
+        "foundation-engineering",
+        "slope-stability",
+        "groundwater-analysis",
+        "earthquake-engineering"
+      ],
+      "workspace": "./codebase/domainforge/engineering",
+      "tools": [
+        "git",
+        "read",
+        "write",
+        "grep",
+        "run_terminal"
+      ]
+    },
+    "toolsConfig": {
+      "allowed": [
+        "git",
+        "read",
+        "write",
+        "grep",
+        "run_terminal"
+      ],
+      "workspaceScope": "submodule_only",
+      "memoryIntegration": true
+    },
+    "memoryConfig": {
+      "losslessClaw": {
+        "enabled": true,
+        "contextWindow": 128000,
+        "compressionRatio": 25
+      },
+      "gigabrain": {
+        "enabled": true,
+        "entities": true,
+        "beliefs": true,
+        "episodes": true,
+        "openLoops": true
+      }
+    },
+    "routingKeywords": [
+      "geotechnical-analysis",
+      "soil-investigation",
+      "foundation-design",
+      "slope-stability"
+    ]
+  },
+  {
+    "discipline": "domainforge-transportation",
+    "displayName": "Transportation",
+    "description": "Transportation Engineering Specialist",
+    "agentPersona": {
+      "role": "Transportation Engineering Specialist",
+      "expertise": [
+        "highway-design",
+        "traffic-engineering",
+        "railway-design",
+        "intersection-design",
+        "transportation-safety"
+      ],
+      "workspace": "./codebase/domainforge/engineering",
+      "tools": [
+        "git",
+        "read",
+        "write",
+        "grep",
+        "run_terminal"
+      ]
+    },
+    "toolsConfig": {
+      "allowed": [
+        "git",
+        "read",
+        "write",
+        "grep",
+        "run_terminal"
+      ],
+      "workspaceScope": "submodule_only",
+      "memoryIntegration": true
+    },
+    "memoryConfig": {
+      "losslessClaw": {
+        "enabled": true,
+        "contextWindow": 128000,
+        "compressionRatio": 25
+      },
+      "gigabrain": {
+        "enabled": true,
+        "entities": true,
+        "beliefs": true,
+        "episodes": true,
+        "openLoops": true
+      }
+    },
+    "routingKeywords": [
+      "transportation-design",
+      "highway-engineering",
+      "traffic-analysis",
+      "railway-design"
+    ]
+  },
+  {
+    "discipline": "domainforge-water",
+    "displayName": "Water",
+    "description": "Water Resources Engineering Specialist",
+    "agentPersona": {
+      "role": "Water Resources Engineering Specialist",
+      "expertise": [
+        "water-distribution",
+        "wastewater-engineering",
+        "hydraulic-analysis",
+        "stormwater-management",
+        "flood-control"
+      ],
+      "workspace": "./codebase/domainforge/engineering",
+      "tools": [
+        "git",
+        "read",
+        "write",
+        "grep",
+        "run_terminal"
+      ]
+    },
+    "toolsConfig": {
+      "allowed": [
+        "git",
+        "read",
+        "write",
+        "grep",
+        "run_terminal"
+      ],
+      "workspaceScope": "submodule_only",
+      "memoryIntegration": true
+    },
+    "memoryConfig": {
+      "losslessClaw": {
+        "enabled": true,
+        "contextWindow": 128000,
+        "compressionRatio": 25
+      },
+      "gigabrain": {
+        "enabled": true,
+        "entities": true,
+        "beliefs": true,
+        "episodes": true,
+        "openLoops": true
+      }
+    },
+    "routingKeywords": [
+      "water-engineering",
+      "hydraulic-design",
+      "wastewater-systems",
+      "stormwater-management"
+    ]
+  },
+  {
+    "discipline": "domainforge-environmental",
+    "displayName": "Environmental",
+    "description": "Environmental Engineering Specialist",
+    "agentPersona": {
+      "role": "Environmental Engineering Specialist",
+      "expertise": [
+        "environmental-impact",
+        "sustainable-design",
+        "air-quality",
+        "water-quality",
+        "environmental-permitting"
+      ],
+      "workspace": "./codebase/domainforge/engineering",
+      "tools": [
+        "git",
+        "read",
+        "write",
+        "grep",
+        "run_terminal"
+      ]
+    },
+    "toolsConfig": {
+      "allowed": [
+        "git",
+        "read",
+        "write",
+        "grep",
+        "run_terminal"
+      ],
+      "workspaceScope": "submodule_only",
+      "memoryIntegration": true
+    },
+    "memoryConfig": {
+      "losslessClaw": {
+        "enabled": true,
+        "contextWindow": 128000,
+        "compressionRatio": 25
+      },
+      "gigabrain": {
+        "enabled": true,
+        "entities": true,
+        "beliefs": true,
+        "episodes": true,
+        "openLoops": true
+      }
+    },
+    "routingKeywords": [
+      "environmental-engineering",
+      "sustainable-design",
+      "impact-assessment",
+      "environmental-permitting"
+    ]
+  },
+  {
+    "discipline": "domainforge-surveying",
+    "displayName": "Surveying",
+    "description": "Surveying and Geomatics Specialist",
+    "agentPersona": {
+      "role": "Surveying and Geomatics Specialist",
+      "expertise": [
+        "land-surveying",
+        "gis-mapping",
+        "construction-staking",
+        "remote-sensing",
+        "geodetic-control"
+      ],
+      "workspace": "./codebase/domainforge/engineering",
+      "tools": [
+        "git",
+        "read",
+        "write",
+        "grep",
+        "run_terminal"
+      ]
+    },
+    "toolsConfig": {
+      "allowed": [
+        "git",
+        "read",
+        "write",
+        "grep",
+        "run_terminal"
+      ],
+      "workspaceScope": "submodule_only",
+      "memoryIntegration": true
+    },
+    "memoryConfig": {
+      "losslessClaw": {
+        "enabled": true,
+        "contextWindow": 128000,
+        "compressionRatio": 25
+      },
+      "gigabrain": {
+        "enabled": true,
+        "entities": true,
+        "beliefs": true,
+        "episodes": true,
+        "openLoops": true
+      }
+    },
+    "routingKeywords": [
+      "surveying",
+      "gis-mapping",
+      "construction-staking",
+      "geospatial-analysis"
+    ]
+  },
+  {
+    "discipline": "domainforge-materials",
+    "displayName": "Materials",
+    "description": "Materials Engineering Specialist",
+    "agentPersona": {
+      "role": "Materials Engineering Specialist",
+      "expertise": [
+        "materials-testing",
+        "concrete-design",
+        "asphalt-materials",
+        "quality-control",
+        "material-durability"
+      ],
+      "workspace": "./codebase/domainforge/engineering",
+      "tools": [
+        "git",
+        "read",
+        "write",
+        "grep",
+        "run_terminal"
+      ]
+    },
+    "toolsConfig": {
+      "allowed": [
+        "git",
+        "read",
+        "write",
+        "grep",
+        "run_terminal"
+      ],
+      "workspaceScope": "submodule_only",
+      "memoryIntegration": true
+    },
+    "memoryConfig": {
+      "losslessClaw": {
+        "enabled": true,
+        "contextWindow": 128000,
+        "compressionRatio": 25
+      },
+      "gigabrain": {
+        "enabled": true,
+        "entities": true,
+        "beliefs": true,
+        "episodes": true,
+        "openLoops": true
+      }
+    },
+    "routingKeywords": [
+      "materials-testing",
+      "concrete-design",
+      "quality-control",
+      "material-specs"
+    ]
+  },
+  {
+    "discipline": "domainforge-construction",
+    "displayName": "Construction",
+    "description": "Construction Engineering Specialist",
+    "agentPersona": {
+      "role": "Construction Engineering Specialist",
+      "expertise": [
+        "construction-sequencing",
+        "project-scheduling",
+        "construction-safety",
+        "quality-assurance",
+        "contract-administration"
+      ],
+      "workspace": "./codebase/domainforge/engineering",
+      "tools": [
+        "git",
+        "read",
+        "write",
+        "grep",
+        "run_terminal"
+      ]
+    },
+    "toolsConfig": {
+      "allowed": [
+        "git",
+        "read",
+        "write",
+        "grep",
+        "run_terminal"
+      ],
+      "workspaceScope": "submodule_only",
+      "memoryIntegration": true
+    },
+    "memoryConfig": {
+      "losslessClaw": {
+        "enabled": true,
+        "contextWindow": 128000,
+        "compressionRatio": 25
+      },
+      "gigabrain": {
+        "enabled": true,
+        "entities": true,
+        "beliefs": true,
+        "episodes": true,
+        "openLoops": true
+      }
+    },
+    "routingKeywords": [
+      "construction-sequencing",
+      "project-scheduling",
+      "construction-safety",
+      "quality-control"
+    ]
+  },
+  {
+    "discipline": "domainforge-project",
+    "displayName": "Project",
+    "description": "Project Management Specialist",
+    "agentPersona": {
+      "role": "Project Management Specialist",
+      "expertise": [
+        "project-planning",
+        "cost-estimation",
+        "stakeholder-management",
+        "risk-management",
+        "project-documentation"
+      ],
+      "workspace": "./codebase/domainforge/engineering",
+      "tools": [
+        "git",
+        "read",
+        "write",
+        "grep",
+        "run_terminal",
+        "lcm_grep"
+      ]
+    },
+    "toolsConfig": {
+      "allowed": [
+        "git",
+        "read",
+        "write",
+        "grep",
+        "run_terminal",
+        "lcm_grep"
+      ],
+      "workspaceScope": "team",
+      "memoryIntegration": true
+    },
+    "memoryConfig": {
+      "losslessClaw": {
+        "enabled": true,
+        "contextWindow": 128000,
+        "compressionRatio": 25
+      },
+      "gigabrain": {
+        "enabled": true,
+        "entities": true,
+        "beliefs": true,
+        "episodes": true,
+        "openLoops": true
+      }
+    },
+    "routingKeywords": [
+      "project-management",
+      "cost-estimation",
+      "stakeholder-coordination",
+      "risk-management"
+    ]
+  },
+  {
+    "discipline": "domainforge-procurement",
+    "displayName": "Procurement",
+    "description": "Procurement and Contracts Specialist",
+    "agentPersona": {
+      "role": "Procurement and Contracts Specialist",
+      "expertise": [
+        "procurement-planning",
+        "contract-administration",
+        "vendor-management",
+        "subcontractor-coordination",
+        "procurement-compliance"
+      ],
+      "workspace": "./codebase/domainforge/engineering",
+      "tools": [
+        "git",
+        "read",
+        "write",
+        "grep",
+        "run_terminal"
+      ]
+    },
+    "toolsConfig": {
+      "allowed": [
+        "git",
+        "read",
+        "write",
+        "grep",
+        "run_terminal"
+      ],
+      "workspaceScope": "submodule_only",
+      "memoryIntegration": true
+    },
+    "memoryConfig": {
+      "losslessClaw": {
+        "enabled": true,
+        "contextWindow": 128000,
+        "compressionRatio": 25
+      },
+      "gigabrain": {
+        "enabled": true,
+        "entities": true,
+        "beliefs": true,
+        "episodes": true,
+        "openLoops": true
+      }
+    },
+    "routingKeywords": [
+      "procurement",
+      "contract-administration",
+      "vendor-management",
+      "subcontractor-coordination"
+    ]
+  },
+  {
+    "discipline": "domainforge-safety",
+    "displayName": "Safety",
+    "description": "Safety and Risk Management Specialist",
+    "agentPersona": {
+      "role": "Safety and Risk Management Specialist",
+      "expertise": [
+        "construction-safety",
+        "occupational-health",
+        "hazard-assessment",
+        "safety-training",
+        "risk-mitigation"
+      ],
+      "workspace": "./codebase/domainforge/engineering",
+      "tools": [
+        "git",
+        "read",
+        "write",
+        "grep",
+        "run_terminal"
+      ]
+    },
+    "toolsConfig": {
+      "allowed": [
+        "git",
+        "read",
+        "write",
+        "grep",
+        "run_terminal"
+      ],
+      "workspaceScope": "submodule_only",
+      "memoryIntegration": true
+    },
+    "memoryConfig": {
+      "losslessClaw": {
+        "enabled": true,
+        "contextWindow": 128000,
+        "compressionRatio": 25
+      },
+      "gigabrain": {
+        "enabled": true,
+        "entities": true,
+        "beliefs": true,
+        "episodes": true,
+        "openLoops": true
+      }
+    },
+    "routingKeywords": [
+      "construction-safety",
+      "occupational-health",
+      "hazard-assessment",
+      "safety-compliance"
+    ]
+  },
+  {
+    "discipline": "domainforge-legal",
+    "displayName": "Legal",
+    "description": "Legal and Regulatory Compliance Specialist",
+    "agentPersona": {
+      "role": "Legal and Regulatory Compliance Specialist",
+      "expertise": [
+        "regulatory-compliance",
+        "permitting",
+        "contract-law",
+        "environmental-compliance",
+        "right-of-way"
+      ],
+      "workspace": "./codebase/domainforge/engineering",
+      "tools": [
+        "git",
+        "read",
+        "write",
+        "grep",
+        "run_terminal"
+      ]
+    },
+    "toolsConfig": {
+      "allowed": [
+        "git",
+        "read",
+        "write",
+        "grep",
+        "run_terminal"
+      ],
+      "workspaceScope": "submodule_only",
+      "memoryIntegration": true
+    },
+    "memoryConfig": {
+      "losslessClaw": {
+        "enabled": true,
+        "contextWindow": 128000,
+        "compressionRatio": 25
+      },
+      "gigabrain": {
+        "enabled": true,
+        "entities": true,
+        "beliefs": true,
+        "episodes": true,
+        "openLoops": true
+      }
+    },
+    "routingKeywords": [
+      "regulatory-compliance",
+      "permitting",
+      "contract-review",
+      "environmental-law"
+    ]
+  },
+  {
+    "discipline": "infraforge-orchestrator",
+    "displayName": "Orchestrator",
+    "description": "Infrastructure Orchestration Specialist",
+    "agentPersona": {
+      "role": "Infrastructure Orchestration Specialist",
+      "expertise": [
+        "infrastructure-orchestration",
+        "system-integration",
+        "api-management",
+        "service-monitoring",
+        "performance-optimization"
+      ],
+      "workspace": "./codebase/infraforge/infrastructure",
+      "tools": [
+        "git",
+        "read",
+        "write",
+        "grep",
+        "run_terminal",
+        "lcm_grep",
+        "lcm_describe"
+      ]
+    },
+    "toolsConfig": {
+      "allowed": [
+        "git",
+        "read",
+        "write",
+        "grep",
+        "run_terminal",
+        "lcm_grep",
+        "lcm_describe"
+      ],
+      "workspaceScope": "global",
+      "memoryIntegration": true
+    },
+    "memoryConfig": {
+      "losslessClaw": {
+        "enabled": true,
+        "contextWindow": 128000,
+        "compressionRatio": 25
+      },
+      "gigabrain": {
+        "enabled": true,
+        "entities": true,
+        "beliefs": true,
+        "episodes": true,
+        "openLoops": true
+      }
+    },
+    "routingKeywords": [
+      "infrastructure-orchestrate",
+      "system-integration",
+      "service-coordination",
+      "infrastructure-monitor",
+      "performance-optimize"
+    ]
+  },
+  {
+    "discipline": "infraforge-database",
+    "displayName": "Database",
+    "description": "Database Infrastructure Specialist",
+    "agentPersona": {
+      "role": "Database Infrastructure Specialist",
+      "expertise": [
+        "database-architecture",
+        "performance-tuning",
+        "data-backup",
+        "database-security",
+        "data-migration"
+      ],
+      "workspace": "./codebase/infraforge/infrastructure",
+      "tools": [
+        "git",
+        "read",
+        "write",
+        "grep",
+        "run_terminal"
+      ]
+    },
+    "toolsConfig": {
+      "allowed": [
+        "git",
+        "read",
+        "write",
+        "grep",
+        "run_terminal"
+      ],
+      "workspaceScope": "submodule_only",
+      "memoryIntegration": true
+    },
+    "memoryConfig": {
+      "losslessClaw": {
+        "enabled": true,
+        "contextWindow": 128000,
+        "compressionRatio": 25
+      },
+      "gigabrain": {
+        "enabled": true,
+        "entities": true,
+        "beliefs": true,
+        "episodes": true,
+        "openLoops": true
+      }
+    },
+    "routingKeywords": [
+      "database-architecture",
+      "performance-tuning",
+      "data-backup",
+      "database-security"
+    ]
+  },
+  {
+    "discipline": "infraforge-compute",
+    "displayName": "Compute",
+    "description": "Compute Infrastructure Specialist",
+    "agentPersona": {
+      "role": "Compute Infrastructure Specialist",
+      "expertise": [
+        "compute-provisioning",
+        "container-orchestration",
+        "serverless-computing",
+        "cost-optimization",
+        "hpc-engineering"
+      ],
+      "workspace": "./codebase/infraforge/infrastructure",
+      "tools": [
+        "git",
+        "read",
+        "write",
+        "grep",
+        "run_terminal"
+      ]
+    },
+    "toolsConfig": {
+      "allowed": [
+        "git",
+        "read",
+        "write",
+        "grep",
+        "run_terminal"
+      ],
+      "workspaceScope": "submodule_only",
+      "memoryIntegration": true
+    },
+    "memoryConfig": {
+      "losslessClaw": {
+        "enabled": true,
+        "contextWindow": 128000,
+        "compressionRatio": 25
+      },
+      "gigabrain": {
+        "enabled": true,
+        "entities": true,
+        "beliefs": true,
+        "episodes": true,
+        "openLoops": true
+      }
+    },
+    "routingKeywords": [
+      "compute-provisioning",
+      "container-orchestration",
+      "serverless-computing",
+      "hpc-management"
+    ]
+  },
+  {
+    "discipline": "infraforge-networking",
+    "displayName": "Networking",
+    "description": "Network Infrastructure Specialist",
+    "agentPersona": {
+      "role": "Network Infrastructure Specialist",
+      "expertise": [
+        "network-architecture",
+        "network-security",
+        "load-balancing",
+        "vpn-management",
+        "network-monitoring"
+      ],
+      "workspace": "./codebase/infraforge/infrastructure",
+      "tools": [
+        "git",
+        "read",
+        "write",
+        "grep",
+        "run_terminal"
+      ]
+    },
+    "toolsConfig": {
+      "allowed": [
+        "git",
+        "read",
+        "write",
+        "grep",
+        "run_terminal"
+      ],
+      "workspaceScope": "submodule_only",
+      "memoryIntegration": true
+    },
+    "memoryConfig": {
+      "losslessClaw": {
+        "enabled": true,
+        "contextWindow": 128000,
+        "compressionRatio": 25
+      },
+      "gigabrain": {
+        "enabled": true,
+        "entities": true,
+        "beliefs": true,
+        "episodes": true,
+        "openLoops": true
+      }
+    },
+    "routingKeywords": [
+      "network-architecture",
+      "network-security",
+      "load-balancing",
+      "network-monitoring"
+    ]
+  },
+  {
+    "discipline": "infraforge-storage",
+    "displayName": "Storage",
+    "description": "Storage Infrastructure Specialist",
+    "agentPersona": {
+      "role": "Storage Infrastructure Specialist",
+      "expertise": [
+        "storage-architecture",
+        "data-backup",
+        "file-system-management",
+        "object-storage",
+        "storage-security"
+      ],
+      "workspace": "./codebase/infraforge/infrastructure",
+      "tools": [
+        "git",
+        "read",
+        "write",
+        "grep",
+        "run_terminal"
+      ]
+    },
+    "toolsConfig": {
+      "allowed": [
+        "git",
+        "read",
+        "write",
+        "grep",
+        "run_terminal"
+      ],
+      "workspaceScope": "submodule_only",
+      "memoryIntegration": true
+    },
+    "memoryConfig": {
+      "losslessClaw": {
+        "enabled": true,
+        "contextWindow": 128000,
+        "compressionRatio": 25
+      },
+      "gigabrain": {
+        "enabled": true,
+        "entities": true,
+        "beliefs": true,
+        "episodes": true,
+        "openLoops": true
+      }
+    },
+    "routingKeywords": [
+      "storage-architecture",
+      "data-backup",
+      "file-system-management",
+      "object-storage"
+    ]
+  },
+  {
+    "discipline": "infraforge-security",
+    "displayName": "Security",
+    "description": "Infrastructure Security Specialist",
+    "agentPersona": {
+      "role": "Infrastructure Security Specialist",
+      "expertise": [
+        "infrastructure-security",
+        "threat-detection",
+        "compliance-monitoring",
+        "access-control",
+        "vulnerability-management"
+      ],
+      "workspace": "./codebase/infraforge/infrastructure",
+      "tools": [
+        "git",
+        "read",
+        "write",
+        "grep",
+        "run_terminal",
+        "lcm_grep"
+      ]
+    },
+    "toolsConfig": {
+      "allowed": [
+        "git",
+        "read",
+        "write",
+        "grep",
+        "run_terminal",
+        "lcm_grep"
+      ],
+      "workspaceScope": "team",
+      "memoryIntegration": true
+    },
+    "memoryConfig": {
+      "losslessClaw": {
+        "enabled": true,
+        "contextWindow": 128000,
+        "compressionRatio": 25
+      },
+      "gigabrain": {
+        "enabled": true,
+        "entities": true,
+        "beliefs": true,
+        "episodes": true,
+        "openLoops": true
+      }
+    },
+    "routingKeywords": [
+      "infrastructure-security",
+      "threat-detection",
+      "compliance-monitoring",
+      "access-control"
+    ]
+  },
+  {
+    "discipline": "infraforge-monitoring",
+    "displayName": "Monitoring",
+    "description": "Infrastructure Monitoring Specialist",
+    "agentPersona": {
+      "role": "Infrastructure Monitoring Specialist",
+      "expertise": [
+        "system-monitoring",
+        "performance-metrics",
+        "log-aggregation",
+        "incident-detection",
+        "capacity-planning"
+      ],
+      "workspace": "./codebase/infraforge/infrastructure",
+      "tools": [
+        "git",
+        "read",
+        "write",
+        "grep",
+        "run_terminal"
+      ]
+    },
+    "toolsConfig": {
+      "allowed": [
+        "git",
+        "read",
+        "write",
+        "grep",
+        "run_terminal"
+      ],
+      "workspaceScope": "team",
+      "memoryIntegration": true
+    },
+    "memoryConfig": {
+      "losslessClaw": {
+        "enabled": true,
+        "contextWindow": 128000,
+        "compressionRatio": 25
+      },
+      "gigabrain": {
+        "enabled": true,
+        "entities": true,
+        "beliefs": true,
+        "episodes": true,
+        "openLoops": true
+      }
+    },
+    "routingKeywords": [
+      "system-monitoring",
+      "performance-metrics",
+      "log-aggregation",
+      "incident-detection"
+    ]
+  },
+  {
+    "discipline": "infraforge-automation",
+    "displayName": "Automation",
+    "description": "Infrastructure Automation Specialist",
+    "agentPersona": {
+      "role": "Infrastructure Automation Specialist",
+      "expertise": [
+        "infrastructure-as-code",
+        "configuration-management",
+        "ci-cd-pipelines",
+        "automated-deployment",
+        "infrastructure-testing"
+      ],
+      "workspace": "./codebase/infraforge/infrastructure",
+      "tools": [
+        "git",
+        "read",
+        "write",
+        "grep",
+        "run_terminal"
+      ]
+    },
+    "toolsConfig": {
+      "allowed": [
+        "git",
+        "read",
+        "write",
+        "grep",
+        "run_terminal"
+      ],
+      "workspaceScope": "team",
+      "memoryIntegration": true
+    },
+    "memoryConfig": {
+      "losslessClaw": {
+        "enabled": true,
+        "contextWindow": 128000,
+        "compressionRatio": 25
+      },
+      "gigabrain": {
+        "enabled": true,
+        "entities": true,
+        "beliefs": true,
+        "episodes": true,
+        "openLoops": true
+      }
+    },
+    "routingKeywords": [
+      "infrastructure-automation",
+      "configuration-management",
+      "ci-cd-pipelines",
+      "automated-deployment"
+    ]
   }
 ]
