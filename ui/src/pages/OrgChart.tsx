@@ -353,10 +353,11 @@ export function OrgChart() {
 
       {/* SVG layer for edges */}
       <svg
-        className="absolute inset-0 pointer-events-none"
+        className="absolute inset-0 pointer-events-none z-10"
         style={{
           width: "100%",
           height: "100%",
+          overflow: "visible",
         }}
       >
         <g transform={`translate(${pan.x}, ${pan.y}) scale(${zoom})`}>
@@ -383,7 +384,7 @@ export function OrgChart() {
 
       {/* Card layer */}
       <div
-        className="absolute inset-0"
+        className="absolute inset-0 z-0"
         style={{
           transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
           transformOrigin: "0 0",
