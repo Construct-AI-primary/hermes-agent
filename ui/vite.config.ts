@@ -5,6 +5,19 @@ import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  optimizeDeps: {
+    include: [
+      '@paperclipai/adapter-claude-local',
+      '@paperclipai/adapter-codex-local',
+      '@paperclipai/adapter-cursor-local',
+      '@paperclipai/adapter-gemini-local',
+      '@paperclipai/adapter-openclaw-gateway',
+      '@paperclipai/adapter-opencode-local',
+      '@paperclipai/adapter-pi-local',
+      '@paperclipai/adapter-utils',
+      '@paperclipai/shared',
+    ],
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
