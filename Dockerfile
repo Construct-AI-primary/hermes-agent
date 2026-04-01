@@ -2,7 +2,7 @@ FROM node:lts-trixie-slim AS base
 RUN apt-get update \
   && apt-get install -y --no-install-recommends ca-certificates curl git \
   && rm -rf /var/lib/apt/lists/*
-RUN corepack enable
+RUN corepack enable && corepack prepare pnpm@9.15.4 --activate
 
 FROM base AS deps
 WORKDIR /app
@@ -37,9 +37,19 @@ COPY . .
 ARG VITE_WS_BASE_URL
 ENV VITE_WS_BASE_URL=$VITE_WS_BASE_URL
 RUN echo "Building with VITE_WS_BASE_URL=${VITE_WS_BASE_URL}"
+# Build order: shared first, then adapter-utils (depended on by others)
 RUN pnpm --filter @paperclipai/shared build
-RUN pnpm --filter @paperclipai/plugin-sdk build
+RUN pnpm --filter @paperclipai/adapter-utils build
+RUN pnpm --filter @paperclipai/adapter-claude-local build
+RUN pnpm --filter @paperclipai/adapter-codex-local build
+RUN pnpm --filter @paperclipai/adapter-cursor-local build
+RUN pnpm --filter @paperclipai/adapter-gemini-local build
+RUN pnpm --filter @paperclipai/adapter-openclaw-gateway build
+RUN pnpm --filter @paperclipai/adapter-opencode-local build
+RUN pnpm --filter @paperclipai/adapter-pi-local build
+# Then packages that depend on adapter-utils
 RUN pnpm --filter @paperclipai/db build
+RUN pnpm --filter @paperclipai/plugin-sdk build
 RUN pnpm --filter @paperclipai/ui build
 RUN pnpm --filter @paperclipai/plugin-sdk build
 RUN pnpm --filter @paperclipai/server build
