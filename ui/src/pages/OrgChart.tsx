@@ -369,14 +369,14 @@ export function OrgChart() {
             const midY = (y1 + y2) / 2;
 
             return (
-              <path
-                key={`${parent.id}-${child.id}`}
-                d={`M ${x1} ${y1} L ${x1} ${midY} L ${x2} ${midY} L ${x2} ${y2}`}
-                fill="none"
-                stroke="hsl(var(--foreground) / 0.3)"
-                strokeWidth={2}
-                strokeLinecap="round"
-              />
+                <path
+                  key={`${parent.id}-${child.id}`}
+                  d={`M ${x1} ${y1} L ${x1} ${midY} L ${x2} ${midY} L ${x2} ${y2}`}
+                  fill="none"
+                  stroke="color-mix(in oklab, var(--foreground) 30%, transparent)"
+                  strokeWidth={2}
+                  strokeLinecap="round"
+                />
             );
           })}
         </g>
