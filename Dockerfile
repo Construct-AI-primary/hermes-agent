@@ -49,9 +49,9 @@ WORKDIR /app
 COPY --chown=node:node --from=build /app /app
 RUN npm install --global --omit=dev @anthropic-ai/claude-code@latest @openai/codex@latest opencode-ai \
   && mkdir -p /paperclip \
-  && chown node:node /paperclip \
-  && rm -rf node_modules \
-  && pnpm install --prod
+  && chown node:node /paperclip
+# Copy UI dist into server/ui-dist for static serving
+RUN cd /app/server && pnpm run prepare:ui-dist
 
 ENV NODE_ENV=production \
   HOME=/paperclip \
@@ -70,4 +70,4 @@ VOLUME ["/paperclip"]
 EXPOSE 3100
 
 USER node
-CMD ["node", "--import", "./server/node_modules/tsx/dist/loader.mjs", "server/dist/index.js"]
+CMD ["node", "./server/dist/index.js"]
