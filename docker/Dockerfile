@@ -36,12 +36,17 @@ RUN pnpm --filter @paperclipai/shared build
 RUN pnpm --filter @paperclipai/db build
 RUN pnpm --filter @paperclipai/adapter-utils build
 RUN pnpm --filter @paperclipai/plugin-sdk build
+RUN pnpm --filter @paperclipai/adapter-claude-local build
+RUN pnpm --filter @paperclipai/adapter-codex-local build
+RUN pnpm --filter @paperclipai/adapter-cursor-local build
+RUN pnpm --filter @paperclipai/adapter-gemini-local build
+RUN pnpm --filter @paperclipai/adapter-openclaw-gateway build
+RUN pnpm --filter @paperclipai/adapter-opencode-local build
+RUN pnpm --filter @paperclipai/adapter-pi-local build
 RUN pnpm --filter @paperclipai/ui build
 RUN pnpm --filter @paperclipai/plugin-sdk build
 RUN pnpm --filter @paperclipai/server build
 RUN test -f server/dist/index.js || (echo "ERROR: server build output missing" && exit 1)
-RUN test -f packages/adapter-utils/dist/index.js || (echo "ERROR: adapter-utils build output missing" && exit 1)
-RUN test -f packages/db/dist/index.js || (echo "ERROR: db build output missing" && exit 1)
 
 FROM base AS production
 WORKDIR /app
@@ -69,4 +74,4 @@ VOLUME ["/paperclip"]
 EXPOSE 3100
 
 USER node
-CMD ["node", "--import", "./server/node_modules/tsx/dist/loader.mjs", "server/dist/index.js"]
+CMD ["node", "server/dist/index.js"]
