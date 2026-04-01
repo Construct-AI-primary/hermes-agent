@@ -2194,12 +2194,28 @@ export function agentRoutes(db: Db) {
 
     const offset = Number(req.query.offset ?? 0);
     const limitBytes = Number(req.query.limitBytes ?? 256000);
-    const result = await heartbeat.readLog(runId, {
-      offset: Number.isFinite(offset) ? offset : 0,
-      limitBytes: Number.isFinite(limitBytes) ? limitBytes : 256000,
-    });
 
-    res.json(result);
+    try {
+      const result = await heartbeat.readLog(runId, {
+        offset: Number.isFinite(offset) ? offset : 0,
+        limitBytes: Number.isFinite(limitBytes) ? limitBytes : 256000,
+      });
+      res.json(result);
+    } catch (err) {
+      if (err instanceof Error && (err as any).status === 404) {
+        // Log files may not exist on ephemeral storage (e.g., Render) after container restarts.
+        // Return an empty 200 response so the UI doesn't spam 404 errors.
+        res.json({
+          runId,
+          store: run.logStore,
+          logRef: run.logRef,
+          content: "",
+          nextOffset: undefined,
+        });
+        return;
+      }
+      throw err;
+    }
   });
 
   router.get("/heartbeat-runs/:runId/workspace-operations", async (req, res) => {
