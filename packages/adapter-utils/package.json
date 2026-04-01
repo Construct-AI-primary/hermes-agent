@@ -13,8 +13,14 @@
   },
   "type": "module",
   "exports": {
-    ".": "./src/index.ts",
-    "./*": "./src/*.ts"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./server-utils": {
+      "types": "./dist/server-utils.d.ts",
+      "import": "./dist/server-utils.js"
+    }
   },
   "publishConfig": {
     "access": "public",
