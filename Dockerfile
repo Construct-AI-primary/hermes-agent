@@ -129,5 +129,4 @@ ENV NODE_ENV=production \
 VOLUME ["/paperclip"]
 EXPOSE 3100
 
-USER node
 CMD ["node", "./server/dist/index.js"]

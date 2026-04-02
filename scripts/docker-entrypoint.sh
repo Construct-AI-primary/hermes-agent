@@ -26,4 +26,4 @@ if [ "$changed" = "1" ]; then
     chown -R node:node /paperclip
 fi
 
-exec gosu node "$@"
+exec "$@"
