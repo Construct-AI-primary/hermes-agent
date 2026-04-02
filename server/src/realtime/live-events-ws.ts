@@ -252,9 +252,33 @@ export function setupLiveEventsWebSocketServer(
     })
       .then((context) => {
         if (!context) {
+          // Log authorization failure details for debugging
+          const hasToken = !!(req.headers.authorization || url.searchParams.get("token"));
+          const headers = headersFromIncomingMessage(req);
+          logger.warn(
+            {
+              path: req.url,
+              companyId,
+              deploymentMode: opts.deploymentMode,
+              hasBearerToken: hasToken,
+              hasResolveSession: !!opts.resolveSessionFromHeaders,
+              cookieHeader: headers.get("cookie") ? "(present)" : "(missing)",
+            },
+            "live websocket upgrade rejected: authorization failed"
+          );
           rejectUpgrade(socket, "403 Forbidden", "forbidden");
           return;
         }
+
+        logger.debug(
+          {
+            path: req.url,
+            companyId,
+            actorType: context.actorType,
+            actorId: context.actorId,
+          },
+          "live websocket upgrade accepted"
+        );
 
         const reqWithContext = req as IncomingMessageWithContext;
         reqWithContext.paperclipUpgradeContext = context;
