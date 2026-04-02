@@ -305,6 +305,67 @@
       "count": 11,
       "agents": [
         {
+          "agent_id": "devforge-forge",
+          "name": "Forge",
+          "division": "engineering",
+          "role": "Engineering Director",
+          "description": "Enterprise system architecture and design",
+          "status": "active",
+          "authority_level": "senior",
+          "responsibilities": [
+            "System architecture design and planning",
+            "Technology stack evaluation and selection",
+            "Scalability and performance architecture",
+            "Enterprise integration patterns"
+          ],
+          "expertise": [
+            "architecture",
+            "scalability",
+            "enterprise",
+            "patterns"
+          ],
+          "integration": {
+            "reports_to": "devforge-orion",
+            "coordinates_with": [
+              "devforge-devcore",
+              "devforge-codesmith"
+            ],
+            "memory_systems": [
+              "gigabrain",
+              "para"
+            ]
+          },
+          "openclaw_config": {
+            "tools_allowed": [
+              "git",
+              "read",
+              "write",
+              "grep",
+              "run_terminal",
+              "lcm_grep"
+            ],
+            "workspace_scope": "team",
+            "max_concurrent_requests": 5,
+            "timeout_seconds": 300
+          },
+          "paperclip_config": {
+            "routing_keywords": [
+              "architecture",
+              "design",
+              "scalability",
+              "enterprise"
+            ],
+            "priority": 4
+          },
+          "model_config": {
+            "provider": "openrouter",
+            "model": "deepseek/deepseek-chat",
+            "fallback_models": [],
+            "temperature": 0.7,
+            "max_tokens": 4096
+          }
+        },
+        {
           "agent_id": "devforge-codesmith",
           "name": "Codesmith",
           "division": "engineering",
@@ -326,6 +387,7 @@
             "security"
           ],
           "integration": {
+            "reports_to": "devforge-forge",
             "coordinates_with": [
               "devforge-devcore",
               "devforge-interface"
@@ -386,6 +448,7 @@
             "optimization"
           ],
           "integration": {
+            "reports_to": "devforge-forge",
             "coordinates_with": [
               "devforge-vector",
               "devforge-synth"
@@ -448,6 +511,7 @@
             "standards"
           ],
           "integration": {
+            "reports_to": "devforge-forge",
             "coordinates_with": [
               "devforge-codesmith",
               "devforge-forge"
@@ -507,6 +571,7 @@
             "workflows"
           ],
           "integration": {
+            "reports_to": "devforge-forge",
             "coordinates_with": [
               "devforge-cloudops"
             ],
@@ -564,6 +629,7 @@
             "databases"
           ],
           "integration": {
+            "reports_to": "devforge-forge",
             "coordinates_with": [
               "devforge-cortex",
               "devforge-navigator"
@@ -624,6 +690,7 @@
             "testing"
           ],
           "integration": {
+            "reports_to": "devforge-forge",
             "coordinates_with": [
               "devforge-codesmith",
               "devforge-devcore"
@@ -684,6 +751,7 @@
             "workflow-review"
           ],
           "integration": {
+            "reports_to": "devforge-forge",
             "coordinates_with": [
               "devforge-cortex",
               "devforge-reviewer"
@@ -748,6 +816,7 @@
             "best-practices"
           ],
           "integration": {
+            "reports_to": "devforge-forge",
             "coordinates_with": [
               "devforge-promptsmith",
               "devforge-fixer"
@@ -807,6 +876,7 @@
             "training-data"
           ],
           "integration": {
+            "reports_to": "devforge-forge",
             "coordinates_with": [
               "devforge-cortex",
               "devforge-dataforge"
@@ -864,6 +934,7 @@
             "troubleshooting"
           ],
           "integration": {
+            "reports_to": "devforge-forge",
             "coordinates_with": [
               "devforge-reviewer",
               "devforge-devcore"
@@ -901,66 +972,6 @@
             "temperature": 0.7,
             "max_tokens": 4096
           }
-        },
-        {
-          "agent_id": "devforge-forge",
-          "name": "Forge",
-          "division": "engineering",
-          "role": "System Architecture",
-          "description": "Enterprise system architecture and design",
-          "status": "active",
-          "authority_level": "senior",
-          "responsibilities": [
-            "System architecture design and planning",
-            "Technology stack evaluation and selection",
-            "Scalability and performance architecture",
-            "Enterprise integration patterns"
-          ],
-          "expertise": [
-            "architecture",
-            "scalability",
-            "enterprise",
-            "patterns"
-          ],
-          "integration": {
-            "coordinates_with": [
-              "devforge-devcore",
-              "devforge-codesmith"
-            ],
-            "memory_systems": [
-              "gigabrain",
-              "para"
-            ]
-          },
-          "openclaw_config": {
-            "tools_allowed": [
-              "git",
-              "read",
-              "write",
-              "grep",
-              "run_terminal",
-              "lcm_grep"
-            ],
-            "workspace_scope": "team",
-            "max_concurrent_requests": 5,
-            "timeout_seconds": 300
-          },
-          "paperclip_config": {
-            "routing_keywords": [
-              "architecture",
-              "design",
-              "scalability",
-              "enterprise"
-            ],
-            "priority": 4
-          },
-          "model_config": {
-            "provider": "openrouter",
-            "model": "deepseek/deepseek-chat",
-            "fallback_models": [],
-            "temperature": 0.7,
-            "max_tokens": 4096
-          }
         }
       ]
     },
@@ -972,10 +983,10 @@
           "agent_id": "devforge-dataforge",
           "name": "Dataforge",
           "division": "data",
-          "role": "Data Transformation",
+          "role": "Data Director",
           "description": "Data processing and transformation pipelines",
           "status": "active",
-          "authority_level": "standard",
+          "authority_level": "senior",
           "responsibilities": [
             "ETL pipeline development and management",
             "Data transformation and cleaning",
@@ -989,6 +1000,7 @@
             "data-quality"
           ],
           "integration": {
+            "reports_to": "devforge-orion",
             "coordinates_with": [
               "devforge-navigator",
               "devforge-sentinel"
@@ -1047,6 +1059,7 @@
             "metadata"
           ],
           "integration": {
+            "reports_to": "devforge-dataforge",
             "coordinates_with": [
               "devforge-dataforge",
               "devforge-vector"
@@ -1106,6 +1119,7 @@
             "streaming"
           ],
           "integration": {
+            "reports_to": "devforge-dataforge",
             "coordinates_with": [
               "devforge-sentinel",
               "devforge-cloudops"
@@ -1165,6 +1179,7 @@
             "migration"
           ],
           "integration": {
+            "reports_to": "devforge-dataforge",
             "coordinates_with": [
               "devforge-dataforge",
               "devforge-codesmith"
@@ -1223,6 +1238,7 @@
             "validation"
           ],
           "integration": {
+            "reports_to": "devforge-dataforge",
             "coordinates_with": [
               "devforge-dataforge",
               "devforge-pulse"
@@ -1281,6 +1297,7 @@
             "kafka"
           ],
           "integration": {
+            "reports_to": "devforge-dataforge",
             "coordinates_with": [
               "devforge-pulse",
               "devforge-cloudops"
@@ -1339,6 +1356,7 @@
             "security"
           ],
           "integration": {
+            "reports_to": "devforge-dataforge",
             "coordinates_with": [
               "devforge-automata",
               "devforge-stream"
@@ -1442,7 +1460,7 @@
           "agent_id": "devforge-guardian",
           "name": "Guardian",
           "division": "security",
-          "role": "Threat Protection",
+          "role": "Security Director",
           "description": "Comprehensive security monitoring and protection",
           "status": "active",
           "authority_level": "senior",
@@ -1459,6 +1477,7 @@
             "vulnerability"
           ],
           "integration": {
+            "reports_to": "devforge-orion",
             "coordinates_with": [
               "devforge-sentinelx",
               "devforge-gatekeeper"
@@ -1520,6 +1539,7 @@
             "identity"
           ],
           "integration": {
+            "reports_to": "devforge-guardian",
             "coordinates_with": [
               "devforge-guardian",
               "devforge-auditor"
@@ -1578,6 +1598,7 @@
             "policy"
           ],
           "integration": {
+            "reports_to": "devforge-guardian",
             "coordinates_with": [
               "devforge-guardian",
               "devforge-watchtower"
@@ -1637,6 +1658,7 @@
             "intelligence"
           ],
           "integration": {
+            "reports_to": "devforge-guardian",
             "coordinates_with": [
               "devforge-guardian",
               "devforge-pulse"
@@ -1697,6 +1719,7 @@
             "training"
           ],
           "integration": {
+            "reports_to": "devforge-guardian",
             "coordinates_with": [
               "devforge-guardian",
               "devforge-auditor"
@@ -1756,6 +1779,7 @@
             "data-protection"
           ],
           "integration": {
+            "reports_to": "devforge-guardian",
             "coordinates_with": [
               "devforge-guardian",
               "devforge-librarian"
@@ -1804,10 +1828,10 @@
           "agent_id": "devforge-atlas",
           "name": "Atlas",
           "division": "product",
-          "role": "Product Mapping",
+          "role": "Product Director",
           "description": "Product architecture and system mapping",
           "status": "active",
-          "authority_level": "standard",
+          "authority_level": "senior",
           "responsibilities": [
             "Product architecture design and documentation",
             "System mapping and integration planning",
@@ -1821,6 +1845,7 @@
             "prioritization"
           ],
           "integration": {
+            "reports_to": "devforge-orion",
             "coordinates_with": [
               "devforge-cartographer",
               "devforge-catalyst"
@@ -1880,6 +1905,7 @@
             "marketing"
           ],
           "integration": {
+            "reports_to": "devforge-atlas",
             "coordinates_with": [
               "devforge-amplifier",
               "devforge-storycraft"
@@ -1937,6 +1963,7 @@
             "stakeholder"
           ],
           "integration": {
+            "reports_to": "devforge-atlas",
             "coordinates_with": [
               "devforge-atlas",
               "devforge-catalyst"
@@ -1996,6 +2023,7 @@
             "trends"
           ],
           "integration": {
+            "reports_to": "devforge-atlas",
             "coordinates_with": [
               "devforge-atlas",
               "devforge-concierge"
@@ -2055,6 +2083,7 @@
             "satisfaction"
           ],
           "integration": {
+            "reports_to": "devforge-atlas",
             "coordinates_with": [
               "devforge-catalyst",
               "devforge-merchant"
@@ -2113,6 +2142,7 @@
             "execution"
           ],
           "integration": {
+            "reports_to": "devforge-atlas",
             "coordinates_with": [
               "devforge-brandforge",
               "devforge-amplifier"
@@ -2170,6 +2200,7 @@
             "narrative"
           ],
           "integration": {
+            "reports_to": "devforge-atlas",
             "coordinates_with": [
               "devforge-brandforge",
               "devforge-amplifier"
@@ -2213,6 +2244,64 @@
       "count": 7,
       "agents": [
         {
+          "agent_id": "devforge-merchant",
+          "name": "Merchant",
+          "division": "growth",
+          "role": "Growth Director",
+          "description": "E-commerce and commercial operations",
+          "status": "active",
+          "authority_level": "senior",
+          "responsibilities": [
+            "E-commerce platform management",
+            "Commercial operations optimization",
+            "Revenue optimization and pricing strategy",
+            "Customer acquisition and retention"
+          ],
+          "expertise": [
+            "ecommerce",
+            "commerce",
+            "pricing",
+            "acquisition"
+          ],
+          "integration": {
+            "reports_to": "devforge-orion",
+            "coordinates_with": [
+              "devforge-dealmaker",
+              "devforge-concierge"
+            ],
+            "memory_systems": [
+              "gigabrain"
+            ]
+          },
+          "openclaw_config": {
+            "tools_allowed": [
+              "git",
+              "read",
+              "write",
+              "search"
+            ],
+            "workspace_scope": "team",
+            "max_concurrent_requests": 5,
+            "timeout_seconds": 300
+          },
+          "paperclip_config": {
+            "routing_keywords": [
+              "ecommerce",
+              "commerce",
+              "pricing",
+              "retail"
+            ],
+            "priority": 5
+          },
+          "model_config": {
+            "provider": "openrouter",
+            "model": "minimax/minimax-m2.7",
+            "fallback_models": [],
+            "temperature": 0.7,
+            "max_tokens": 4096
+          }
+        },
+        {
           "agent_id": "devforge-ambassador",
           "name": "Ambassador",
           "division": "growth",
@@ -2233,6 +2322,7 @@
             "thought-leadership"
           ],
           "integration": {
+            "reports_to": "devforge-merchant",
             "coordinates_with": [
               "devforge-brandforge",
               "devforge-amplifier"
@@ -2290,6 +2380,7 @@
             "collaboration"
           ],
           "integration": {
+            "reports_to": "devforge-merchant",
             "coordinates_with": [
               "devforge-strategos",
               "devforge-dealmaker"
@@ -2348,6 +2439,7 @@
             "social-media"
           ],
           "integration": {
+            "reports_to": "devforge-merchant",
             "coordinates_with": [
               "devforge-brandforge",
               "devforge-ambassador"
@@ -2405,6 +2497,7 @@
             "trends"
           ],
           "integration": {
+            "reports_to": "devforge-merchant",
             "coordinates_with": [
               "devforge-strategos",
               "devforge-analyst"
@@ -2464,6 +2557,7 @@
             "crm"
           ],
           "integration": {
+            "reports_to": "devforge-merchant",
             "coordinates_with": [
               "devforge-merchant",
               "devforge-ally"
@@ -2502,63 +2596,6 @@
           }
         },
         {
-          "agent_id": "devforge-merchant",
-          "name": "Merchant",
-          "division": "growth",
-          "role": "Commerce Operations",
-          "description": "E-commerce and commercial operations",
-          "status": "active",
-          "authority_level": "standard",
-          "responsibilities": [
-            "E-commerce platform management",
-            "Commercial operations optimization",
-            "Revenue optimization and pricing strategy",
-            "Customer acquisition and retention"
-          ],
-          "expertise": [
-            "ecommerce",
-            "commerce",
-            "pricing",
-            "acquisition"
-          ],
-          "integration": {
-            "coordinates_with": [
-              "devforge-dealmaker",
-              "devforge-concierge"
-            ],
-            "memory_systems": [
-              "gigabrain"
-            ]
-          },
-          "openclaw_config": {
-            "tools_allowed": [
-              "git",
-              "read",
-              "write",
-              "search"
-            ],
-            "workspace_scope": "team",
-            "max_concurrent_requests": 5,
-            "timeout_seconds": 300
-          },
-          "paperclip_config": {
-            "routing_keywords": [
-              "ecommerce",
-              "commerce",
-              "pricing",
-              "retail"
-            ],
-            "priority": 5
-          },
-          "model_config": {
-            "provider": "openrouter",
-            "model": "minimax/minimax-m2.7",
-            "fallback_models": [],
-            "temperature": 0.7,
-            "max_tokens": 4096
-          }
-        },
-        {
           "agent_id": "devforge-voyager",
           "name": "Voyager",
           "division": "growth",
@@ -2579,6 +2616,7 @@
             "entry-strategy"
           ],
           "integration": {
+            "reports_to": "devforge-merchant",
             "coordinates_with": [
               "devforge-strategos",
               "devforge-analyst"
@@ -2644,6 +2682,7 @@
             "research"
           ],
           "integration": {
+            "reports_to": "devforge-council",
             "coordinates_with": [
               "devforge-strategos",
               "devforge-scout"
@@ -2760,6 +2799,7 @@
             "workflows"
           ],
           "integration": {
+            "reports_to": "devforge-council",
             "coordinates_with": [
               "devforge-archivist",
               "devforge-mentor"
@@ -2821,6 +2861,7 @@
             "mentoring"
           ],
           "integration": {
+            "reports_to": "devforge-council",
             "coordinates_with": [
               "devforge-librarian",
               "devforge-compass"
@@ -2878,6 +2919,7 @@
             "scenarios"
           ],
           "integration": {
+            "reports_to": "devforge-council",
             "coordinates_with": [
               "devforge-analyst",
               "devforge-insight"
@@ -2937,6 +2979,7 @@
             "growth"
           ],
           "integration": {
+            "reports_to": "devforge-council",
             "coordinates_with": [
               "devforge-strategos",
               "devforge-voyager"
@@ -2996,6 +3039,7 @@
             "threats"
           ],
           "integration": {
+            "reports_to": "devforge-council",
             "coordinates_with": [
               "devforge-analyst",
               "devforge-pathfinder"
