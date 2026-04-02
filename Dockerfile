@@ -64,10 +64,36 @@ RUN pnpm --filter @paperclipai/adapter-opencode-local build
 RUN pnpm --filter @paperclipai/adapter-pi-local build
 # Then packages that depend on adapter-utils
 RUN pnpm --filter @paperclipai/db build
+# Diagnostic: log what TypeScript sees for workspaceRuntimeServices columns
+# Using `|| true` to prevent build failures from diagnostic commands
+RUN echo "=== WORKSPACE_RUNTIME SERVICES DIAGNOSTICS ==="; \
+    echo "--- d.ts readonly field count ---"; \
+    grep -c 'readonly ' packages/db/dist/schema/workspace_runtime_services.d.ts || true; \
+    echo "--- Compiled JS line count ---"; \
+    wc -l packages/db/dist/schema/workspace_runtime_services.js || true; \
+    echo "--- Symlink resolution for @paperclipai/db ---"; \
+    ls -la server/node_modules/@paperclipai/db 2>/dev/null || echo "No symlink found"; \
+    echo "--- dist/ existence check ---"; \
+    if [ -d packages/db/dist ]; then echo "dist/ EXISTS"; else echo "dist/ MISSING"; fi; \
+    echo "--- index.d.ts exports ---"; \
+    grep 'workspaceRuntimeServices' packages/db/dist/index.d.ts 2>/dev/null || echo "Not found in index.d.ts"; \
+    echo "--- All columns in db/$inferInsert type ---"; \
+    grep -A 50 'declare const workspaceRuntimeServices' packages/db/dist/schema/workspace_runtime_services.d.ts | head -40 || true
+# Pre-build diagnostic: show exactly what TypeScript sees for workspaceRuntimeServices
+RUN echo "=== COLUMN PRESENCE CHECK ==="; \
+    for col in companyId projectId projectWorkspaceId executionWorkspaceId issueId scopeType scopeId serviceName status lifecycle reuseKey command cwd port url provider providerRef ownerAgentId startedByRunId lastUsedAt startedAt stoppedAt stopPolicy healthStatus updatedAt createdAt; do \
+      if grep -q "readonly ${col}:" packages/db/dist/schema/workspace_runtime_services.d.ts 2>/dev/null; then \
+        echo "OK: $col found"; \
+      else \
+        echo "MISSING: $col NOT found in d.ts"; \
+      fi; \
+    done; \
+    echo "=== END DIAGNOSTICS ==="
 RUN pnpm --filter @paperclipai/plugin-sdk build
 RUN pnpm --filter @paperclipai/ui build
 RUN pnpm --filter @paperclipai/plugin-sdk build
-RUN pnpm --filter @paperclipai/server build
+# Verbose server build: capture full TypeScript error output
+RUN pnpm --filter @paperclipai/server build 2>&1 | tee /tmp/server-build.log || (echo "=== SERVER BUILD FAILED ===" && cat /tmp/server-build.log && exit 1)
 RUN test -f server/dist/index.js || (echo "ERROR: server build output missing" && exit 1)
 
 FROM base AS production
