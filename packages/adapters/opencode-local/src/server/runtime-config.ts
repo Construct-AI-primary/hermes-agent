@@ -51,12 +51,21 @@ export async function prepareOpenCodeRuntimeConfig(input: {
 
   await fs.mkdir(runtimeConfigDir, { recursive: true });
   try {
-    await fs.cp(sourceConfigDir, runtimeConfigDir, {
-      recursive: true,
-      force: true,
-      errorOnExist: false,
-      dereference: false,
-    });
+    // Copy source config but exclude node_modules to avoid copying
+    // large dependency trees that can cause ENOTEMPTY on cleanup
+    // (e.g. zod/v4/locales symlinks held open by the adapter process)
+    const entries = await fs.readdir(sourceConfigDir, { withFileTypes: true });
+    for (const entry of entries) {
+      if (entry.name === "node_modules") continue;
+      const src = path.join(sourceConfigDir, entry.name);
+      const dest = path.join(runtimeConfigDir, entry.name);
+      await fs.cp(src, dest, {
+        recursive: true,
+        force: true,
+        errorOnExist: false,
+        dereference: false,
+      });
+    }
   } catch (err) {
     if ((err as NodeJS.ErrnoException | null)?.code !== "ENOENT") {
       throw err;
@@ -85,7 +94,21 @@ export async function prepareOpenCodeRuntimeConfig(input: {
       "Injected runtime OpenCode config with permission.external_directory=allow to avoid headless approval prompts.",
     ],
     cleanup: async () => {
-      await fs.rm(runtimeConfigHome, { recursive: true, force: true });
+      // Use maxRetries to handle race conditions with file locks
+      // and ENOTEMPTY errors that can occur with nested symlinks
+      let lastError: Error | undefined;
+      for (let attempt = 0; attempt < 3; attempt++) {
+        try {
+          await fs.rm(runtimeConfigHome, { recursive: true, force: true, maxRetries: 3 });
+          return;
+        } catch (err) {
+          lastError = err as Error;
+          // Wait a bit before retrying to allow file handles to close
+          await new Promise((resolve) => setTimeout(resolve, 50 * (attempt + 1)));
+        }
+      }
+      // Log but don't throw - cleanup failures shouldn't crash the agent
+      console.warn(`[opencode-local] Cleanup failed for ${runtimeConfigHome}: ${lastError?.message ?? lastError}`);
     },
   };
 }
