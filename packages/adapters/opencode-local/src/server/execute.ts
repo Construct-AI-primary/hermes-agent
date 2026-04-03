@@ -400,9 +400,12 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
       };
     };
 
+    const fallbackModel = asString(config.fallbackModel, "").trim();
     const initial = await runAttempt(sessionId);
     const initialFailed =
       !initial.proc.timedOut && ((initial.proc.exitCode ?? 0) !== 0 || Boolean(initial.parsed.errorMessage));
+
+    // If session is unknown, retry with fresh session first
     if (
       sessionId &&
       initialFailed &&
@@ -414,6 +417,23 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
       );
       const retry = await runAttempt(null);
       return toResult(retry, true);
+    }
+
+    // If primary model failed and a fallback model is configured, retry with it
+    if (initialFailed && fallbackModel) {
+      await onLog(
+        "stdout",
+        `[paperclip] Primary model "${model}" failed (exit ${initial.proc.exitCode}); retrying with fallback model "${fallbackModel}".\n`,
+      );
+      // Build a modified context that overrides the model
+      const fallbackCtx: AdapterExecutionContext = {
+        ...ctx,
+        config: { ...config, model: fallbackModel, fallbackModel: "" },
+      };
+      const fallbackResult = await execute(fallbackCtx);
+      // Tag the result so the caller knows which model was used
+      fallbackResult.model = fallbackModel;
+      return fallbackResult;
     }
 
     return toResult(initial);

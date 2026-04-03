@@ -377,6 +377,7 @@ export function AgentConfigForm(props: AgentConfigFormProps) {
   const [runPolicyAdvancedOpen, setRunPolicyAdvancedOpen] = useState(false);
   // Popover states
   const [modelOpen, setModelOpen] = useState(false);
+  const [fallbackModelOpen, setFallbackModelOpen] = useState(false);
   const [thinkingEffortOpen, setThinkingEffortOpen] = useState(false);
 
   // Create mode helpers
@@ -761,6 +762,28 @@ export function AgentConfigForm(props: AgentConfigFormProps) {
                   : undefined}
                 detectModelLabel={adapterType === "hermes_local" ? "Detect from Hermes config" : undefined}
               />
+              {adapterType === "opencode_local" && (
+                <Field label="Fallback model" hint="Optional model to retry with if the primary model fails (e.g. rate limit, unavailable).">
+                  <ModelDropdown
+                    models={models}
+                    value={
+                      isCreate
+                        ? val!.fallbackModel ?? ""
+                        : eff("adapterConfig", "fallbackModel", String(config.fallbackModel ?? ""))
+                    }
+                    onChange={(v) =>
+                      isCreate
+                        ? set!({ fallbackModel: v })
+                        : mark("adapterConfig", "fallbackModel", v || undefined)
+                    }
+                    open={fallbackModelOpen}
+                    onOpenChange={setFallbackModelOpen}
+                    allowDefault={false}
+                    required={false}
+                    groupByProvider
+                  />
+                </Field>
+              )}
               {fetchedModelsError && (
                 <p className="text-xs text-destructive">
                   {fetchedModelsError instanceof Error
