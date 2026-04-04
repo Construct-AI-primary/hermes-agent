@@ -51,7 +51,7 @@ function normalize(t) {
 
 // Tokenize text into words for fuzzy matching
 function tokenize(t) {
-  return normalize(t).split(/[\s_-/]+/).filter(w => w.length > 1);
+  return normalize(t).split(/[\s_\/-]+/).filter(w => w.length > 1);
 }
 
 // Enhanced semantic scoring using agent capabilities
@@ -65,7 +65,7 @@ function score(skill, agent) {
     capabilities.flatMap(cap =>
       cap.toLowerCase()
         .replace(/[^\w\s-]/g, ' ') // Remove punctuation
-        .split(/[\s\-_/]+/)
+        .split(/[\s\/_-]+/)
         .filter(word => word.length > 2 && !['and', 'the', 'for', 'with', 'from', 'into'].includes(word))
     )
   );
