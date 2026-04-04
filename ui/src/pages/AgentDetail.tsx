@@ -2370,6 +2370,7 @@ function AgentSkillsTab({
   const [skillDraft, setSkillDraft] = useState<string[]>([]);
   const [lastSavedSkills, setLastSavedSkills] = useState<string[]>([]);
   const [unmanagedOpen, setUnmanagedOpen] = useState(false);
+  const [showAllSkills, setShowAllSkills] = useState(false);
   const lastSavedSkillsRef = useRef<string[]>([]);
   const hasHydratedSkillSnapshotRef = useRef(false);
   const skipNextSkillAutosaveRef = useRef(true);
@@ -2458,14 +2459,10 @@ function AgentSkillsTab({
     () => new Set(skillDraft),
     [skillDraft],
   );
-  const optionalSkillRows = useMemo<SkillRow[]>(
+  const allOptionalRows = useMemo<SkillRow[]>(
     () =>
       (companySkills ?? [])
-        .filter((skill) => {
-          if (adapterEntryByKey.get(skill.key)?.required) return false;
-          // Show all company skills, but the checkbox reflects if assigned
-          return true;
-        })
+        .filter((skill) => !adapterEntryByKey.get(skill.key)?.required)
         .map((skill) => ({
           id: skill.id,
           key: skill.key,
@@ -2480,6 +2477,32 @@ function AgentSkillsTab({
         })),
     [adapterEntryByKey, companySkills],
   );
+  // Compute relevance scores for recommendation
+  const recommendedSkills = useMemo<SkillRow[]>(() => {
+    const agentText = `${agent.name} ${agent.role} ${agent.title || ''}`.toLowerCase();
+    const agentWords = new Set(agentText.split(/[\s_-/]+/).filter(w => w.length > 2));
+    return allOptionalRows
+      .map(skill => {
+        let score = 0;
+        const skillText = `${skill.key} ${skill.name} ${skill.description || ''}`.toLowerCase();
+        // Role match in skill name
+        if (agent.role && skill.key.toLowerCase().includes(agent.role.toLowerCase())) score += 50;
+        // Name words in skill key
+        for (const w of agentWords) {
+          if (skill.key.toLowerCase().includes(w)) score += 15;
+          if (skill.name.toLowerCase().includes(w)) score += 10;
+          if ((skill.description || '').toLowerCase().includes(w)) score += 3;
+        }
+        return { ...skill, score };
+      })
+      .filter(skill => skill.score > 0 && !assignedSkillKeys.has(skill.key))
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 5);
+  }, [agent.name, agent.role, agent.title, allOptionalRows, assignedSkillKeys]);
+  // Default to showing assigned skills only; toggle shows all
+  const optionalSkillRows = showAllSkills
+    ? allOptionalRows
+    : allOptionalRows.filter(s => assignedSkillKeys.has(s.key));
   const requiredSkillRows = useMemo<SkillRow[]>(
     () =>
       (skillSnapshot?.entries ?? [])
@@ -2585,7 +2608,9 @@ function AgentSkillsTab({
       ) : (
         <>
           {(() => {
-            const renderSkillRow = (skill: SkillRow) => {
+            // Extend SkillRow for recommended section
+            type SkillRowWithScore = SkillRow & { score?: number };
+            const renderSkillRow = (skill: SkillRowWithScore) => {
               const adapterEntry = skill.adapterEntry ?? adapterEntryByKey.get(skill.key);
               const required = Boolean(adapterEntry?.required);
               const rowClassName = cn(
@@ -2688,8 +2713,77 @@ function AgentSkillsTab({
 
             return (
               <>
+                {/* Recommended skills section */}
+                {recommendedSkills.length > 0 && (
+                  <section className="border-y border-border">
+                    <div className="border-b border-border bg-muted/40 px-3 py-2 flex items-center justify-between">
+                      <span className="text-xs font-medium text-muted-foreground">
+                        Recommended for {agent.name}
+                      </span>
+                      <span className="text-[10px] text-muted-foreground">
+                        Based on agent role & name
+                      </span>
+                    </div>
+                    {recommendedSkills.map((skill) => (
+                      <div key={`rec-${skill.id}`} className="flex items-start gap-3 border-b border-border px-3 py-3 text-sm last:border-b-0 hover:bg-accent/10">
+                        <span className="mt-1 h-2 w-2 rounded-full bg-emerald-400/60 shrink-0" />
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center justify-between gap-3">
+                            <div className="min-w-0">
+                              <span className="truncate font-medium">{skill.name}</span>
+                              {skill.score != null && skill.score > 0 && (
+                                <span className="ml-2 text-[10px] text-muted-foreground">
+                                  ({skill.score})
+                                </span>
+                              )}
+                            </div>
+                            {skill.linkTo ? (
+                              <Link
+                                to={skill.linkTo}
+                                className="shrink-0 text-xs text-muted-foreground no-underline hover:text-foreground"
+                              >
+                                View
+                              </Link>
+                            ) : null}
+                          </div>
+                          {skill.description && (
+                            <p className="mt-1 text-xs text-muted-foreground">{skill.description}</p>
+                          )}
+                          <button
+                            className="mt-1 text-xs text-primary underline underline-offset-2"
+                            onClick={() => {
+                              setSkillDraft((prev) => Array.from(new Set([...prev, skill.key])));
+                            }}
+                          >
+                            Add skill
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </section>
+                )}
+
                 {optionalSkillRows.length > 0 && (
                   <section className="border-y border-border">
+                    <div className="border-b border-border bg-muted/40 px-3 py-2 flex items-center justify-between">
+                      <span className="text-xs font-medium text-muted-foreground">
+                        {showAllSkills ? `All skills (${optionalSkillRows.length})` : `Assigned skills (${optionalSkillRows.length})`}
+                      </span>
+                      {companySkills && companySkills.length > optionalSkillRows.length && (
+                        <button
+                          type="button"
+                          className="text-[11px] text-primary underline underline-offset-2"
+                          onClick={() => setShowAllSkills((v) => !v)}
+                        >
+                          {showAllSkills ? "Show assigned only" : `Show all ${companySkills.filter(s => !adapterEntryByKey.get(s.key)?.required).length} available`}
+                        </button>
+                      )}
+                    </div>
+                    {optionalSkillRows.length === 0 && !showAllSkills && (
+                      <div className="px-3 py-6 text-sm text-muted-foreground text-center">
+                        No skills assigned yet. Click "Show all available" to browse and add skills.
+                      </div>
+                    )}
                     {optionalSkillRows.map(renderSkillRow)}
                   </section>
                 )}
