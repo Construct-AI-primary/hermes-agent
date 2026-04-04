@@ -2454,10 +2454,18 @@ function AgentSkillsTab({
     () => new Map((skillSnapshot?.entries ?? []).map((entry) => [entry.key, entry])),
     [skillSnapshot],
   );
+  const assignedSkillKeys = useMemo(
+    () => new Set(skillDraft),
+    [skillDraft],
+  );
   const optionalSkillRows = useMemo<SkillRow[]>(
     () =>
       (companySkills ?? [])
-        .filter((skill) => !adapterEntryByKey.get(skill.key)?.required)
+        .filter((skill) => {
+          if (adapterEntryByKey.get(skill.key)?.required) return false;
+          // Show all company skills, but the checkbox reflects if assigned
+          return true;
+        })
         .map((skill) => ({
           id: skill.id,
           key: skill.key,
