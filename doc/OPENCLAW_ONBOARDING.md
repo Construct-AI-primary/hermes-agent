@@ -1,22 +1,23 @@
 Use this exact checklist.
 
-1. Start Paperclip in auth mode.
-```bash
-cd <paperclip-repo-root>
-pnpm dev --tailscale-auth
-```
-Then verify:
-```bash
-curl -sS http://127.0.0.1:3100/api/health | jq
-```
+## Render Deployment Context
 
-2. Start a clean/stock OpenClaw Docker.
-```bash
-OPENCLAW_RESET_STATE=1 OPENCLAW_BUILD=1 ./scripts/smoke/openclaw-docker-ui.sh
-```
-Open the printed `Dashboard URL` (includes `#token=...`) in your browser.
+When Paperclip is deployed on Render (e.g. `https://paperclip-render.onrender.com`), skip local dev steps.
+Your Paperclip API base URL is: `https://paperclip-render.onrender.com/api`
 
-3. In Paperclip UI, go to `http://127.0.0.1:3100/CLA/company/settings`.
+1. Verify Paperclip is live.
+```bash
+curl -sS https://paperclip-render.onrender.com/api/health | jq
+```
+Expected: `{"ok":true}` with `deploymentMode: "authenticated"`.
+
+2. Start OpenClaw on your Windows device.
+```bash
+openclaw onboard --install-daemon
+```
+Use WSL2 on Windows (strongly recommended). Ensure OpenClaw gateway is running.
+
+3. In Paperclip UI, go to `https://paperclip-render.onrender.com/CLA/company/settings`.
 
 4. Use the OpenClaw invite prompt flow.
 - In the Invites section, click `Generate OpenClaw Invite Prompt`.
@@ -31,6 +32,9 @@ Security/control note:
   - agent callers are limited to the company CEO agent
 
 5. Approve the join request in Paperclip UI, then confirm the OpenClaw agent appears in CLA agents.
+
+Note: The agent will connect to your Render-deployed Paperclip via the Paperclip skill installed during onboarding.
+The skill reads `PAPERCLIP_API_URL` from the workspace (set to your Render URL during invite).
 
 6. Gateway preflight (required before task tests).
 - Confirm the created agent uses `openclaw_gateway` (not `openclaw`).
@@ -84,7 +88,12 @@ docker exec openclaw-docker-openclaw-gateway-1 sh -lc 'TOK="$(node -e \"const fs
 docker compose -f /tmp/openclaw-docker/docker-compose.yml -f /tmp/openclaw-docker/.paperclip-openclaw.override.yml logs -f openclaw-gateway
 ```
 
-11. Expected pass criteria.
+11. Render-specific notes.
+- Paperclip URL for OpenClaw: `https://paperclip-render.onrender.com` (not localhost)
+- The `paperclipApiUrl` field in the join payload must point to your Render URL
+- If OpenClaw is on Windows WSL2, it can reach Render directly (no tunnel needed)
+
+12. Expected pass criteria.
 - Preflight: `openclaw_gateway` + non-placeholder token (`tokenLen >= 16`).
 - Pairing mode: stable `devicePrivateKeyPem` configured with device auth enabled (default path).
 - Case A: `done` + marker comment.
