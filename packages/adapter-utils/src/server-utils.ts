@@ -484,7 +484,8 @@ export function buildPersistentSkillSnapshot(
 
   for (const desiredSkill of desiredSkills) {
     if (availableByKey.has(desiredSkill)) continue;
-    warnings.push(`Desired skill "${desiredSkill}" is not available from the Paperclip skills directory.`);
+    // Skill is in desiredSkills but not found as a physical directory.
+    // It will be symlinked into the skills home at runtime from the company skills library.
     entries.push({
       key: desiredSkill,
       runtimeName: null,
@@ -493,9 +494,9 @@ export function buildPersistentSkillSnapshot(
       state: "missing",
       sourcePath: null,
       targetPath: null,
-      detail: "Paperclip cannot find this skill in the local runtime skills directory.",
-      origin: "external_unknown",
-      originLabel: "External or unavailable",
+      detail: "Skill is registered in the company skills library. It will be linked into the workspace when the agent runs.",
+      origin: "company_managed",
+      originLabel: "Managed by Paperclip",
       readOnly: false,
     });
   }
