@@ -2480,7 +2480,7 @@ function AgentSkillsTab({
   // Compute relevance scores for recommendation
   const recommendedSkills = useMemo<SkillRow[]>(() => {
     const agentText = `${agent.name} ${agent.role} ${agent.title || ''}`.toLowerCase();
-    const agentWords = new Set(agentText.split(/[\s_-/]+/).filter(w => w.length > 2));
+    const agentWords = new Set(agentText.split(/[\s\/_-]+/).filter(w => w.length > 2));
     return allOptionalRows
       .map(skill => {
         let score = 0;
