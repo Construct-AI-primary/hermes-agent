@@ -1,4 +1,4 @@
----
+ut espective ---
 title: Writing a Skill
 summary: SKILL.md format and best practices
 ---
@@ -17,16 +17,7 @@ skills/
         └── examples.md
 ```
 
-## SKILL.md Format
-
-```markdown
----
-name: my-skill
-description: >
-  Short description of what this skill does and when to use it.
-  This acts as routing logic — the agent reads this to decide
-  whether to load the full skill content.
----
+b
 
 # My Skill
 

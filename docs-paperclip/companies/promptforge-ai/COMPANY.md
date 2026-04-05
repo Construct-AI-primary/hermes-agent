@@ -63,6 +63,14 @@ Advanced Prompt Engineering & Orchestration Specialists.
 - agents/collaborator-promptforge-cross-company-knowledge-sharing/AGENTS.md
 - agents/validator-promptforge-syntax-logic-validation/AGENTS.md
 
+## Shared Knowledge
+
+All PromptForge agents should be familiar with these Paperclip operational guides:
+
+- **Board Operator Guides**: `docs-paperclip/guides/board-operator/` — managing-tasks, delegation, approvals, org-structure, managing-agents, dashboard
+- **Agent Developer Guides**: `docs-paperclip/guides/agent-developer/` — task-workflow, writing-a-skill
+- **Issue Management**: Issues have statuses (`backlog`, `todo`, `in_progress`, `in_review`, `done`, `blocked`, `cancelled`), atomic checkout, blocked comments, task hierarchy tracing to goals
+
 ## Skills
 
 - skills/sage-promptforge-chief-architect/SKILL.md
