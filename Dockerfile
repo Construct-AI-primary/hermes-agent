@@ -101,9 +101,23 @@ ARG USER_UID=1000
 ARG USER_GID=1000
 WORKDIR /app
 COPY --chown=node:node --from=build /app /app
-RUN npm install --global --omit=dev @anthropic-ai/claude-code@latest @openai/codex@latest opencode-ai \
-  && mkdir -p /paperclip \
-  && chown node:node /paperclip
+
+# Install Hermes agent
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends python3 python3-pip python3-venv && \
+    rm -rf /var/lib/apt/lists/* && \
+    pip install --break-system-packages uv && \
+    mkdir -p /paperclip && \
+    chown node:node /paperclip
+
+RUN cd /app/hermes_agent && \
+    uv venv venv && \
+    . venv/bin/activate && \
+    uv pip install '.[all]' && \
+    ln -sf /app/hermes_agent/run_agent.py /usr/local/bin/hermes-agent && \
+    chmod +x /usr/local/bin/hermes-agent
+
+RUN npm install --global --omit=dev @anthropic-ai/claude-code@latest @openai/codex@latest opencode-ai
 # Copy UI dist into server/ui-dist for static serving
 RUN cd /app/server && pnpm run prepare:ui-dist
 
