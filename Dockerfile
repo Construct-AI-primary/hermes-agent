@@ -102,22 +102,19 @@ ARG USER_GID=1000
 WORKDIR /app
 COPY --chown=node:node --from=build /app /app
 
-# Install Hermes agent
+# Install system dependencies for Hermes agent
 RUN apt-get update && \
     apt-get install -y --no-install-recommends python3 python3-pip python3-venv make && \
-    cd hermes-agent && \
     rm -rf /var/lib/apt/lists/* && \
     pip install --break-system-packages uv && \
     mkdir -p /paperclip && \
     chown node:node /paperclip
 
-# Install hermes-agent from public repo (works even when submodule not initialized)
+# Install hermes-agent from public repo (submodule source)
 RUN cd /tmp && \
     git clone --depth 1 https://github.com/tennantalistair/hermes-agent.git && \
     cd hermes-agent && \
-    uv venv venv && \
-    . venv/bin/activate && \
-    uv pip install '.[all]' && \
+    pip install --break-system-packages --no-cache-dir -e ".[dev]" && \
     ln -sf /tmp/hermes-agent/run_agent.py /usr/local/bin/hermes-agent && \
     chmod +x /usr/local/bin/hermes-agent
 

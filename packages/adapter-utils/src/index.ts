@@ -51,3 +51,7 @@ export {
   redactTranscriptEntryPaths,
 } from "./log-redaction.js";
 export { inferOpenAiCompatibleBiller } from "./billing.js";
+export {
+  buildInvocationEnvForLogs,
+  resolveCommandForLogs,
+} from "./server-utils.js";
