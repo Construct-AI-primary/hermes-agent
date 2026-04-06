@@ -48,8 +48,6 @@ RUN pnpm install --frozen-lockfile
 FROM base AS build
 WORKDIR /app
 COPY --from=deps /app /app
-# Initialize git submodules (hermes_agent, openclaw, docs-construct-ai)
-RUN git submodule update --init --recursive
 COPY . .
 ARG VITE_WS_BASE_URL
 ENV VITE_WS_BASE_URL=$VITE_WS_BASE_URL
@@ -112,11 +110,14 @@ RUN apt-get update && \
     mkdir -p /paperclip && \
     chown node:node /paperclip
 
-RUN cd /app/hermes_agent && \
+# Install hermes-agent from public repo (works even when submodule not initialized)
+RUN cd /tmp && \
+    git clone --depth 1 https://github.com/tennantalistair/hermes-agent.git && \
+    cd hermes-agent && \
     uv venv venv && \
     . venv/bin/activate && \
     uv pip install '.[all]' && \
-    ln -sf /app/hermes_agent/run_agent.py /usr/local/bin/hermes-agent && \
+    ln -sf /tmp/hermes-agent/run_agent.py /usr/local/bin/hermes-agent && \
     chmod +x /usr/local/bin/hermes-agent
 
 RUN npm install --global --omit=dev @anthropic-ai/claude-code@latest @openai/codex@latest opencode-ai
