@@ -104,7 +104,8 @@ COPY --chown=node:node --from=build /app /app
 
 # Install Hermes agent
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends python3 python3-pip python3-venv && \
+    apt-get install -y --no-install-recommends python3 python3-pip python3-venv make && \
+    cd hermes-agent && \
     rm -rf /var/lib/apt/lists/* && \
     pip install --break-system-packages uv && \
     mkdir -p /paperclip && \
