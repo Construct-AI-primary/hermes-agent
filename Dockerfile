@@ -48,6 +48,8 @@ RUN pnpm install --frozen-lockfile
 FROM base AS build
 WORKDIR /app
 COPY --from=deps /app /app
+# Initialize git submodules (hermes_agent, openclaw, docs-construct-ai)
+RUN git submodule update --init --recursive
 COPY . .
 ARG VITE_WS_BASE_URL
 ENV VITE_WS_BASE_URL=$VITE_WS_BASE_URL
