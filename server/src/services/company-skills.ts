@@ -1524,6 +1524,27 @@ export function companySkillService(db: Db) {
     });
   }
 
+  function deriveFileInventoryFromSourceLocator(skill: CompanySkill): CompanySkillFileInventoryEntry[] {
+    if (skill.sourceType === "local_path" && skill.sourceLocator) {
+      const dir = normalizeSkillDirectory(skill);
+      if (dir) {
+        return [{ path: "SKILL.md", kind: "skill" as const }];
+      }
+    }
+    if (skill.sourceType === "github" || skill.sourceType === "skills_sh") {
+      const meta = getSkillMeta(skill);
+      const owner = asString(meta.owner);
+      const repo = asString(meta.repo);
+      if (owner && repo) {
+        return [{ path: "SKILL.md", kind: "skill" as const }];
+      }
+    }
+    if (skill.sourceType === "url") {
+      return [{ path: "SKILL.md", kind: "skill" as const }];
+    }
+    return [];
+  }
+
   async function listFull(companyId: string): Promise<CompanySkill[]> {
     await ensureSkillInventoryCurrent(companyId);
     const rows = await db
@@ -1531,7 +1552,13 @@ export function companySkillService(db: Db) {
       .from(companySkills)
       .where(eq(companySkills.companyId, companyId))
       .orderBy(asc(companySkills.name), asc(companySkills.key));
-    return rows.map((row) => toCompanySkill(row));
+    return rows.map((row) => {
+      const skill = toCompanySkill(row);
+      if (!skill.fileInventory || skill.fileInventory.length === 0) {
+        skill.fileInventory = deriveFileInventoryFromSourceLocator(skill);
+      }
+      return skill;
+    });
   }
 
   async function getById(id: string) {

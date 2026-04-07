@@ -110,6 +110,26 @@ RUN apt-get update && \
     mkdir -p /paperclip && \
     chown node:node /paperclip
 
+# Copy company skills from docs into the instance skills directory
+# Try both doc/ and docs-paperclip/ locations (repo may have renamed the docs dir)
+RUN mkdir -p /paperclip/instances/default/skills && \
+    COMPANIES_DIR=""; \
+    if [ -d "doc/companies" ]; then COMPANIES_DIR="doc/companies"; \
+    elif [ -d "docs-paperclip/companies" ]; then COMPANIES_DIR="docs-paperclip/companies"; \
+    fi && \
+    if [ -n "$COMPANIES_DIR" ]; then \
+      for company_dir in ${COMPANIES_DIR}/*/; do \
+        company_name=$(basename "$company_dir"); \
+        if [ -d "${company_dir}skills" ]; then \
+          target_dir="/paperclip/instances/default/skills/${company_name}"; \
+          mkdir -p "$target_dir"; \
+          cp -r "${company_dir}skills"/* "$target_dir"/ 2>/dev/null || true; \
+          echo "Copied skills for ${company_name} from ${company_dir}"; \
+        fi; \
+      done; \
+    fi && \
+    chown -R node:node /paperclip/instances/default/skills
+
 # Install hermes-agent from local submodule (ensures hermes_cli module is included)
 COPY hermes_agent/ /tmp/hermes-agent
 RUN cd /tmp/hermes-agent && \
