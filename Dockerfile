@@ -115,7 +115,8 @@ COPY hermes_agent/ /tmp/hermes-agent
 RUN cd /tmp/hermes-agent && \
     pip install --break-system-packages --no-cache-dir -e ".[dev]" && \
     ln -sf /tmp/hermes-agent/run_agent.py /usr/local/bin/hermes-agent && \
-    chmod +x /usr/local/bin/hermes-agent
+    ln -sf /usr/local/bin/hermes-agent /usr/local/bin/hermes && \
+    chmod +x /usr/local/bin/hermes-agent /usr/local/bin/hermes
 
 RUN npm install --global --omit=dev @anthropic-ai/claude-code@latest @openai/codex@latest opencode-ai
 # Copy UI dist into server/ui-dist for static serving
