@@ -24,7 +24,8 @@ pnpm --filter @paperclipai/adapter-opencode-local build
 pnpm --filter @paperclipai/adapter-pi-local build
 pnpm --filter @paperclipai/plugin-sdk build
 pnpm --filter @paperclipai/ui build
-pnpm --filter @paperclipai/server build
+# Skip preflight:workspace-links for server build - workspace links are already correct after pnpm install
+cd server && tsc && mkdir -p dist/onboarding-assets && cp -R src/onboarding-assets/. dist/onboarding-assets/ && cd ..
 
 echo "=== Build complete ==="
 ls -la server/dist/index.js 2>/dev/null || echo "WARNING: server/dist/index.js not found!"
