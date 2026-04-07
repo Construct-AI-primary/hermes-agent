@@ -3,7 +3,7 @@ import { drizzle as drizzlePg } from "drizzle-orm/postgres-js";
 import { migrate as migratePg } from "drizzle-orm/postgres-js/migrator";
 import { readFile, readdir } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
-import { lookup } from "node:dns/promises";
+import { resolve4 } from "node:dns/promises";
 import postgres from "postgres";
 import * as schema from "./schema/index.js";
 
@@ -14,8 +14,11 @@ const MIGRATIONS_JOURNAL_JSON = fileURLToPath(new URL("./migrations/meta/_journa
 async function resolveToIPv4(url: string): Promise<postgres.Options<never>["host"]> {
   const parsed = new URL(url);
   try {
-    const { address } = await lookup(parsed.hostname, { family: 4 });
-    return address;
+    const addresses = await resolve4(parsed.hostname);
+    if (addresses.length > 0) {
+      return addresses[0];
+    }
+    return parsed.hostname;
   } catch {
     return parsed.hostname;
   }
