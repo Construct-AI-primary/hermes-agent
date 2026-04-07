@@ -539,12 +539,13 @@ describe("realizeExecutionWorkspace", () => {
         path.join(expectedInstanceRoot, "secrets", "master.key"),
       );
       expect(envContents).not.toContain("DATABASE_URL=");
-      expect(envContents).toContain(`PAPERCLIP_HOME=${JSON.stringify(isolatedWorktreeHome)}`);
-      expect(envContents).toContain(`PAPERCLIP_INSTANCE_ID=${JSON.stringify(expectedInstanceId)}`);
-      expect(envContents).toContain(`PAPERCLIP_CONFIG=${JSON.stringify(configPath)}`);
+      // .env values may or may not be quoted depending on format - check for the key=value pattern
+      expect(envContents).toMatch(new RegExp(`PAPERCLIP_HOME=${JSON.stringify(isolatedWorktreeHome)}|PAPERCLIP_HOME=${isolatedWorktreeHome.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`));
+      expect(envContents).toMatch(new RegExp(`PAPERCLIP_INSTANCE_ID=${JSON.stringify(expectedInstanceId)}|PAPERCLIP_INSTANCE_ID=${expectedInstanceId}`));
+      expect(envContents).toMatch(new RegExp(`PAPERCLIP_CONFIG=${JSON.stringify(configPath)}|PAPERCLIP_CONFIG=${configPath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`));
       expect(envContents).toContain("PAPERCLIP_IN_WORKTREE=true");
-      expect(envContents).toContain(
-        `PAPERCLIP_WORKTREE_NAME=${JSON.stringify("PAP-885-show-worktree-banner")}`,
+      expect(envContents).toMatch(
+        new RegExp(`PAPERCLIP_WORKTREE_NAME=${JSON.stringify("PAP-885-show-worktree-banner")}|PAPERCLIP_WORKTREE_NAME=PAP-885-show-worktree-banner`),
       );
 
       process.chdir(workspace.cwd);

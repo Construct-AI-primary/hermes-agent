@@ -505,6 +505,7 @@ function SkillPane({
   installUpdatePending,
   onSave,
   savePending,
+  error,
 }: {
   loading: boolean;
   detail: CompanySkillDetail | null | undefined;
@@ -524,12 +525,21 @@ function SkillPane({
   installUpdatePending: boolean;
   onSave: () => void;
   savePending: boolean;
+  error: Error | null | undefined;
 }) {
   const { pushToast } = useToast();
 
   if (!detail) {
     if (loading) {
       return <PageSkeleton variant="detail" />;
+    }
+    if (error) {
+      return (
+        <EmptyState
+          icon={Boxes}
+          message={error.message ?? "Failed to load skill details."}
+        />
+      );
     }
     return (
       <EmptyState
@@ -1174,6 +1184,7 @@ export function CompanySkills() {
             installUpdatePending={installUpdate.isPending}
             onSave={() => saveFile.mutate()}
             savePending={saveFile.isPending}
+            error={detailQuery.error}
           />
         </div>
       </div>

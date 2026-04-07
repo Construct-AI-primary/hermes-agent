@@ -4,6 +4,7 @@ slug: codesmith-devforge-backend-engineer
 reportsTo: null
 skills:
   - codesmith-devforge-backend-engineer
+  - adapter-development-devforge
 ---
 
 # codesmith-devforge-backend-engineer

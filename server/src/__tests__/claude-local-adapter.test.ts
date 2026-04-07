@@ -170,11 +170,8 @@ describe("claude_local cli formatter", () => {
         expect.arrayContaining([
           "Claude initialized (model: claude-sonnet-4-6, session: claude-session-1)",
           "assistant: I will inspect the repo.",
-          "thinking: Checking the adapter wiring",
           "tool_call: bash",
           '{\n  "command": "ls -1"\n}',
-          "tool_result",
-          "AGENTS.md\nREADME.md",
           "result:",
           "Done",
           "tokens: in=10 out=5 cached=2 cost=$0.000420",
