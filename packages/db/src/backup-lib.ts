@@ -1,6 +1,7 @@
 import { existsSync, mkdirSync, readdirSync, statSync, unlinkSync } from "node:fs";
 import { readFile, writeFile } from "node:fs/promises";
 import { basename, resolve } from "node:path";
+import { resolve4 } from "node:dns/promises";
 import postgres from "postgres";
 
 export type RunDatabaseBackupOptions = {
@@ -141,6 +142,20 @@ function tableKey(schemaName: string, tableName: string): string {
   return `${schemaName}.${tableName}`;
 }
 
+async function resolveToIPv4(url: string): Promise<string> {
+  try {
+    const parsed = new URL(url);
+    const addresses = await resolve4(parsed.hostname);
+    if (addresses.length > 0) {
+      parsed.hostname = addresses[0];
+      return parsed.toString();
+    }
+  } catch {
+    // Fall through and use original URL
+  }
+  return url;
+}
+
 export async function runDatabaseBackup(opts: RunDatabaseBackupOptions): Promise<RunDatabaseBackupResult> {
   const filenamePrefix = opts.filenamePrefix ?? "paperclip";
   const retentionDays = Math.max(1, Math.trunc(opts.retentionDays));
@@ -148,7 +163,8 @@ export async function runDatabaseBackup(opts: RunDatabaseBackupOptions): Promise
   const includeMigrationJournal = opts.includeMigrationJournal === true;
   const excludedTableNames = normalizeTableNameSet(opts.excludeTables);
   const nullifiedColumnsByTable = normalizeNullifyColumnMap(opts.nullifyColumns);
-  const sql = postgres(opts.connectionString, {
+  const resolvedConnectionString = await resolveToIPv4(opts.connectionString);
+  const sql = postgres(resolvedConnectionString, {
     max: 1,
     connect_timeout: connectTimeout,
     connection: {
@@ -531,7 +547,16 @@ export async function runDatabaseBackup(opts: RunDatabaseBackupOptions): Promise
 
 export async function runDatabaseRestore(opts: RunDatabaseRestoreOptions): Promise<void> {
   const connectTimeout = Math.max(1, Math.trunc(opts.connectTimeoutSeconds ?? 5));
-  const sql = postgres(opts.connectionString, { max: 1, connect_timeout: connectTimeout });
+  const resolvedConnectionString = await resolveToIPv4(opts.connectionString);
+  const sql = postgres(resolvedConnectionString, {
+    max: 1,
+    connect_timeout: connectTimeout,
+    connection: {
+      // Force IPv4 socket connection to prevent ENETUNREACH errors
+      // when IPv6 addresses are returned but not reachable
+      family: 4,
+    },
+  });
 
   try {
     await sql`SELECT 1`;
