@@ -1,4 +1,8 @@
 /// <reference path="./types/express.d.ts" />
+// Force IPv4-first DNS resolution globally to prevent ENETUNREACH on Render
+// when PostgreSQL hostnames resolve to IPv6 addresses
+import { setDefaultResultOrder } from "node:dns";
+try { setDefaultResultOrder("ipv4first"); } catch { /* Node.js < 16.4 */ }
 import { existsSync, readFileSync, rmSync } from "node:fs";
 import { createServer } from "node:http";
 import { resolve } from "node:path";
