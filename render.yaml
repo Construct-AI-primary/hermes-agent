@@ -5,7 +5,8 @@ services:
     repo: https://github.com/Construct-AI-primary/paperclip-render.git
     branch: master
     buildCommand: |
-      corepack enable && corepack prepare pnpm@9.15.4 --activate
+      corepack prepare pnpm@9.15.4 --activate
+      export PATH="$(pwd)/node_modules/.bin:$PATH"
       pnpm install --frozen-lockfile
       pnpm --filter @paperclipai/shared build
       pnpm --filter @paperclipai/adapter-utils build
