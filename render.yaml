@@ -31,11 +31,11 @@ services:
       - key: SERVE_UI
         value: true
       - key: PAPERCLIP_HOME
-        value: /opt/render/project/src/.paperclip
+        value: /paperclip
       - key: PAPERCLIP_INSTANCE_ID
         value: default
       - key: PAPERCLIP_CONFIG
-        value: /opt/render/project/src/config.json
+        value: /paperclip/instances/default/config.json
       - key: PAPERCLIP_DEPLOYMENT_MODE
         value: authenticated
       - key: PAPERCLIP_DEPLOYMENT_EXPOSURE
@@ -54,5 +54,5 @@ services:
         value: "true"
     disk:
       name: paperclip-data
-      mountPath: /opt/render/project/src/.paperclip
+      mountPath: /paperclip
       sizeGB: 10
