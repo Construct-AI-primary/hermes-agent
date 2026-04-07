@@ -110,10 +110,9 @@ RUN apt-get update && \
     mkdir -p /paperclip && \
     chown node:node /paperclip
 
-# Install hermes-agent from public repo (submodule source)
-RUN cd /tmp && \
-    git clone --depth 1 https://github.com/tennantalistair/hermes-agent.git && \
-    cd hermes-agent && \
+# Install hermes-agent from local submodule (ensures hermes_cli module is included)
+COPY hermes_agent/ /tmp/hermes-agent
+RUN cd /tmp/hermes-agent && \
     pip install --break-system-packages --no-cache-dir -e ".[dev]" && \
     ln -sf /tmp/hermes-agent/run_agent.py /usr/local/bin/hermes-agent && \
     chmod +x /usr/local/bin/hermes-agent
