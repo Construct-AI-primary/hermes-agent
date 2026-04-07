@@ -10,6 +10,8 @@ echo "=== Installing dependencies ==="
 pnpm install --frozen-lockfile --prod=false
 
 echo "=== Building packages ==="
+# DB first - server imports db types directly and needs dist/schema/*.d.ts
+pnpm --filter @paperclipai/db build
 pnpm --filter @paperclipai/shared build
 pnpm --filter @paperclipai/adapter-utils build
 pnpm --filter @paperclipai/adapter-claude-local build
@@ -19,7 +21,6 @@ pnpm --filter @paperclipai/adapter-gemini-local build
 pnpm --filter @paperclipai/adapter-openclaw-gateway build
 pnpm --filter @paperclipai/adapter-opencode-local build
 pnpm --filter @paperclipai/adapter-pi-local build
-pnpm --filter @paperclipai/db build
 pnpm --filter @paperclipai/plugin-sdk build
 pnpm --filter @paperclipai/ui build
 pnpm --filter @paperclipai/server build
