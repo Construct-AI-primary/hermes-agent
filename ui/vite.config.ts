@@ -10,13 +10,9 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
       lexical: path.resolve(__dirname, "./node_modules/lexical/Lexical.mjs"),
     },
-    external: ["node:child_process", "node:fs", "node:path"],
   },
   build: {
     sourcemap: true,
-    rollupOptions: {
-      external: ["node:child_process", "node:fs", "node:path"],
-    },
   },
   server: {
     port: 5173,

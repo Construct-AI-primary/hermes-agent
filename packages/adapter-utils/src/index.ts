@@ -51,7 +51,8 @@ export {
   redactTranscriptEntryPaths,
 } from "./log-redaction.js";
 export { inferOpenAiCompatibleBiller } from "./billing.js";
-export {
-  buildInvocationEnvForLogs,
-  resolveCommandForLogs,
-} from "./server-utils.js";
+
+// NOTE: buildInvocationEnvForLogs and resolveCommandForLogs are NOT re-exported here
+// because server-utils.js imports Node.js modules (node:child_process, node:fs, node:path)
+// that crash in browser environments. Server-only consumers should import directly from
+// "@paperclipai/adapter-utils/server-utils".
