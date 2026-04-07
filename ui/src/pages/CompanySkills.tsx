@@ -733,10 +733,10 @@ function SkillPane({
 }
 
 export function CompanySkills() {
-  const { "*": routePath } = useParams<{ "*": string }>();
+  const { companyPrefix, "*": routePath } = useParams<{ companyPrefix?: string; "*": string }>();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { selectedCompanyId } = useCompany();
+  const { companies, selectedCompanyId, setSelectedCompanyId } = useCompany();
   const { setBreadcrumbs } = useBreadcrumbs();
   const { pushToast } = useToast();
   const [skillFilter, setSkillFilter] = useState("");
@@ -754,6 +754,18 @@ export function CompanySkills() {
   const parsedRoute = useMemo(() => parseSkillRoute(routePath), [routePath]);
   const routeSkillId = parsedRoute.skillId;
   const selectedPath = parsedRoute.filePath;
+
+  const routeCompanyId = useMemo(() => {
+    if (!companyPrefix) return null;
+    const requestedPrefix = companyPrefix.toUpperCase();
+    return companies.find((company) => company.issuePrefix.toUpperCase() === requestedPrefix)?.id ?? null;
+  }, [companies, companyPrefix]);
+
+  useEffect(() => {
+    if (!routeCompanyId) return;
+    if (routeCompanyId === selectedCompanyId) return;
+    setSelectedCompanyId(routeCompanyId, { source: "route_sync" });
+  }, [routeCompanyId, selectedCompanyId, setSelectedCompanyId]);
 
   useEffect(() => {
     setBreadcrumbs([
