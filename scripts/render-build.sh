@@ -5,7 +5,9 @@ echo "=== Installing pnpm ==="
 npm install -g pnpm@9.15.4
 
 echo "=== Installing dependencies ==="
-pnpm install --frozen-lockfile
+# Must include devDependencies because shared package's tsconfig includes test files
+# that import vitest, and build runs tsc which checks those imports
+pnpm install --frozen-lockfile --prod=false
 
 echo "=== Building packages ==="
 pnpm --filter @paperclipai/shared build
