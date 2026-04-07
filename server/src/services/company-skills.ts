@@ -1696,7 +1696,14 @@ export function companySkillService(db: Db) {
     if (skill.sourceType === "local_path" || skill.sourceType === "catalog") {
       const absolutePath = resolveLocalSkillFilePath(skill, normalizedPath);
       if (absolutePath) {
-        content = await fs.readFile(absolutePath, "utf8");
+        const stat = await statPath(absolutePath);
+        if (stat?.isFile()) {
+          content = await fs.readFile(absolutePath, "utf8");
+        } else if (normalizedPath === "SKILL.md") {
+          content = skill.markdown;
+        } else {
+          throw notFound("Skill file not found");
+        }
       } else if (normalizedPath === "SKILL.md") {
         content = skill.markdown;
       } else {
