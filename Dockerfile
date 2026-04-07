@@ -130,8 +130,8 @@ RUN mkdir -p /paperclip/instances/default/skills && \
     fi && \
     chown -R node:node /paperclip/instances/default/skills
 
-# Install hermes-agent from local submodule (ensures hermes_cli module is included)
-COPY hermes_agent/ /tmp/hermes-agent
+# Install hermes-agent from GitHub (avoids submodule issues)
+RUN git clone --depth 1 https://github.com/tennantalistair/hermes-agent.git /tmp/hermes-agent
 RUN cd /tmp/hermes-agent && \
     pip install --break-system-packages --no-cache-dir -e ".[dev]" && \
     ln -sf /tmp/hermes-agent/run_agent.py /usr/local/bin/hermes-agent && \
