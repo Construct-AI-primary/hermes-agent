@@ -50,7 +50,7 @@ describeEmbeddedPostgres("applyPendingMigrations", () => {
 
       await applyPendingMigrations(connectionString);
 
-      const sql = postgres(connectionString, { max: 1, onnotice: () => {} });
+      const sql = postgres(connectionString, { max: 1, onnotice: () => {}, connection: { family: 4 } });
       try {
         const richMagnetoHash = await migrationHash("0030_rich_magneto.sql");
 
@@ -103,7 +103,7 @@ describeEmbeddedPostgres("applyPendingMigrations", () => {
 
       await applyPendingMigrations(connectionString);
 
-      const sql = postgres(connectionString, { max: 1, onnotice: () => {} });
+      const sql = postgres(connectionString, { max: 1, onnotice: () => {}, connection: { family: 4 } });
       try {
         const illegalToadHash = await migrationHash("0044_illegal_toad.sql");
 
@@ -147,7 +147,7 @@ describeEmbeddedPostgres("applyPendingMigrations", () => {
 
       await applyPendingMigrations(connectionString);
 
-      const sql = postgres(connectionString, { max: 1, onnotice: () => {} });
+      const sql = postgres(connectionString, { max: 1, onnotice: () => {}, connection: { family: 4 } });
       try {
         await sql.unsafe(`
           INSERT INTO "user" ("id", "name", "email", "email_verified", "created_at", "updated_at")

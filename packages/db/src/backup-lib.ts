@@ -148,7 +148,15 @@ export async function runDatabaseBackup(opts: RunDatabaseBackupOptions): Promise
   const includeMigrationJournal = opts.includeMigrationJournal === true;
   const excludedTableNames = normalizeTableNameSet(opts.excludeTables);
   const nullifiedColumnsByTable = normalizeNullifyColumnMap(opts.nullifyColumns);
-  const sql = postgres(opts.connectionString, { max: 1, connect_timeout: connectTimeout });
+  const sql = postgres(opts.connectionString, {
+    max: 1,
+    connect_timeout: connectTimeout,
+    connection: {
+      // Force IPv4 socket connection to prevent ENETUNREACH errors
+      // when IPv6 addresses are returned but not reachable
+      family: 4,
+    },
+  });
 
   try {
     await sql`SELECT 1`;

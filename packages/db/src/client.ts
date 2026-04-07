@@ -25,10 +25,9 @@ async function resolveToIPv4(url: string): Promise<postgres.Options<never>["host
 }
 
 async function createUtilitySqlResolved(url: string): Promise<postgres.Sql> {
-  const host = await resolveToIPv4(url);
   const parsed = new URL(url);
   return postgres({
-    host,
+    host: parsed.hostname,
     port: parsed.port ? Number(parsed.port) : 5432,
     database: parsed.pathname.slice(1) || undefined,
     username: parsed.username ? decodeURIComponent(parsed.username) : undefined,
