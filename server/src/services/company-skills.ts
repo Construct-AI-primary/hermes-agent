@@ -1539,7 +1539,7 @@ export function companySkillService(db: Db) {
         return [{ path: "SKILL.md", kind: "skill" as const }];
       }
     }
-    if (skill.sourceType === "url") {
+    if (skill.sourceType === "url" || skill.sourceType === "catalog") {
       return [{ path: "SKILL.md", kind: "skill" as const }];
     }
     return [];
