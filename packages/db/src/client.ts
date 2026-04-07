@@ -3,6 +3,7 @@ import { drizzle as drizzlePg } from "drizzle-orm/postgres-js";
 import { migrate as migratePg } from "drizzle-orm/postgres-js/migrator";
 import { readFile, readdir } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
+import { lookup } from "node:dns/promises";
 import postgres from "postgres";
 import * as schema from "./schema/index.js";
 
@@ -10,7 +11,31 @@ const MIGRATIONS_FOLDER = fileURLToPath(new URL("./migrations", import.meta.url)
 const DRIZZLE_MIGRATIONS_TABLE = "__drizzle_migrations";
 const MIGRATIONS_JOURNAL_JSON = fileURLToPath(new URL("./migrations/meta/_journal.json", import.meta.url));
 
-function createUtilitySql(url: string) {
+async function resolveToIPv4(url: string): Promise<postgres.Options<never>["host"]> {
+  const parsed = new URL(url);
+  try {
+    const { address } = await lookup(parsed.hostname, { family: 4 });
+    return address;
+  } catch {
+    return parsed.hostname;
+  }
+}
+
+async function createUtilitySqlResolved(url: string): Promise<postgres.Sql> {
+  const host = await resolveToIPv4(url);
+  const parsed = new URL(url);
+  return postgres({
+    host,
+    port: parsed.port ? Number(parsed.port) : 5432,
+    database: parsed.pathname.slice(1) || undefined,
+    username: parsed.username ? decodeURIComponent(parsed.username) : undefined,
+    password: parsed.password ? decodeURIComponent(parsed.password) : undefined,
+    max: 1,
+    onnotice: () => {},
+  });
+}
+
+function createUtilitySql(url: string): postgres.Sql {
   return postgres(url, { max: 1, onnotice: () => {} });
 }
 
@@ -45,13 +70,21 @@ export type MigrationState =
       reason: "no-migration-journal-empty-db" | "no-migration-journal-non-empty-db" | "pending-migrations";
     };
 
-export function createDb(url: string) {
-  const sql = postgres(url);
+export async function createDb(url: string) {
+  const host = await resolveToIPv4(url);
+  const parsed = new URL(url);
+  const sql = postgres({
+    host,
+    port: parsed.port ? Number(parsed.port) : 5432,
+    database: parsed.pathname.slice(1) || undefined,
+    username: parsed.username ? decodeURIComponent(parsed.username) : undefined,
+    password: parsed.password ? decodeURIComponent(parsed.password) : undefined,
+  });
   return drizzlePg(sql, { schema });
 }
 
 export async function getPostgresDataDirectory(url: string): Promise<string | null> {
-  const sql = createUtilitySql(url);
+  const sql = await createUtilitySqlResolved(url);
   try {
     const rows = await sql<{ data_directory: string | null }[]>`
       SELECT current_setting('data_directory', true) AS data_directory
@@ -242,7 +275,7 @@ async function applyPendingMigrationsManually(
     journalEntries.map((entry) => [entry.fileName, normalizeFolderMillis(entry.folderMillis)]),
   );
 
-  const sql = createUtilitySql(url);
+  const sql = await createUtilitySqlResolved(url);
   try {
     const { migrationTableSchema, columnNames } = await ensureMigrationJournalTable(sql);
     const qualifiedTable = `${quoteIdentifier(migrationTableSchema)}.${quoteIdentifier(DRIZZLE_MIGRATIONS_TABLE)}`;
@@ -491,7 +524,7 @@ export async function reconcilePendingMigrationHistory(
     return { repairedMigrations: [], remainingMigrations: [] };
   }
 
-  const sql = createUtilitySql(url);
+  const sql = await createUtilitySqlResolved(url);
   const repairedMigrations: string[] = [];
 
   try {
@@ -598,7 +631,7 @@ async function discoverMigrationTableSchema(sql: ReturnType<typeof postgres>): P
 }
 
 export async function inspectMigrations(url: string): Promise<MigrationState> {
-  const sql = createUtilitySql(url);
+  const sql = await createUtilitySqlResolved(url);
 
   try {
     const availableMigrations = await listMigrationFiles();
@@ -662,7 +695,7 @@ export async function applyPendingMigrations(url: string): Promise<void> {
   if (initialState.status === "upToDate") return;
 
   if (initialState.reason === "no-migration-journal-empty-db") {
-    const sql = createUtilitySql(url);
+    const sql = await createUtilitySqlResolved(url);
     try {
       const db = drizzlePg(sql);
       await migratePg(db, { migrationsFolder: MIGRATIONS_FOLDER });
@@ -723,7 +756,7 @@ export type MigrationBootstrapResult =
   | { migrated: false; reason: "not-empty-no-migration-journal"; tableCount: number };
 
 export async function migratePostgresIfEmpty(url: string): Promise<MigrationBootstrapResult> {
-  const sql = createUtilitySql(url);
+  const sql = await createUtilitySqlResolved(url);
 
   try {
     const migrationTableSchema = await discoverMigrationTableSchema(sql);
@@ -762,7 +795,7 @@ export async function ensurePostgresDatabase(
     throw new Error(`Unsafe database name: ${databaseName}`);
   }
 
-  const sql = createUtilitySql(url);
+  const sql = await createUtilitySqlResolved(url);
   try {
     const existing = await sql<{ one: number }[]>`
       select 1 as one from pg_database where datname = ${databaseName} limit 1

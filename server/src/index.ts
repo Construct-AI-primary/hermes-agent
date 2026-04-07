@@ -255,7 +255,7 @@ export async function startServer(): Promise<StartedServer> {
   if (config.databaseUrl) {
     migrationSummary = await ensureMigrations(config.databaseUrl, "PostgreSQL");
   
-    db = createDb(config.databaseUrl);
+    db = await createDb(config.databaseUrl);
     logger.info("Using external PostgreSQL via DATABASE_URL/config");
     activeDatabaseConnectionString = config.databaseUrl;
     startupDbInfo = { mode: "external-postgres", connectionString: config.databaseUrl };
@@ -416,7 +416,7 @@ export async function startServer(): Promise<StartedServer> {
       autoApply: shouldAutoApplyFirstRunMigrations,
     });
   
-    db = createDb(embeddedConnectionString);
+    db = await createDb(embeddedConnectionString);
     logger.info("Embedded PostgreSQL ready");
     activeDatabaseConnectionString = embeddedConnectionString;
     resolvedEmbeddedPostgresPort = port;
