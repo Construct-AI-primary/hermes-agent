@@ -35,6 +35,11 @@ async function createUtilitySqlResolved(url: string): Promise<postgres.Sql> {
     password: parsed.password ? decodeURIComponent(parsed.password) : undefined,
     max: 1,
     onnotice: () => {},
+    connection: {
+      // Force IPv4 socket connection to prevent ENETUNREACH errors
+      // when IPv6 addresses are returned but not reachable
+      family: 4,
+    },
   });
 }
 
@@ -82,6 +87,11 @@ export async function createDb(url: string) {
     database: parsed.pathname.slice(1) || undefined,
     username: parsed.username ? decodeURIComponent(parsed.username) : undefined,
     password: parsed.password ? decodeURIComponent(parsed.password) : undefined,
+    connection: {
+      // Force IPv4 socket connection to prevent ENETUNREACH errors
+      // when IPv6 addresses are returned but not reachable
+      family: 4,
+    },
   });
   return drizzlePg(sql, { schema });
 }
