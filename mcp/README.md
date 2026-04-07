@@ -127,7 +127,17 @@ npm publish --access public
 
 ## Contributing
 
-This is a community project. Feel free to open issues and PRs at the [Paperclip MCP GitHub repo](https://github.com/construct-ai/paperclip-mcp).
+See [CONTRIBUTING.md](../CONTRIBUTING.md) in the main Paperclip repo for general contribution guidelines.
+
+When submitting a PR to this package, please include a **Thinking Path** at the top:
+
+```
+> - Paperclip orchestrates AI agents for zero-human companies
+> - The MCP server lets AI clients interact with Paperclip instances
+> - [explain what you changed and why from the top down]
+```
+
+This is a separate package in the `mcp/` directory — changes here should not affect the core UI or API.
 
 ## License
 
