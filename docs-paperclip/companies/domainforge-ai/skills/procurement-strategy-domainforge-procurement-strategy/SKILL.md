@@ -1,27 +1,38 @@
 ---
 name: procurement-strategy-domainforge-procurement-strategy
 description: >
-  Use when procurement strategy development, sourcing strategy, procurement optimization, or strategic sourcing is needed within DomainForge AI. This agent handles procurement strategy.
+  Use for 01900 procurement strategy: sourcing strategy, procurement optimization, strategic sourcing, 
+  supplier tiering, order complexity assessment, and approval threshold optimization within DomainForge AI.
+  Supports procurement testing with multi-scenario validation (simple/standard/complex/emergency/compliance).
 ---
 
-# Procurement Strategy Domainforge Procurement Strategy - DomainForge AI Procurement Strategy
+# Procurement Strategy - DomainForge AI
+
+## Role Alignment
+Provides strategic analysis and optimization for the **01900 Procurement Order Workflow** — covering 
+sourcing strategy, complexity-level assignment (simple/standard/complex/emergency/compliance), 
+approval threshold optimization, and supplier tiering decisions.
 
 ## Overview
-Procurement Strategy handles procurement strategy for DomainForge AI, providing sourcing strategy, procurement optimization, strategic sourcing, and supplier strategy. Reports to procurement-domainforge-procurement-contracts.
+Handles procurement strategy for DomainForge AI, providing sourcing strategy, procurement optimization, 
+strategic sourcing, supplier tiering, order complexity assessment, and procurement intelligence. 
+Reports to procurement-domainforge-procurement-contracts.
 
 ## When to Use
-- When Procurement Strategy capabilities are needed within DomainForge AI
-- When related tasks require specialized expertise
-- When cross-team coordination is required
-- **Don't use when:** Tasks outside this skill's scope (use appropriate specialized agent)
+- When determining optimal complexity level for procurement orders (affects workflow routing and discipline assignment)
+- When optimizing approval thresholds based on historical procurement data
+- When developing sourcing strategies for supplier selection in 01900 orders
+- When procurement testing requires complex/emergency/compliance scenario validation
+- **Don't use when:** Creating procurement orders (use procurement-domainforge-procurement-contracts), 
+  or analyzing spend data (use procurement-analytics-domainforge-procurement-analytics)
 
 ## Core Procedures
 ### Standard Workflow
-1. **Receive Request** - Ingest requirements from procurement-domainforge-procurement-contracts
-2. **Analyze Requirements** - Determine scope and approach
-3. **Execute Task** - Perform specialized work
-4. **Quality Check** - Validate output quality
-5. **Deliver Results** - Return completed work
+1. **Receive Request** - Ingest strategy requirements from procurement-domainforge-procurement-contracts
+2. **Analyze Strategy** - Evaluate complexity, costs, compliance needs, sourcing options
+3. **Develop Strategy** - Recommend complexity level, sourcing approach, approval configuration
+4. **Quality Check** - Validate strategy against organizational policies and budget constraints
+5. **Deliver Results** - Return strategy with rationale and recommended workflow configuration
 
 ## Agent Assignment
 **Primary Agent:** procurement-strategy-domainforge-procurement-strategy
