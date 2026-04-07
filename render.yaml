@@ -1,14 +1,28 @@
 services:
   - type: web
     name: paperclip
-    runtime: docker
+    runtime: node
     repo: https://github.com/Construct-AI-primary/paperclip-render.git
     branch: master
-    dockerfilePath: ./Dockerfile
-    dockerContext: .
-    buildArgs:
-      - key: VITE_WS_BASE_URL
-        value: paperclip-render.onrender.com
+    buildCommand: |
+      corepack enable && corepack prepare pnpm@9.15.4 --activate
+      pnpm install --frozen-lockfile
+      pnpm --filter @paperclipai/shared build
+      pnpm --filter @paperclipai/adapter-utils build
+      pnpm --filter @paperclipai/adapter-claude-local build
+      pnpm --filter @paperclipai/adapter-codex-local build
+      pnpm --filter @paperclipai/adapter-cursor-local build
+      pnpm --filter @paperclipai/adapter-gemini-local build
+      pnpm --filter @paperclipai/adapter-openclaw-gateway build
+      pnpm --filter @paperclipai/adapter-opencode-local build
+      pnpm --filter @paperclipai/adapter-pi-local build
+      pnpm --filter @paperclipai/db build
+      pnpm --filter @paperclipai/plugin-sdk build
+      pnpm --filter @paperclipai/ui build
+      pnpm --filter @paperclipai/server build
+    startCommand: |
+      export NODE_OPTIONS="--dns-result-order=ipv4first"
+      node server/dist/index.js
     envVars:
       - key: NODE_ENV
         value: production
@@ -17,11 +31,11 @@ services:
       - key: SERVE_UI
         value: true
       - key: PAPERCLIP_HOME
-        value: /paperclip
+        value: /opt/render/project/src/.paperclip
       - key: PAPERCLIP_INSTANCE_ID
         value: default
       - key: PAPERCLIP_CONFIG
-        value: /paperclip/instances/default/config.json
+        value: /opt/render/project/src/config.json
       - key: PAPERCLIP_DEPLOYMENT_MODE
         value: authenticated
       - key: PAPERCLIP_DEPLOYMENT_EXPOSURE
@@ -40,5 +54,5 @@ services:
         value: "true"
     disk:
       name: paperclip-data
-      mountPath: /paperclip
+      mountPath: /opt/render/project/src/.paperclip
       sizeGB: 10
