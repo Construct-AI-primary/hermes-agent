@@ -13,13 +13,20 @@ const MIGRATIONS_JOURNAL_JSON = fileURLToPath(new URL("./migrations/meta/_journa
 
 async function resolveToIPv4(url: string): Promise<postgres.Options<never>["host"]> {
   const parsed = new URL(url);
+  // If hostname is already an IPv4 address, return it directly
+  if (/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(parsed.hostname)) {
+    return parsed.hostname;
+  }
   try {
     const addresses = await resolve4(parsed.hostname);
     if (addresses.length > 0) {
       return addresses[0];
     }
-    return parsed.hostname;
-  } catch {
+    // If resolve4 returns empty, try to resolve and filter for IPv4
+    throw new Error(`No IPv4 addresses found for ${parsed.hostname}`);
+  } catch (error) {
+    // Log the error but don't fail - the family: 4 option should handle it
+    console.warn(`Warning: IPv4 resolution failed for ${parsed.hostname}: ${error instanceof Error ? error.message : error}. Falling back to hostname with family: 4.`);
     return parsed.hostname;
   }
 }
