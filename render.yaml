@@ -23,7 +23,7 @@ services:
       - key: PAPERCLIP_DEPLOYMENT_MODE
         value: authenticated
       - key: PAPERCLIP_DEPLOYMENT_EXPOSURE
-        value: private
+        value: public
       - key: PAPERCLIP_ALLOWED_HOSTNAMES
         value: paperclip-render-1.onrender.com,paperclip-render.onrender.com
       - key: DATABASE_URL
