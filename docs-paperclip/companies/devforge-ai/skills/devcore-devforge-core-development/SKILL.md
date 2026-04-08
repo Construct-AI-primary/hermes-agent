@@ -57,4 +57,7 @@ Devcore handles core development for DevForge AI, providing code architecture, d
 **OpenStinger Context:** Core development session continuity, coding knowledge sharing
 **PARA Classification:** Core development, coding standards
 **Related Skills:** nexus-devforge-ceo, codesmith-devforge-backend-engineer, forge-devforge-system-architecture
+**Testing Integration:** procurement-testing
+**Workflow Documentation:** [01900 Procurement Order Workflow](docs-paperclip/disciplines/01900-procurement/order-workflow/README.md)
 **Last Updated:** 2026-03-04
++++++++ REPLACE</parameter>

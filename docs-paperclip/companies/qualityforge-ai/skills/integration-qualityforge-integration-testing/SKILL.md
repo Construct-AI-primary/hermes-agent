@@ -209,3 +209,6 @@ describe('Order Service Integration', () => {
 - **validator-qualityforge-validator**: Coordinate on input/output validation for API contracts
 - **resolver-qualityforge-issue-resolver**: Escalate integration failures for root cause analysis
 - **reporter-qualityforge-quality-reporter**: Provide integration test metrics for quality reporting
+**Testing Integration:** procurement-testing
+**Workflow Documentation:** [01900 Procurement Order Workflow](docs-paperclip/disciplines/01900-procurement/order-workflow/README.md)
++++++++ REPLACE</parameter>

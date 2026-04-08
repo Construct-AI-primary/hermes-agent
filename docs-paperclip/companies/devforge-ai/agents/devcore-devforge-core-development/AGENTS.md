@@ -7,6 +7,8 @@ skills:
   - esm-module-resolution-devforge
   - database-cascade-management-devforge
   - authentication-flows-devforge
+  - systematic-debugging
+  - writing-skills
 ---
 
 # devcore-devforge-core-development

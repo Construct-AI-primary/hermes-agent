@@ -57,4 +57,7 @@ Forge handles system architecture for DevForge AI, providing system design, tech
 **OpenStinger Context:** Architecture session continuity, design knowledge sharing
 **PARA Classification:** System architecture, technology evaluation
 **Related Skills:** nexus-devforge-ceo, devcore-devforge-core-development, council-devforge-strategic-decision-making
+**Testing Integration:** procurement-testing
+**Workflow Documentation:** [01900 Procurement Order Workflow](docs-paperclip/disciplines/01900-procurement/order-workflow/README.md)
 **Last Updated:** 2026-03-04
++++++++ REPLACE</parameter>

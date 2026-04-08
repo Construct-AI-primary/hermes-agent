@@ -359,6 +359,87 @@ INSERT INTO companies (...) VALUES (...);
 INSERT INTO agents (...) VALUES (...);
 ```
 
+### 6. Verify Agent Reporting Structure
+
+**Important**: Always ensure proper organizational hierarchy when adding agents:
+
+- **CEO agents** should have `reports_to = NULL` (they report to no one)
+- **All other agents** should report to their appropriate CEO or manager
+- **Verify reporting chain** exists before adding agents
+- **Update AGENTS.md files** with correct `reportsTo` field matching the database
+
+**Example Reporting Structure:**
+```sql
+-- CEO (reports to no one)
+INSERT INTO agents (..., reports_to) VALUES (..., NULL);
+
+-- Specialist agents (report to CEO)
+INSERT INTO agents (..., reports_to) VALUES (..., '<ceo_agent_id>');
+```
+
+**Validation Query:**
+```sql
+-- Check for orphaned agents (agents with invalid reports_to references)
+SELECT a.name, a.role, a.reports_to
+FROM agents a
+LEFT JOIN agents boss ON a.reports_to = boss.id
+WHERE a.reports_to IS NOT NULL
+  AND boss.id IS NULL;
+```
+
+### 7. Add Agent Model Assignments
+
+**Important**: Every agent must have model assignments in the `agent_models` table for proper AI model routing and performance tracking.
+
+**Required Model Assignment:**
+```sql
+-- Add primary model assignment for new agent
+INSERT INTO agent_models (
+  agent_id,
+  model_id,
+  assignment_type,
+  priority,
+  temperature,
+  max_tokens,
+  assigned_at,
+  assigned_by,
+  reason,
+  is_active
+) VALUES (
+  '<agent_name>',  -- Must match agent name exactly
+  'anthropic/claude-3.5-sonnet',  -- Default model
+  'primary',
+  1,
+  0.7,  -- Standard temperature
+  4096, -- Standard token limit
+  NOW(),
+  'system',  -- Or your username
+  'Default model assignment for new agent',
+  true
+) ON CONFLICT (agent_id, assignment_type) DO NOTHING;
+```
+
+**Model Assignment Guidelines:**
+- **agent_id**: Must exactly match the agent name in the `agents` table
+- **model_id**: Use `'anthropic/claude-3.5-sonnet'` as default for new agents
+- **assignment_type**: Use `'primary'` for the main model assignment
+- **temperature**: Use `0.7` for balanced creativity vs consistency
+- **max_tokens**: Use `4096` for standard context window
+- **assigned_by**: Use your username or `'system'` for automated assignments
+
+**Validation Query:**
+```sql
+-- Check for agents missing model assignments
+SELECT a.name, a.company_id, c.name as company_name
+FROM agents a
+JOIN companies c ON a.company_id = c.id
+LEFT JOIN agent_models am ON a.name = am.agent_id AND am.assignment_type = 'primary'
+WHERE am.id IS NULL
+ORDER BY c.name, a.name;
+```
++++++++ REPLACE</parameter>
++++++++ REPLACE</parameter>
+
 ## Troubleshooting
 
 ### Error: "relation 'agent_permissions' does not exist"

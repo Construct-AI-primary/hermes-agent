@@ -148,4 +148,7 @@ Recommendations: [List]
 - diagnostics-qualityforge-diagnostics-specialist (simulation failure analysis)
 - performance-qualityforge-performance-testing (performance simulation)
 - probe-qualityforge-prompt-testing (prompt workflow simulation)
+**Testing Integration:** procurement-testing
+**Workflow Documentation:** [01900 Procurement Order Workflow](docs-paperclip/disciplines/01900-procurement/order-workflow/README.md)
 **Last Updated:** 2026-03-30
++++++++ REPLACE</parameter>

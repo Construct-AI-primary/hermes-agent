@@ -63,4 +63,7 @@ vendor management, procurement planning, supplier coordination, and compliance e
 **OpenStinger Context:** Session continuity, knowledge sharing
 **PARA Classification:** Procurement, contracts
 **Related Skills:** orion-domainforge-ceo, logistics-domainforge-supply-chain
+**Testing Integration:** procurement-testing
+**Workflow Documentation:** [01900 Procurement Order Workflow](docs-paperclip/disciplines/01900-procurement/order-workflow/README.md)
 **Last Updated:** 2026-03-04
+

@@ -210,3 +210,6 @@ describe('User Purchase Flow', () => {
 - **performance-qualityforge-performance-testing**: Share performance data collected during E2E test execution
 - **resolver-qualityforge-issue-resolver**: Escalate E2E test failures for root cause analysis and resolution
 - **reporter-qualityforge-quality-reporter**: Provide E2E test results for quality reporting and dashboards
+**Testing Integration:** procurement-testing
+**Workflow Documentation:** [01900 Procurement Order Workflow](docs-paperclip/disciplines/01900-procurement/order-workflow/README.md)
++++++++ REPLACE</parameter>

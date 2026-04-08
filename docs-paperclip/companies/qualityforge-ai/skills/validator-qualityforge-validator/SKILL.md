@@ -198,3 +198,6 @@ const OrderSchema = z.object({
 - **standards-qualityforge-standards**: Align validation rules with coding standards
 - **monitor-qualityforge-quality-monitor**: Feed validation metrics into quality dashboards
 - **reporter-qualityforge-quality-reporter**: Provide validation results for quality reports
+**Testing Integration:** procurement-testing
+**Workflow Documentation:** [01900 Procurement Order Workflow](docs-paperclip/disciplines/01900-procurement/order-workflow/README.md)
++++++++ REPLACE</parameter>

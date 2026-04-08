@@ -57,4 +57,7 @@ Interface handles API integration for DevForge AI, providing third-party service
 **OpenStinger Context:** Integration session continuity, API knowledge sharing
 **PARA Classification:** API integration, external connectivity
 **Related Skills:** orion-devforge-orchestrator, codesmith-devforge-backend-engineer, forge-devforge-system-architecture
+**Testing Integration:** procurement-testing
+**Workflow Documentation:** [01900 Procurement Order Workflow](docs-paperclip/disciplines/01900-procurement/order-workflow/README.md)
 **Last Updated:** 2026-03-04
++++++++ REPLACE</parameter>
