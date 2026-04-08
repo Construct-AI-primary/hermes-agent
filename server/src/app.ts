@@ -86,19 +86,20 @@ export async function createApp(
     },
   }));
   app.use(httpLogger);
-  const privateHostnameGateEnabled =
-    opts.deploymentMode === "authenticated" && opts.deploymentExposure === "private";
-  const privateHostnameAllowSet = resolvePrivateHostnameAllowSet({
-    allowedHostnames: opts.allowedHostnames,
-    bindHost: opts.bindHost,
-  });
-  app.use(
-    privateHostnameGuard({
-      enabled: privateHostnameGateEnabled,
-      allowedHostnames: opts.allowedHostnames,
-      bindHost: opts.bindHost,
-    }),
-  );
+  // Hostname guard disabled for Render deployment
+  // const privateHostnameGateEnabled =
+  //   opts.deploymentMode === "authenticated" && opts.deploymentExposure === "private";
+  // const privateHostnameAllowSet = resolvePrivateHostnameAllowSet({
+  //   allowedHostnames: opts.allowedHostnames,
+  //   bindHost: opts.bindHost,
+  // });
+  // app.use(
+  //   privateHostnameGuard({
+  //     enabled: privateHostnameGateEnabled,
+  //     allowedHostnames: opts.allowedHostnames,
+  //     bindHost: opts.bindHost,
+  //   }),
+  // );
   app.use(
     actorMiddleware(db, {
       deploymentMode: opts.deploymentMode,
