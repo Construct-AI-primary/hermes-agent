@@ -823,4 +823,4 @@ export async function ensurePostgresDatabase(
   }
 }
 
-export type Db = ReturnType<typeof createDb>;
+export type Db = Awaited<ReturnType<typeof createDb>>;
