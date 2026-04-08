@@ -54,7 +54,14 @@ export function privateHostnameGuard(opts: {
   allowedHostnames: string[];
   bindHost: string;
 }): RequestHandler {
+  console.log('[HOSTNAME-GUARD] Initializing with:', {
+    enabled: opts.enabled,
+    allowedHostnames: opts.allowedHostnames,
+    bindHost: opts.bindHost,
+  });
+
   if (!opts.enabled) {
+    console.log('[HOSTNAME-GUARD] Disabled - allowing all hostnames');
     return (_req, _res, next) => next();
   }
 
@@ -63,11 +70,23 @@ export function privateHostnameGuard(opts: {
     bindHost: opts.bindHost,
   });
 
+  console.log('[HOSTNAME-GUARD] Allowed hostnames:', Array.from(allowSet));
+
   return (req, res, next) => {
     const hostname = extractHostname(req);
     const wantsJson = req.path.startsWith("/api") || req.accepts(["json", "html", "text"]) === "json";
 
+    console.log('[HOSTNAME-GUARD] Request:', {
+      path: req.path,
+      extractedHostname: hostname,
+      forwardedHost: req.header("x-forwarded-host"),
+      hostHeader: req.header("host"),
+      isInAllowSet: hostname ? allowSet.has(hostname) : false,
+      isLoopback: hostname ? isLoopbackHostname(hostname) : false,
+    });
+
     if (!hostname) {
+      console.log('[HOSTNAME-GUARD] BLOCKED: Missing hostname');
       const error = "Missing Host header. If you want to allow a hostname, run pnpm paperclipai allowed-hostname <host>.";
       if (wantsJson) {
         res.status(403).json({ error });
@@ -78,10 +97,12 @@ export function privateHostnameGuard(opts: {
     }
 
     if (isLoopbackHostname(hostname) || allowSet.has(hostname)) {
+      console.log('[HOSTNAME-GUARD] ALLOWED:', hostname);
       next();
       return;
     }
 
+    console.log('[HOSTNAME-GUARD] BLOCKED:', hostname, '- Not in allowSet:', Array.from(allowSet));
     const error = blockedHostnameMessage(hostname);
     if (wantsJson) {
       res.status(403).json({ error });
