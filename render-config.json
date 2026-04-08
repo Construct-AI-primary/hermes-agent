@@ -1,0 +1,47 @@
+{
+  "$meta": {
+    "version": 1,
+    "updatedAt": "2026-04-08T09:44:00.000Z",
+    "source": "configure"
+  },
+  "database": {
+    "mode": "postgres",
+    "connectionString": "$DATABASE_URL"
+  },
+  "logging": {
+    "mode": "file",
+    "logDir": "/paperclip/instances/default/logs"
+  },
+  "server": {
+    "deploymentMode": "authenticated",
+    "exposure": "private",
+    "host": "0.0.0.0",
+    "port": 10000,
+    "allowedHostnames": [
+      "paperclip-render-1.onrender.com",
+      "paperclip-render.onrender.com"
+    ],
+    "serveUi": true
+  },
+  "auth": {
+    "baseUrlMode": "env",
+    "baseUrl": "$BETTER_AUTH_BASE_URL",
+    "secret": "$BETTER_AUTH_SECRET",
+    "disableSignUp": false
+  },
+  "storage": {
+    "provider": "s3",
+    "s3": {
+      "bucket": "paperclip",
+      "region": "us-east-1",
+      "accessKeyId": "$AWS_ACCESS_KEY_ID",
+      "secretAccessKey": "$AWS_SECRET_ACCESS_KEY",
+      "prefix": "",
+      "forcePathStyle": false
+    }
+  },
+  "secrets": {
+    "provider": "env",
+    "strictMode": false
+  }
+}
