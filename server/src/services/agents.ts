@@ -1,6 +1,6 @@
 import { createHash, randomBytes } from "node:crypto";
 import { and, desc, eq, gte, inArray, lt, ne, sql } from "drizzle-orm";
-import type { Db, AgentInsert, AgentSelect, AgentConfigRevisionSelect } from "@paperclipai/db";
+import type { Db } from "@paperclipai/db";
 import {
   agents,
   agentConfigRevisions,
@@ -12,6 +12,9 @@ import {
   heartbeatRunEvents,
   heartbeatRuns,
 } from "@paperclipai/db";
+
+type AgentInsert = typeof agents.$inferInsert;
+type AgentSelect = typeof agents.$inferSelect;
 import { isUuidLike, normalizeAgentUrlKey } from "@paperclipai/shared";
 import { conflict, notFound, unprocessable } from "../errors.js";
 import { normalizeAgentPermissions } from "./agent-permissions.js";
