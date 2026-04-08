@@ -2240,7 +2240,7 @@ export function heartbeatService(db: Db) {
         });
     const resolvedProjectId = executionWorkspace.projectId ?? issueRef?.projectId ?? executionProjectId ?? null;
     const resolvedProjectWorkspaceId = issueRef?.projectWorkspaceId ?? resolvedWorkspace.workspaceId ?? null;
-    let persistedExecutionWorkspace = null;
+    let persistedExecutionWorkspace: Awaited<ReturnType<typeof executionWorkspacesSvc.update>> | null = null;
     const nextExecutionWorkspaceMetadataBase = {
       ...(existingExecutionWorkspace?.metadata ?? {}),
       source: executionWorkspace.source,

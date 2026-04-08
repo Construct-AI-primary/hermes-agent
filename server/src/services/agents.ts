@@ -1,6 +1,6 @@
 import { createHash, randomBytes } from "node:crypto";
 import { and, desc, eq, gte, inArray, lt, ne, sql } from "drizzle-orm";
-import type { Db } from "@paperclipai/db";
+import type { Db, AgentInsert, AgentSelect, AgentConfigRevisionSelect } from "@paperclipai/db";
 import {
   agents,
   agentConfigRevisions,
@@ -39,7 +39,7 @@ const CONFIG_REVISION_FIELDS = [
 ] as const;
 
 type ConfigRevisionField = (typeof CONFIG_REVISION_FIELDS)[number];
-type AgentConfigSnapshot = Pick<typeof agents.$inferSelect, ConfigRevisionField>;
+type AgentConfigSnapshot = Pick<AgentSelect, ConfigRevisionField>;
 
 interface RevisionMetadata {
   createdByAgentId?: string | null;
@@ -71,7 +71,7 @@ function jsonEqual(left: unknown, right: unknown): boolean {
 }
 
 function buildConfigSnapshot(
-  row: Pick<typeof agents.$inferSelect, ConfigRevisionField>,
+  row: Pick<AgentSelect, ConfigRevisionField>,
 ): AgentConfigSnapshot {
   const adapterConfig =
     typeof row.adapterConfig === "object" && row.adapterConfig !== null && !Array.isArray(row.adapterConfig)
@@ -106,7 +106,7 @@ function containsRedactedMarker(value: unknown): boolean {
   return Object.values(value as Record<string, unknown>).some((entry) => containsRedactedMarker(entry));
 }
 
-function hasConfigPatchFields(data: Partial<typeof agents.$inferInsert>) {
+function hasConfigPatchFields(data: Partial<AgentInsert>) {
   return CONFIG_REVISION_FIELDS.some((field) => Object.prototype.hasOwnProperty.call(data, field));
 }
 
@@ -117,7 +117,7 @@ function diffConfigSnapshot(
   return CONFIG_REVISION_FIELDS.filter((field) => !jsonEqual(before[field], after[field]));
 }
 
-function configPatchFromSnapshot(snapshot: unknown): Partial<typeof agents.$inferInsert> {
+function configPatchFromSnapshot(snapshot: unknown): Partial<AgentInsert> {
   if (!isPlainRecord(snapshot)) throw unprocessable("Invalid revision snapshot");
 
   if (typeof snapshot.name !== "string" || snapshot.name.length === 0) {
@@ -199,7 +199,7 @@ export function agentService(db: Db) {
     };
   }
 
-  function normalizeAgentRow(row: typeof agents.$inferSelect) {
+  function normalizeAgentRow(row: AgentSelect) {
     return withUrlKey({
       ...row,
       permissions: normalizeAgentPermissions(row.permissions, row.role),
@@ -297,7 +297,7 @@ export function agentService(db: Db) {
 
   async function updateAgent(
     id: string,
-    data: Partial<typeof agents.$inferInsert>,
+    data: Partial<AgentInsert>,
     options?: UpdateAgentOptions,
   ) {
     const existing = await getById(id);
@@ -330,7 +330,7 @@ export function agentService(db: Db) {
       }
     }
 
-    const normalizedPatch = { ...data } as Partial<typeof agents.$inferInsert>;
+    const normalizedPatch = { ...data } as Partial<AgentInsert>;
     if (data.permissions !== undefined) {
       const role = (data.role ?? existing.role) as string;
       normalizedPatch.permissions = normalizeAgentPermissions(data.permissions, role);
@@ -381,7 +381,7 @@ export function agentService(db: Db) {
 
     getById,
 
-    create: async (companyId: string, data: Omit<typeof agents.$inferInsert, "companyId">) => {
+    create: async (companyId: string, data: Omit<AgentInsert, "companyId">) => {
       if (data.reportsTo) {
         await ensureManager(companyId, data.reportsTo);
       }

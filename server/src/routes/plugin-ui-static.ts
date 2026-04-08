@@ -242,7 +242,7 @@ export function pluginUiStaticRoutes(db: Db, options: PluginUiStaticRouteOptions
     }
 
     // Step 1: Look up the plugin
-    let plugin = null;
+    let plugin: Awaited<ReturnType<typeof registry.getById>> | null = null;
     try {
       plugin = await registry.getById(pluginId);
     } catch (error) {

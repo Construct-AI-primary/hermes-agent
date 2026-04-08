@@ -1148,7 +1148,7 @@ export function issueRoutes(db: Db, storage: StorageService) {
       },
     });
 
-    let comment = null;
+    let comment: Awaited<ReturnType<typeof svc.addComment>> | undefined;
     if (commentBody) {
       comment = await svc.addComment(id, commentBody, {
         agentId: actor.agentId ?? undefined,
@@ -1174,7 +1174,6 @@ export function issueRoutes(db: Db, storage: StorageService) {
           ...(hasFieldChanges ? { updated: true } : {}),
         },
       });
-
     }
 
     const assigneeChanged = assigneeWillChange;

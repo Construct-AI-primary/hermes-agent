@@ -30,3 +30,4 @@ export {
   formatEmbeddedPostgresError,
 } from "./embedded-postgres-error.js";
 export * from "./schema/index.js";
+export * from "./schema/types.js";
