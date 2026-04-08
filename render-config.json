@@ -5,8 +5,7 @@
     "source": "configure"
   },
   "database": {
-    "mode": "postgres",
-    "connectionString": "$DATABASE_URL"
+    "mode": "postgres"
   },
   "logging": {
     "mode": "file",
@@ -24,9 +23,7 @@
     "serveUi": true
   },
   "auth": {
-    "baseUrlMode": "env",
-    "baseUrl": "$BETTER_AUTH_BASE_URL",
-    "secret": "$BETTER_AUTH_SECRET",
+    "baseUrlMode": "auto",
     "disableSignUp": false
   },
   "storage": {
@@ -34,8 +31,6 @@
     "s3": {
       "bucket": "paperclip",
       "region": "us-east-1",
-      "accessKeyId": "$AWS_ACCESS_KEY_ID",
-      "secretAccessKey": "$AWS_SECRET_ACCESS_KEY",
       "prefix": "",
       "forcePathStyle": false
     }
