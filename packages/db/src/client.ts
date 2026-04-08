@@ -34,11 +34,23 @@ async function resolveToIPv4(url: string): Promise<postgres.Options<never>["host
 async function createUtilitySqlResolved(url: string): Promise<postgres.Sql> {
   const host = await resolveToIPv4(url);
   const parsed = new URL(url);
-  return postgres({
+  const port = parsed.port ? Number(parsed.port) : 5432;
+  const database = parsed.pathname.slice(1) || undefined;
+  const username = parsed.username ? decodeURIComponent(parsed.username) : undefined;
+
+  // Log connection details for debugging (without password)
+  console.log(`[DB] Creating database connection:`);
+  console.log(`[DB]   Host: ${host}`);
+  console.log(`[DB]   Port: ${port}`);
+  console.log(`[DB]   Database: ${database}`);
+  console.log(`[DB]   Username: ${username}`);
+  console.log(`[DB]   SSL: ${url.includes('sslmode=require') ? 'required' : 'not required'}`);
+
+  const sql = postgres({
     host,
-    port: parsed.port ? Number(parsed.port) : 5432,
-    database: parsed.pathname.slice(1) || undefined,
-    username: parsed.username ? decodeURIComponent(parsed.username) : undefined,
+    port,
+    database,
+    username,
     password: parsed.password ? decodeURIComponent(parsed.password) : undefined,
     max: 1,
     connect_timeout: 30,
@@ -49,6 +61,10 @@ async function createUtilitySqlResolved(url: string): Promise<postgres.Sql> {
       family: 4,
     },
   });
+
+  console.log(`[DB] Connection object created, testing connectivity...`);
+  
+  return sql;
 }
 
 function createUtilitySql(url: string): postgres.Sql {
