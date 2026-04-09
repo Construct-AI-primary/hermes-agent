@@ -1,7 +1,24 @@
+# Project Implementation Workflow Templates
+
+## Overview
+This document provides two specialized workflow templates for different project implementation scenarios:
+
+### 1. Generic Project Implementation Template
+For single-project implementations with multiple phases. Use this template when implementing a single, cohesive project with 3-5 phases.
+
+### 2. Discipline Workflow Setup Template
+For discipline-based implementations where multiple workflows require separate projects. Use this template when a discipline has multiple workflows (like Geotechnical Engineering with 5 workflows) that each need their own project structure.
+
+**Choose the appropriate template based on your project scope:**
+- **Single Project**: Use "Generic Project Implementation Template" (this section)
+- **Multiple Workflow Projects**: Use "Discipline Workflow Setup Template" (see `.clinerules/workflows/discipline-workflow-setup.md`)
+
+---
+
 # Generic Project Implementation Workflow Template
 
 ## Overview
-This workflow template implements any project using Paperclip's multi-company team structure. The workflow ensures proper project setup, team assignments, and skill validation for cross-company collaboration.
+This workflow template implements a single project using Paperclip's multi-company team structure. The workflow ensures proper project setup, team assignments, and skill validation for cross-company collaboration.
 
 ## Prerequisites
 - Access to Paperclip companies and teams structure

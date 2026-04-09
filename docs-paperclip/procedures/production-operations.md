@@ -22,7 +22,7 @@ This document defines how to operate Paperclip in production when the server is 
 │ │ - Companies, agents, issues, tasks                  │ │
 │ └─────────────────────────────────────────────────────┘ │
 └─────────────────────────────────────────────────────────┘
-        ↕ HTTPS API calls
+         ↕ HTTPS API calls (outbound from local machine)
 ┌─────────────────────────────────────────────────────────┐
 │ Your Machine (localhost)                                │
 │ ┌─────────────────────────────────────────────────────┐ │
@@ -36,6 +36,36 @@ This document defines how to operate Paperclip in production when the server is 
 ```
 
 **Key principle:** Paperclip on Render is the source of truth. Hermes on your local machine is the agent executor. You do NOT need to run Paperclip locally for production use.
+
+## Network Architecture & Ngrok Analysis
+
+### Why Ngrok Is NOT Required
+
+This setup does **NOT** require ngrok or any tunneling service because:
+
+1. **Outbound-only connections**: Hermes agents initiate HTTPS requests TO Render-hosted Paperclip
+2. **Public server**: Paperclip runs on Render (publicly accessible cloud platform)
+3. **Standard HTTPS**: All communication uses standard HTTPS through corporate firewalls
+4. **No inbound exposure**: Your local machine is never exposed to the internet
+
+### When You WOULD Need Ngrok
+
+Ngrok is only required in these scenarios:
+- Running Paperclip **locally** for development and needing external access
+- Testing webhooks that require public callback URLs
+- Developing integrations that need inbound connections to localhost
+
+### Local Development Exception
+
+For local testing only (not production):
+```bash
+# Only for local development testing
+pnpm dev  # Starts Paperclip on localhost:3100
+ngrok http 3100  # Expose locally running Paperclip
+# Then update Hermes config to use ngrok URL instead of Render
+```
+
+**Recommendation**: Avoid ngrok for production. The Render + local Hermes architecture is simpler, more secure, and always available.
 
 ## Environment Variables
 
