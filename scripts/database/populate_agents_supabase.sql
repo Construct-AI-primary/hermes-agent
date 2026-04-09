@@ -68,7 +68,7 @@ INSERT INTO agents (
   updated_at,
   metadata
 ) VALUES
--- DomainForge AI Agents
+-- DomainForge AI Agents (Updated with correct names from team documentation)
 (
   '91223cfa-cf03-4f71-a5b0-c6afa1b02ac5',
   '2d7d9c60-c02f-42a7-8f6a-7db86ecc879d',
@@ -160,7 +160,203 @@ INSERT INTO agents (
   '2026-03-30T15:54:10.681Z',
   '{"team": "DomainForge AI", "discipline": "Transportation Engineering"}'
 ),
--- InfraForge AI Agents
+-- Additional DomainForge AI agents from team documentation (using existing IDs)
+(
+  '56789012-5678-5678-5678-567890123ef0',
+  '2d7d9c60-c02f-42a7-8f6a-7db86ecc879d',
+  'Construction Engineering',
+  'engineer',
+  'Construction Engineering Specialist',
+  'Construction engineering and project management. Handles construction methodologies, project scheduling, resource allocation, quality control, and construction safety.',
+  'active',
+  '91223cfa-cf03-4f71-a5b0-c6afa1b02ac5',
+  '2026-03-30T15:54:15.000Z',
+  '2026-03-30T15:54:15.000Z',
+  '{"team": "DomainForge AI", "discipline": "Construction Engineering"}'
+),
+(
+  'f6f6f6f6-6666-6666-6666-666666666666',
+  '2d7d9c60-c02f-42a7-8f6a-7db86ecc879d',
+  'Mobile Testing',
+  'engineer',
+  'Mobile Testing Specialist',
+  'Mobile application testing and quality assurance. Handles mobile app testing, device compatibility, performance testing, and user experience validation.',
+  'active',
+  '91223cfa-cf03-4f71-a5b0-c6afa1b02ac5',
+  '2026-03-30T15:54:20.000Z',
+  '2026-03-30T15:54:20.000Z',
+  '{"team": "DomainForge AI", "discipline": "Mobile Testing"}'
+),
+(
+  'e5e5e5e5-5555-5555-5555-555555555555',
+  '2d7d9c60-c02f-42a7-8f6a-7db86ecc879d',
+  'Mobile Workflow Designer',
+  'engineer',
+  'Mobile Workflow Design Specialist',
+  'Mobile workflow design and optimization. Handles mobile user experience design, workflow automation, interface design, and mobile process optimization.',
+  'active',
+  '91223cfa-cf03-4f71-a5b0-c6afa1b02ac5',
+  '2026-03-30T15:54:25.000Z',
+  '2026-03-30T15:54:25.000Z',
+  '{"team": "DomainForge AI", "discipline": "Mobile Workflow Design"}'
+),
+(
+  '12345678-1234-1234-1234-123456789abc',
+  '2d7d9c60-c02f-42a7-8f6a-7db86ecc879d',
+  'Buyer Specialist',
+  'specialist',
+  'Procurement and Contracts Specialist',
+  'Procurement strategy and vendor management. Handles contract negotiation, supplier evaluation, procurement planning, cost optimization, and supply chain integration.',
+  'active',
+  '91223cfa-cf03-4f71-a5b0-c6afa1b02ac5',
+  '2026-03-30T15:54:30.000Z',
+  '2026-03-30T15:54:30.000Z',
+  '{"team": "DomainForge AI", "specialization": "Procurement and Contracts"}'
+),
+(
+  'a1a1a1a1-1111-1111-1111-111111111111',
+  '2d7d9c60-c02f-42a7-8f6a-7db86ecc879d',
+  'Procurement Strategy',
+  'specialist',
+  'Procurement Strategy Specialist',
+  'Strategic procurement planning and optimization. Handles procurement strategy development, category management, sourcing strategies, spend analysis, supplier consolidation, total cost of ownership analysis, procurement transformation initiatives, and procurement best practices implementation.',
+  'active',
+  '91223cfa-cf03-4f71-a5b0-c6afa1b02ac5',
+  '2026-03-30T15:54:35.000Z',
+  '2026-03-30T15:54:35.000Z',
+  '{"team": "DomainForge AI", "specialization": "Procurement Strategy"}'
+),
+(
+  'd4d4d4d4-4444-4444-4444-444444444444',
+  '2d7d9c60-c02f-42a7-8f6a-7db86ecc879d',
+  'Procurement Analytics',
+  'specialist',
+  'Procurement Analytics Specialist',
+  'Data-driven procurement insights and analytics. Handles spend analysis and reporting, procurement KPI tracking and dashboards, supplier performance analytics, cost savings tracking and validation, procurement forecasting and predictive analytics, market intelligence and benchmarking, and procurement data visualization.',
+  'active',
+  '91223cfa-cf03-4f71-a5b0-c6afa1b02ac5',
+  '2026-03-30T15:54:40.000Z',
+  '2026-03-30T15:54:40.000Z',
+  '{"team": "DomainForge AI", "specialization": "Procurement Analytics"}'
+),
+(
+  'b2b2b2b2-2222-2222-2222-222222222222',
+  '2d7d9c60-c02f-42a7-8f6a-7db86ecc879d',
+  'Supplier Management',
+  'specialist',
+  'Supplier Management Specialist',
+  'Comprehensive supplier relationship and performance management. Handles supplier qualification and onboarding, supplier performance monitoring and scorecards, supplier risk assessment and mitigation, supplier development programs, supplier collaboration and innovation, supplier diversity initiatives, and supplier relationship management.',
+  'active',
+  '91223cfa-cf03-4f71-a5b0-c6afa1b02ac5',
+  '2026-03-30T15:54:45.000Z',
+  '2026-03-30T15:54:45.000Z',
+  '{"team": "DomainForge AI", "specialization": "Supplier Management"}'
+),
+(
+  '23456789-2345-2345-2345-234567890bcd',
+  '2d7d9c60-c02f-42a7-8f6a-7db86ecc879d',
+  'Dispatcher Specialist',
+  'specialist',
+  'Logistics and Supply Chain Specialist',
+  'Supply chain and logistics management. Handles logistics planning, inventory management, transportation coordination, distribution optimization, and supply chain risk management.',
+  'active',
+  '91223cfa-cf03-4f71-a5b0-c6afa1b02ac5',
+  '2026-03-30T15:54:50.000Z',
+  '2026-03-30T15:54:50.000Z',
+  '{"team": "DomainForge AI", "specialization": "Logistics and Supply Chain"}'
+),
+(
+  'c3c3c3c3-3333-3333-3333-333333333333',
+  '2d7d9c60-c02f-42a7-8f6a-7db86ecc879d',
+  'Contract Administration',
+  'specialist',
+  'Contract Administration Specialist',
+  'Contract lifecycle management and administration. Handles contract drafting and negotiation, contract compliance monitoring, contract amendment and renewal management, contract performance tracking, contract risk management, contract repository management, and contract audit and reporting.',
+  'active',
+  '91223cfa-cf03-4f71-a5b0-c6afa1b02ac5',
+  '2026-03-30T15:54:55.000Z',
+  '2026-03-30T15:54:55.000Z',
+  '{"team": "DomainForge AI", "specialization": "Contract Administration"}'
+),
+(
+  'c9c9c9c9-9999-9999-9999-999999999999',
+  '2d7d9c60-c02f-42a7-8f6a-7db86ecc879d',
+  'Financial Compliance',
+  'specialist',
+  'Procurement Financial Compliance Specialist',
+  'Procurement-specific financial compliance and budget management. Handles budget approval workflows, financial authority matrices, procurement budget tracking, cost allocation and coding, financial compliance validation, audit trail management, financial reporting for procurement, and procurement fraud prevention.',
+  'active',
+  '91223cfa-cf03-4f71-a5b0-c6afa1b02ac5',
+  '2026-03-30T15:55:00.000Z',
+  '2026-03-30T15:55:00.000Z',
+  '{"team": "DomainForge AI", "specialization": "Financial Compliance"}'
+),
+(
+  '34567890-3456-3456-3456-345678901cde',
+  '2d7d9c60-c02f-42a7-8f6a-7db86ecc879d',
+  'Counsel - specialist',
+  'specialist',
+  'Legal and Regulatory Compliance Specialist',
+  'Legal compliance and regulatory affairs. Handles contract law, regulatory compliance, risk assessment, legal documentation, and governance frameworks.',
+  'active',
+  '91223cfa-cf03-4f71-a5b0-c6afa1b02ac5',
+  '2026-03-30T15:55:05.000Z',
+  '2026-03-30T15:55:05.000Z',
+  '{"team": "DomainForge AI", "specialization": "Legal and Regulatory Compliance"}'
+),
+(
+  '67890123-6789-6789-6789-678901234f01',
+  '2d7d9c60-c02f-42a7-8f6a-7db86ecc879d',
+  'Guardian 2',
+  'specialist',
+  'Safety and Risk Management Specialist',
+  'Safety protocols and risk management. Handles hazard identification, risk assessment, safety training, emergency response planning, and safety compliance.',
+  'active',
+  '91223cfa-cf03-4f71-a5b0-c6afa1b02ac5',
+  '2026-03-30T15:55:10.000Z',
+  '2026-03-30T15:55:10.000Z',
+  '{"team": "DomainForge AI", "specialization": "Safety and Risk Management"}'
+),
+(
+  '89012345-8901-8901-8901-890123456123',
+  '2d7d9c60-c02f-42a7-8f6a-7db86ecc879d',
+  'Inspector Specialist',
+  'specialist',
+  'Quality Control Specialist',
+  'Quality inspection and control. Handles quality inspection, testing procedures, defect prevention, compliance verification, and quality metrics tracking.',
+  'active',
+  '91223cfa-cf03-4f71-a5b0-c6afa1b02ac5',
+  '2026-03-30T15:55:15.000Z',
+  '2026-03-30T15:55:15.000Z',
+  '{"team": "DomainForge AI", "specialization": "Quality Control"}'
+),
+(
+  '78901234-7890-7890-7890-789012345012',
+  '2d7d9c60-c02f-42a7-8f6a-7db86ecc879d',
+  'Scrutineer',
+  'specialist',
+  'Quality Assurance Specialist',
+  'Quality management and assurance. Handles quality management systems, process improvement, standards compliance, audit coordination, and continuous improvement initiatives.',
+  'active',
+  '91223cfa-cf03-4f71-a5b0-c6afa1b02ac5',
+  '2026-03-30T15:55:20.000Z',
+  '2026-03-30T15:55:20.000Z',
+  '{"team": "DomainForge AI", "specialization": "Quality Assurance"}'
+),
+(
+  '45678901-4567-4567-4567-456789012def',
+  '2d7d9c60-c02f-42a7-8f6a-7db86ecc879d',
+  'Treasurer 2',
+  'specialist',
+  'Finance and Cost Management Specialist',
+  'Financial planning and cost management. Handles budget management, cost analysis, financial reporting, economic evaluation, and financial risk assessment.',
+  'active',
+  '91223cfa-cf03-4f71-a5b0-c6afa1b02ac5',
+  '2026-03-30T15:55:25.000Z',
+  '2026-03-30T15:55:25.000Z',
+  '{"team": "DomainForge AI", "specialization": "Finance and Cost Management"}'
+),
+-- InfraForge AI Agents (Updated with correct names from team documentation)
 (
   '2876f20c-220c-4bf7-9baf-6ea668f85ef6',
   '09f438a3-4041-46f2-b3cc-96fc9446e666',
@@ -186,6 +382,33 @@ INSERT INTO agents (
   '2026-03-30T15:54:44.386Z',
   '2026-03-30T15:54:44.386Z',
   '{"team": "InfraForge AI", "specialization": "Database Infrastructure"}'
+),
+-- Additional InfraForge AI agents from team documentation
+(
+  'a7a7a7a7-7777-7777-7777-777777777777',
+  '09f438a3-4041-46f2-b3cc-96fc9446e666',
+  'Mobile API',
+  'engineer',
+  'Mobile API Integration Specialist',
+  'Mobile API design, development, and integration. Handles mobile API architecture, authentication systems, offline synchronization, and mobile app integration.',
+  'active',
+  '2876f20c-220c-4bf7-9baf-6ea668f85ef6',
+  '2026-03-30T15:54:48.000Z',
+  '2026-03-30T15:54:48.000Z',
+  '{"team": "InfraForge AI", "specialization": "Mobile API Integration"}'
+),
+(
+  'b8b8b8b8-8888-8888-8888-888888888888',
+  '09f438a3-4041-46f2-b3cc-96fc9446e666',
+  'Supply Chain Integration',
+  'specialist',
+  'Supply Chain Integration Specialist',
+  'Supply chain system integration and connectivity. Handles EDI integration, supplier portal development, delivery tracking systems, and inventory management integration.',
+  'active',
+  '2876f20c-220c-4bf7-9baf-6ea668f85ef6',
+  '2026-03-30T15:54:52.000Z',
+  '2026-03-30T15:54:52.000Z',
+  '{"team": "InfraForge AI", "specialization": "Supply Chain Integration"}'
 )
 ON CONFLICT (id) DO UPDATE SET
   company_id = EXCLUDED.company_id,
@@ -206,4 +429,3 @@ ON CONFLICT (id) DO UPDATE SET
 -- SELECT COUNT(*) as total_agents FROM agents WHERE company_id IN ('2d7d9c60-c02f-42a7-8f6a-7db86ecc879d', '09f438a3-4041-46f2-b3cc-96fc9446e666');
 -- SELECT name, role, title FROM agents WHERE company_id = '2d7d9c60-c02f-42a7-8f6a-7db86ecc879d' ORDER BY created_at;
 -- SELECT name, role, title FROM agents WHERE company_id = '09f438a3-4041-46f2-b3cc-96fc9446e666' ORDER BY created_at;
--- SELECT name, role, title, permissions FROM agents WHERE company_id IN ('2d7d9c60-c02f-42a7-8f6a-7db86ecc879d', '09f438a3-4041-46f2-b3cc-96fc9446e666') ORDER BY name;
