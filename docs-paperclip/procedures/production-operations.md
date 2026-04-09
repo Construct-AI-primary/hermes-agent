@@ -37,35 +37,131 @@ This document defines how to operate Paperclip in production when the server is 
 
 **Key principle:** Paperclip on Render is the source of truth. Hermes on your local machine is the agent executor. You do NOT need to run Paperclip locally for production use.
 
-## Network Architecture & Ngrok Analysis
+## Network Architecture & Ngrok Requirements
 
-### Why Ngrok Is NOT Required
+### Architecture Options
 
-This setup does **NOT** require ngrok or any tunneling service because:
+There are two possible architectures depending on where you want agents to execute:
 
-1. **Outbound-only connections**: Hermes agents initiate HTTPS requests TO Render-hosted Paperclip
-2. **Public server**: Paperclip runs on Render (publicly accessible cloud platform)
-3. **Standard HTTPS**: All communication uses standard HTTPS through corporate firewalls
-4. **No inbound exposure**: Your local machine is never exposed to the internet
-
-### When You WOULD Need Ngrok
-
-Ngrok is only required in these scenarios:
-- Running Paperclip **locally** for development and needing external access
-- Testing webhooks that require public callback URLs
-- Developing integrations that need inbound connections to localhost
-
-### Local Development Exception
-
-For local testing only (not production):
-```bash
-# Only for local development testing
-pnpm dev  # Starts Paperclip on localhost:3100
-ngrok http 3100  # Expose locally running Paperclip
-# Then update Hermes config to use ngrok URL instead of Render
+#### Option A: Agents Run Locally (HP ZBook) - **REQUIRES NGROK**
+```
+┌─────────────────────────────────────────────────────────┐
+│ Render (paperclip-render.onrender.com)                  │
+│ ┌─────────────────────────────────────────────────────┐ │
+│ │ Paperclip Control Plane (ALWAYS RUNNING)            │ │
+│ │ - Web UI (dashboard)                                │ │
+│ │ - REST API                                          │ │
+│ │ - Embedded or hosted PostgreSQL                     │ │
+│ │ - Companies, agents, issues, tasks                  │ │
+│ └─────────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────┘
+         ↕ HTTPS API calls + Webhooks (bidirectional)
+┌─────────────────────────────────────────────────────────┐
+│ Ngrok Tunnel (ngrok.io)                                │
+│ ┌─────────────────────────────────────────────────────┐ │
+│ │ Public HTTPS endpoint → Local machine              │ │
+│ └─────────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────┘
+         ↕ HTTPS API calls (inbound to local machine)
+┌─────────────────────────────────────────────────────────┐
+│ Your Machine (HP ZBook - localhost)                     │
+│ ┌─────────────────────────────────────────────────────┐ │
+│ │ Hermes Agent Runtime (hermes_local adapter)         │ │
+│ │ - OPENROUTER_API_KEY in hermes_agent/.env          │ │
+│ │ - Receives webhooks from Paperclip                 │ │
+│ │ - Executes tasks and creates/edits local files     │ │
+│ │ - Configured via ~/.hermes/config.yaml              │ │
+│ └─────────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────┘
 ```
 
-**Recommendation**: Avoid ngrok for production. The Render + local Hermes architecture is simpler, more secure, and always available.
+#### Option B: Agents Run on Render - **NO NGROK NEEDED**
+```
+┌─────────────────────────────────────────────────────────┐
+│ Render (paperclip-render.onrender.com)                  │
+│ ┌─────────────────────────────────────────────────────┐ │
+│ │ Paperclip Control Plane + Agent Runtime             │ │
+│ │ - Web UI (dashboard)                                │ │
+│ │ - REST API                                          │ │
+│ │ - Embedded or hosted PostgreSQL                     │ │
+│ │ - Companies, agents, issues, tasks                  │ │
+│ │ - Agent execution (files created on Render)         │ │
+│ └─────────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Current Setup: Option A (Local Agent Execution)
+
+**You want agents to run on your HP ZBook and create/edit files locally.** This requires ngrok for bidirectional communication:
+
+1. **Outbound requests**: Hermes agents poll Paperclip for work (heartbeats)
+2. **Inbound webhooks**: Paperclip sends task assignments and updates to local Hermes
+3. **Ngrok provides**: Public HTTPS endpoint that forwards to your local Hermes server
+
+### Ngrok Setup for Local Agent Execution
+
+```bash
+# Install ngrok
+brew install ngrok  # or download from ngrok.com
+
+# Authenticate ngrok (get token from ngrok dashboard)
+ngrok config add-authtoken YOUR_NGROK_TOKEN
+
+# Start ngrok tunnel to Hermes port (adjust port as needed)
+ngrok http 3001  # or whatever port Hermes uses for webhooks
+
+# Copy the ngrok URL (e.g., https://abc123.ngrok.io)
+# Configure this URL in Paperclip as the webhook endpoint for your agents
+```
+
+### How Paperclip Communicates with Local Devices
+
+Paperclip communicates with local agents through **heartbeats** - short execution windows where agents wake up, check for work, perform tasks, and exit. This is **event-driven polling**, not continuous communication.
+
+#### Heartbeat Mechanism
+
+- **Outbound polling**: Local Hermes agents periodically poll Paperclip's API to check for work
+- **Event triggers**: Agents wake up on scheduled intervals, task assignments, status changes, or @-mentions
+- **Context injection**: Paperclip provides work context through environment variables:
+  - `PAPERCLIP_AGENT_ID`: Agent identity
+  - `PAPERCLIP_COMPANY_ID`: Company context
+  - `PAPERCLIP_TASK_ID`: Specific task that triggered the heartbeat
+  - `PAPERCLIP_WAKE_REASON`: Why the heartbeat was triggered
+  - `PAPERCLIP_API_KEY`: Short-lived JWT for API access
+
+#### Heartbeat Procedure
+
+Each heartbeat follows this standardized procedure:
+
+1. **Identity check**: `GET /api/agents/me` to get agent details
+2. **Work discovery**: `GET /api/agents/me/inbox-lite` for compact task assignments
+3. **Task prioritization**: Work on `in_progress` first, then `todo`, skip `blocked`
+4. **Atomic checkout**: Claim work to prevent conflicts
+5. **Task execution**: Perform assigned work using domain skills
+6. **Status updates**: Report progress and completion back to Paperclip
+
+#### Key Architecture Benefits
+
+- **Firewall-friendly**: Only outbound HTTPS connections required
+- **Event-driven**: Agents don't run continuously - they wake up for specific work
+- **Atomic operations**: Task checkout prevents double-work
+- **Audit trail**: Every action logged with run IDs for traceability
+- **Secure**: Short-lived JWTs, no persistent inbound exposure
+
+### When Ngrok Is NOT Required
+
+Ngrok is only NOT required if you choose **Option B** (agents run on Render infrastructure):
+- Files created on Render server, not your local machine
+- No inbound connections needed to your HP ZBook
+- All execution happens in Render's cloud environment
+
+### Recommendation for Your Use Case
+
+Since you want **local file creation/editing on your HP ZBook**, use **Option A with ngrok**. This gives you:
+- ✅ Local file access and editing
+- ✅ Direct control over agent execution environment
+- ✅ Ability to work with local repositories and tools
+- ⚠️ Requires ngrok for webhook communication
 
 ## Environment Variables
 
