@@ -1,7 +1,7 @@
 ---
 name: cascade-promptforge-workflow-designer
 slug: cascade-promptforge-workflow-designer
-reportsTo: null
+reportsTo: sage-promptforge-chief-architect
 skills:
   - cascade-promptforge-workflow-designer
 ---

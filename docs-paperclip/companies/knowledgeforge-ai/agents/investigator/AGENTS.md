@@ -1,5 +1,6 @@
 ---
 name: Investigator
+reportsTo: knowledgeforge-coordinator-guardian
 role: failure-learner
 title: 
 status: idle

@@ -1,7 +1,7 @@
 ---
 name: strategos-domainforge-strategic-planning
 slug: strategos-domainforge-strategic-planning
-reportsTo: null
+reportsTo: orion-domainforge-ceo
 skills:
   - strategos-domainforge-strategic-planning
 ---

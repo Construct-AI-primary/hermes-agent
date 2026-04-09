@@ -1,7 +1,7 @@
 ---
 name: structural-domainforge-structural-engineering
 slug: structural-domainforge-structural-engineering
-reportsTo: null
+reportsTo: orion-domainforge-ceo
 skills:
   - structural-domainforge-structural-engineering
 ---

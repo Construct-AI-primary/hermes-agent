@@ -1,7 +1,7 @@
 ---
 name: supply-chain-integration-infraforge-supply-chain
 slug: supply-chain-integration-infraforge-supply-chain
-reportsTo: null
+reportsTo: orchestrator-infraforge-ceo
 skills:
   - supply-chain-integration-infraforge-supply-chain
 ---

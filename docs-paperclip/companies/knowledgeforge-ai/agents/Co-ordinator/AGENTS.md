@@ -1,5 +1,6 @@
 ---
 name: Co-ordinator
+reportsTo: knowledgeforge-coordinator-guardian
 role: other-parties
 title: 
 status: idle

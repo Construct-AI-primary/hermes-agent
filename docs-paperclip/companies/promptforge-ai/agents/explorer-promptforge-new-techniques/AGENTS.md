@@ -1,7 +1,7 @@
 ---
 name: explorer-promptforge-new-techniques
 slug: explorer-promptforge-new-techniques
-reportsTo: null
+reportsTo: sage-promptforge-chief-architect
 skills:
   - explorer-promptforge-new-techniques
 ---

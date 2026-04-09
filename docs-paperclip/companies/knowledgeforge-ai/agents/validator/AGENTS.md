@@ -1,5 +1,6 @@
 ---
 name: Validator
+reportsTo: knowledgeforge-coordinator-guardian
 role: qa-strategist
 title: 
 status: idle

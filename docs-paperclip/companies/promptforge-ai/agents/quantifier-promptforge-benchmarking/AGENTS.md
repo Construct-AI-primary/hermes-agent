@@ -1,7 +1,7 @@
 ---
 name: quantifier-promptforge-benchmarking
 slug: quantifier-promptforge-benchmarking
-reportsTo: null
+reportsTo: sage-promptforge-chief-architect
 skills:
   - quantifier-promptforge-benchmarking
 ---

@@ -3,7 +3,7 @@ name: Greeter
 role: user-signup
 title: Greeter
 status: idle
-reports_to: 56669ae0-ee85-429a-acbb-4d08f29b4e96
+reportsTo: knowledgeforge-coordinator-guardian
 capabilities: User Signup
 ---
 

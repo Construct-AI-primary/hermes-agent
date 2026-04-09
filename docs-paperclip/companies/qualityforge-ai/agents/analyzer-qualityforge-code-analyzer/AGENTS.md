@@ -1,7 +1,7 @@
 ---
 name: analyzer-qualityforge-code-analyzer
 slug: analyzer-qualityforge-code-analyzer
-reportsTo: null
+reportsTo: governor-qualityforge-quality-director
 skills:
   - analyzer-qualityforge-code-analyzer
 ---

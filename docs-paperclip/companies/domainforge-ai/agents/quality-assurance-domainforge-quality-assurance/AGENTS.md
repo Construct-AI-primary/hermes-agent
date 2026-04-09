@@ -1,7 +1,7 @@
 ---
 name: quality-assurance-domainforge-quality-assurance
 slug: quality-assurance-domainforge-quality-assurance
-reportsTo: null
+reportsTo: orion-domainforge-ceo
 skills:
   - quality-assurance-domainforge-quality-assurance
 ---

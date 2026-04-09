@@ -1,5 +1,6 @@
 ---
 name: Administrator - pre-award
+reportsTo: knowledgeforge-coordinator-guardian
 role: contracts-post-award
 title: 
 status: idle

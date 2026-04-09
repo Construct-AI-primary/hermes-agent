@@ -1,7 +1,7 @@
 ---
 name: tuner-promptforge-ab-testing
 slug: tuner-promptforge-ab-testing
-reportsTo: null
+reportsTo: sage-promptforge-chief-architect
 skills:
   - tuner-promptforge-ab-testing
 ---

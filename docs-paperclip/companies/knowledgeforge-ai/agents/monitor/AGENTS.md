@@ -1,5 +1,6 @@
 ---
 name: Monitor
+reportsTo: knowledgeforge-coordinator-guardian
 role: app-guardian
 title: 
 status: idle

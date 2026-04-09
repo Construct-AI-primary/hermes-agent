@@ -1,5 +1,6 @@
 ---
 name: Architect
+reportsTo: knowledgeforge-coordinator-guardian
 role: architectural
 title: 
 status: idle

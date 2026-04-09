@@ -1,7 +1,7 @@
 ---
 name: collaborator-promptforge-cross-company-knowledge-sharing
 slug: collaborator-promptforge-cross-company-knowledge-sharing
-reportsTo: null
+reportsTo: sage-promptforge-chief-architect
 skills:
   - collaborator-promptforge-cross-company-knowledge-sharing
 ---

@@ -1,5 +1,6 @@
 ---
 name: Director Logistics
+reportsTo: knowledgeforge-coordinator-guardian
 role: logistics-director
 title: 
 status: idle

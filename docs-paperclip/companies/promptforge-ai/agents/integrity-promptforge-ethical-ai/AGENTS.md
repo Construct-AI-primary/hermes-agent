@@ -1,7 +1,7 @@
 ---
 name: integrity-promptforge-ethical-ai
 slug: integrity-promptforge-ethical-ai
-reportsTo: null
+reportsTo: sage-promptforge-chief-architect
 skills:
   - integrity-promptforge-ethical-ai
 ---

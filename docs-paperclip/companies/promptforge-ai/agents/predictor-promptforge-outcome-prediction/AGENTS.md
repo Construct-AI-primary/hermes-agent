@@ -1,7 +1,7 @@
 ---
 name: predictor-promptforge-outcome-prediction
 slug: predictor-promptforge-outcome-prediction
-reportsTo: null
+reportsTo: sage-promptforge-chief-architect
 skills:
   - predictor-promptforge-outcome-prediction
 ---

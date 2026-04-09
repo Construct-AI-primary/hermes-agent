@@ -3,7 +3,7 @@ name: Advisor Disciplines
 role: discipline-strategist
 title: Advisor Disciplines
 status: idle
-reports_to: 68a18976-a913-4f6f-a6cd-2563a61e1e6b
+reportsTo: knowledgeforge-coordinator-guardian
 capabilities: Discipline Strategist
 ---
 

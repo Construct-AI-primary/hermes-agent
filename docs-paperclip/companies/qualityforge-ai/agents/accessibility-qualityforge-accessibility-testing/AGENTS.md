@@ -1,7 +1,7 @@
 ---
 name: accessibility-Accessibility-testing
 slug: accessibility-Accessibility-testing
-reportsTo: null
+reportsTo: governor-qualityforge-quality-director
 skills:
   - accessibility-Accessibility-testing
 ---

@@ -1,7 +1,7 @@
 ---
 name: clarity-promptforge-performance-optimization
 slug: clarity-promptforge-performance-optimization
-reportsTo: null
+reportsTo: sage-promptforge-chief-architect
 skills:
   - clarity-promptforge-performance-optimization
 ---

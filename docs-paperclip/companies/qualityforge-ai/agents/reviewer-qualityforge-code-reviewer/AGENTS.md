@@ -1,7 +1,7 @@
 ---
 name: reviewer-qualityforge-code-reviewer
 slug: reviewer-qualityforge-code-reviewer
-reportsTo: null
+reportsTo: governor-qualityforge-quality-director
 skills:
   - reviewer-qualityforge-code-reviewer
 ---

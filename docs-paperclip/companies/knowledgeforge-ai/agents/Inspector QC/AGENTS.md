@@ -1,5 +1,6 @@
 ---
 name: Inspector QC
+reportsTo: knowledgeforge-coordinator-guardian
 role: quality-control
 title: 
 status: idle

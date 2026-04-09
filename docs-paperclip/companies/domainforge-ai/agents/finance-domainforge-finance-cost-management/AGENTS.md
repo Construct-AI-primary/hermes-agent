@@ -1,7 +1,7 @@
 ---
 name: finance-domainforge-finance-cost-management
 slug: finance-domainforge-finance-cost-management
-reportsTo: null
+reportsTo: orion-domainforge-ceo
 skills:
   - finance-domainforge-finance-cost-management
 ---

@@ -3,7 +3,7 @@ name: Docs Analyzer
 role: doc-analyzer
 title: Document Analysis & Knowledge Extraction Specialist
 status: active
-reports_to: 68a18976-a913-4f6f-a6cd-2563a61e1e6b
+reportsTo: knowledgeforge-coordinator-guardian
 capabilities: Document parsing, content analysis, knowledge indexing, and procurement document processing for KnowledgeForge AI.
 ---
 

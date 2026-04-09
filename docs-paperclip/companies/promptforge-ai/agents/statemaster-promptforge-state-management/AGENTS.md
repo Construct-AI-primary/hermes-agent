@@ -1,7 +1,7 @@
 ---
 name: statemaster-promptforge-state-management
 slug: statemaster-promptforge-state-management
-reportsTo: null
+reportsTo: sage-promptforge-chief-architect
 skills:
   - statemaster-promptforge-state-management
 ---

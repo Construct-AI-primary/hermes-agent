@@ -1,5 +1,6 @@
 ---
 name: Director Engineering
+reportsTo: knowledgeforge-coordinator-guardian
 role: engineering-director
 title: 
 status: idle

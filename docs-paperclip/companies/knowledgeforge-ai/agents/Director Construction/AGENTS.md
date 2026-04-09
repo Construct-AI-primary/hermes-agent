@@ -3,7 +3,7 @@ name: Director Construction
 role: construction-director
 title: Director Construction
 status: idle
-reports_to: 7416890b-1ed3-4298-9697-2e48355df10c
+reportsTo: knowledgeforge-coordinator-guardian
 capabilities: Construction Director
 ---
 

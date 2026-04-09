@@ -1,7 +1,7 @@
 ---
 name: procurement-domainforge-procurement-contracts
 slug: procurement-domainforge-procurement-contracts
-reportsTo: null
+reportsTo: orion-domainforge-ceo
 skills:
   - procurement-domainforge-procurement-contracts
 ---

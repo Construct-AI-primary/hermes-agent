@@ -1,7 +1,7 @@
 ---
 name: scholar-promptforge-academic-research
 slug: scholar-promptforge-academic-research
-reportsTo: null
+reportsTo: sage-promptforge-chief-architect
 skills:
   - scholar-promptforge-academic-research
 ---

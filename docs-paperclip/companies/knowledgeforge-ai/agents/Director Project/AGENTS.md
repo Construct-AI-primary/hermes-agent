@@ -1,5 +1,6 @@
 ---
 name: Director Project
+reportsTo: knowledgeforge-coordinator-guardian
 role: director-project
 title: 
 status: idle

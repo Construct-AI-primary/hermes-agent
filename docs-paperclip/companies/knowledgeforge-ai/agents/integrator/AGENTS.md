@@ -1,5 +1,6 @@
 ---
 name: Integrator
+reportsTo: knowledgeforge-coordinator-guardian
 role: clinet-integrator
 title: 
 status: idle

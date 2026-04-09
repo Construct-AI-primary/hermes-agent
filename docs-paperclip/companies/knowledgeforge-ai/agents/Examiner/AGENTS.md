@@ -3,7 +3,7 @@ name: Examiner
 role: quality-assurance
 title: Examiner
 status: idle
-reports_to: 7416890b-1ed3-4298-9697-2e48355df10c
+reportsTo: knowledgeforge-coordinator-guardian
 capabilities: Quality Assurance
 ---
 
