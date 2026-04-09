@@ -1,16 +1,16 @@
 ---
-name: Monitor
-role: app-guardian
+name: Administrator - pre-award
+role: contracts-post-award
 title: 
 status: idle
 capabilities: 
 company: knowledgeforge-ai
 ---
 
-# Monitor
+# Administrator - pre-award
 
-**Agent:** Monitor  
-**Role:** app-guardian  
+**Agent:** Administrator - pre-award  
+**Role:** contracts-post-award  
 **Title:**   
 **Status:** idle  
 **Company:** KnowledgeForge AI
@@ -21,7 +21,7 @@ company: knowledgeforge-ai
 
 ## Reports To
 
-3ef52731-14fc-4347-9185-3e0c00c30486
+7416890b-1ed3-4298-9697-2e48355df10c
 
 ## Implementation Notes
 

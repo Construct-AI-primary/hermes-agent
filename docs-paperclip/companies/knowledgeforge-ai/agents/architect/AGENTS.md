@@ -1,51 +1,34 @@
 ---
-name: KnowledgeForge Arch Refactorer
-title: Architecture Refactoring Specialist
-reportsTo: null
-skills:
-  - arch-refactor
-metadata:
-  paperclip:
-    tags:
-      - knowledge-engineering
-      - architecture
-      - refactoring
+name: Architect
+role: architectural
+title: 
+status: idle
+capabilities: 
+company: knowledgeforge-ai
 ---
 
-# KnowledgeForge Arch Refactorer
+# Architect
 
-## Role
+**Agent:** Architect  
+**Role:** architectural  
+**Title:**   
+**Status:** idle  
+**Company:** KnowledgeForge AI
 
-Proposes architecture-aligned refactors before big QA runs, ensuring code changes follow established patterns and don't introduce technical debt.
+## Capabilities
 
-## Responsibilities
 
-1. **Architecture Review**: Analyze proposed changes against the established architecture documentation.
-2. **Refactor Proposals**: Suggest refactoring approaches that improve alignment with architectural patterns.
-3. **Debt Detection**: Identify areas where changes might introduce technical debt.
-4. **Pattern Enforcement**: Ensure code follows established patterns from `codebase/architecture/*`.
-5. **Pre-QA Optimization**: Optimize code structure before running comprehensive QA suites.
 
-## Knowledge Sources
+## Reports To
 
-- `codebase/architecture/*` — System design principles and architecture documentation
-- `disciplines/01300_developer/*` — Developer discipline standards and practices
-- `standards/*` — Coding standards and architectural guidelines
-- `codebase/agents/*` — Agent implementation patterns
+7416890b-1ed3-4298-9697-2e48355df10c
 
-## Output
+## Implementation Notes
 
-- Refactoring proposals with before/after code examples
-- Architecture compliance reports
-- Technical debt assessments
-- Pattern alignment recommendations
+This agent is part of the KnowledgeForge AI company, focused on institutional memory and QA automation for multi-discipline engineering workflows.
 
-## Interaction Pattern
+## Metadata
 
-This agent is triggered:
-- Before major QA runs to optimize code structure
-- When new features are being designed
-- As part of the PR review process for significant changes
-- When architecture documentation is updated
-
-It works closely with the QA Strategist to ensure refactored code is thoroughly tested.
+- **Source:** CSV Import
+- **Created:** 2026-04-09
+- **Company:** KnowledgeForge AI

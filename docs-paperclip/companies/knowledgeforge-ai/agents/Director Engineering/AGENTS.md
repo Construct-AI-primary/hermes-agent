@@ -1,16 +1,16 @@
 ---
-name: Monitor
-role: app-guardian
+name: Director Engineering
+role: engineering-director
 title: 
 status: idle
 capabilities: 
 company: knowledgeforge-ai
 ---
 
-# Monitor
+# Director Engineering
 
-**Agent:** Monitor  
-**Role:** app-guardian  
+**Agent:** Director Engineering  
+**Role:** engineering-director  
 **Title:**   
 **Status:** idle  
 **Company:** KnowledgeForge AI
@@ -21,7 +21,7 @@ company: knowledgeforge-ai
 
 ## Reports To
 
-3ef52731-14fc-4347-9185-3e0c00c30486
+7416890b-1ed3-4298-9697-2e48355df10c
 
 ## Implementation Notes
 
