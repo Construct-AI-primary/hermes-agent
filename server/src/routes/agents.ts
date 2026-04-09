@@ -1419,8 +1419,24 @@ export function agentRoutes(db: Db) {
   });
 
   router.patch("/agents/:id/permissions", validate(updateAgentPermissionsSchema), async (req, res) => {
-    const id = req.params.id as string;
-    const existing = await svc.getById(id);
+    const idOrUrlKey = req.params.id as string;
+    
+    // Try direct UUID lookup first
+    let existing = await svc.getById(idOrUrlKey);
+    
+    // If not found and companyId is provided, try shortname lookup
+    if (!existing && req.query.companyId) {
+      const companyId = req.query.companyId as string;
+      const resolved = await svc.resolveByReference(companyId, idOrUrlKey);
+      if (resolved.ambiguous) {
+        res.status(409).json({ error: "Agent shortname is ambiguous in this company. Use the agent ID." });
+        return;
+      }
+      if (resolved.agent) {
+        existing = resolved.agent;
+      }
+    }
+    
     if (!existing) {
       res.status(404).json({ error: "Agent not found" });
       return;

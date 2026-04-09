@@ -38,16 +38,16 @@ async function createUtilitySqlResolved(url: string): Promise<postgres.Sql> {
   const database = parsed.pathname.slice(1) || undefined;
   const username = parsed.username ? decodeURIComponent(parsed.username) : undefined;
 
-  // Log connection details for debugging (without password)
-  console.log(`[DB] ===== DATABASE CONNECTION DEBUG =====`);
-  console.log(`[DB]   Full URL (password hidden): ${url.replace(/:[^:]*@/, ':****@')}`);
-  console.log(`[DB]   Host: ${host}`);
-  console.log(`[DB]   Port: ${port}`);
-  console.log(`[DB]   Database: ${database}`);
-  console.log(`[DB]   Username: ${username}`);
-  console.log(`[DB]   Password length: ${parsed.password ? parsed.password.length : 0}`);
-  console.log(`[DB]   SSL: ${url.includes('sslmode=require') ? 'required' : 'not required'}`);
-  console.log(`[DB] =====================================`);
+  // Log connection details for debugging (without password) - use stderr to avoid polluting JSON output
+  console.error(`[DB] ===== DATABASE CONNECTION DEBUG =====`);
+  console.error(`[DB]   Full URL (password hidden): ${url.replace(/:[^:]*@/, ':****@')}`);
+  console.error(`[DB]   Host: ${host}`);
+  console.error(`[DB]   Port: ${port}`);
+  console.error(`[DB]   Database: ${database}`);
+  console.error(`[DB]   Username: ${username}`);
+  console.error(`[DB]   Password length: ${parsed.password ? parsed.password.length : 0}`);
+  console.error(`[DB]   SSL: ${url.includes('sslmode=require') ? 'required' : 'not required'}`);
+  console.error(`[DB] =====================================`);
 
   const sql = postgres({
     host,
@@ -60,7 +60,7 @@ async function createUtilitySqlResolved(url: string): Promise<postgres.Sql> {
     onnotice: () => {},
   });
 
-  console.log(`[DB] Connection object created, testing connectivity...`);
+  console.error(`[DB] Connection object created, testing connectivity...`);
   
   return sql;
 }
