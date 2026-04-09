@@ -154,7 +154,7 @@ Issues Found: [List with severity]
 - optimizer-qualityforge-code-optimizer (migration performance optimization)
 - codesmith-qualityforge-code-architect (migration implementation)
 - coverage-qualityforge-test-coverage-analyst (migration test coverage)
-- diagnostics-qualityforge-diagnostics-specialist (migration issue diagnosis)
+- diagnostics-Diagnostics-specialist (migration issue diagnosis)
 - guardian-qualityforge-quality-guardian (migration quality gates)
 - auditor-qualityforge-quality-auditor (migration compliance audit)
 **Last Updated:** 2026-03-30

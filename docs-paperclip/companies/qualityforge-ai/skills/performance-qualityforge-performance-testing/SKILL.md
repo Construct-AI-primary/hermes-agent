@@ -1,5 +1,5 @@
 ---
-name: performance-qualityforge-performance-testing
+name: performance-Performance-testing
 description: Performance testing, load testing, stress testing
 category: qualityforge-testing
 division: Testing Division
@@ -26,7 +26,7 @@ Use this skill when:
 **Don't use when:**
 - Testing functional correctness of features (use `unittest-qualityforge-unit-testing`)
 - Testing user journey flows (use `e2e-qualityforge-end-to-end-testing`)
-- Testing sustained load over extended periods (use `load-qualityforge-load-testing`)
+- Testing sustained load over extended periods (use `load-Load-testing`)
 - Testing scalability with growing user base (use `loadtester-qualityforge-scalability-testing`)
 
 ## Core Procedures
@@ -212,9 +212,9 @@ export default function () {
 
 ## Cross-Team Integration
 
-- **load-qualityforge-load-testing**: Coordinate on sustained load testing and capacity validation
+- **load-Load-testing**: Coordinate on sustained load testing and capacity validation
 - **loadtester-qualityforge-scalability-testing**: Share findings on system scaling behavior
-- **profiler-qualityforge-performance-profiler**: Provide performance data for detailed profiling
+- **profiler-Performance-profiler**: Provide performance data for detailed profiling
 - **automation-qualityforge-test-automation**: Integrate performance tests into CI/CD pipeline
 - **monitor-qualityforge-quality-monitor**: Feed performance metrics into quality dashboards
 - **reporter-qualityforge-quality-reporter**: Provide performance test results for quality reporting

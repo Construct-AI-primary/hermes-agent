@@ -1,5 +1,5 @@
 ---
-name: accessibility-qualityforge-accessibility-testing
+name: accessibility-Accessibility-testing
 description: >
   Use when accessibility testing, WCAG compliance testing, screen reader testing, accessibility auditing, inclusive design validation, or accessibility remediation guidance is needed within QualityForge AI. This agent handles accessibility testing.
 ---
@@ -15,7 +15,7 @@ Accessibility is the accessibility testing and WCAG compliance specialist for Qu
 - When validating keyboard navigation and focus management across all interactive elements
 - When performing color contrast analysis and visual accessibility testing
 - When conducting accessibility audits for regulatory compliance (Section 508, EN 301 549, ADA)
-- **Don't use when:** Testing general UI functionality (use e2e-qualityforge-end-to-end-testing), conducting cross-browser compatibility testing (use compatibility-qualityforge-compatibility-testing), or performing usability testing (use e2e-qualityforge-end-to-end-testing)
+- **Don't use when:** Testing general UI functionality (use e2e-qualityforge-end-to-end-testing), conducting cross-browser compatibility testing (use compatibility-Compatibility-testing), or performing usability testing (use e2e-qualityforge-end-to-end-testing)
 
 ## Core Procedures
 
@@ -115,7 +115,7 @@ Testing Steps: [How to verify the fix]
 - [ ] Accessibility knowledge base updated with findings
 
 ## Agent Assignment
-**Primary Agent:** accessibility-qualityforge-accessibility-testing
+**Primary Agent:** accessibility-Accessibility-testing
 **Company:** QualityForge AI
 **Division:** Testing Division
 **Role:** Accessibility Testing Expert
@@ -164,8 +164,8 @@ Testing Steps: [How to verify the fix]
 **PARA Classification:** pages/disciplines/02200-quality-assurance, areas/test-execution, resources/testing-tools
 **Related Skills:**
 - e2e-qualityforge-end-to-end-testing (end-to-end accessibility validation)
-- compatibility-qualityforge-compatibility-testing (cross-platform accessibility)
-- standards-qualityforge-standards-enforcer (accessibility standards enforcement)
+- compatibility-Compatibility-testing (cross-platform accessibility)
+- standards-Standards-enforcer (accessibility standards enforcement)
 - guardian-qualityforge-quality-guardian (accessibility quality gates)
 - codesmith-qualityforge-code-architect (accessibility implementation guidance)
 - auditor-qualityforge-quality-auditor (accessibility compliance audit)

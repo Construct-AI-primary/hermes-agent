@@ -24,10 +24,10 @@ Use this skill when:
 6. **Assessing cost efficiency** of scaling strategies (cost per transaction at different scales)
 
 **Don't use when:**
-- Testing current capacity under known load (use `load-qualityforge-load-testing`)
-- Measuring baseline performance metrics (use `performance-qualityforge-performance-testing`)
-- Profiling specific code paths (use `profiler-qualityforge-performance-profiler`)
-- Testing individual API endpoints (use `integration-qualityforge-integration-testing`)
+- Testing current capacity under known load (use `load-Load-testing`)
+- Measuring baseline performance metrics (use `performance-Performance-testing`)
+- Profiling specific code paths (use `profiler-Performance-profiler`)
+- Testing individual API endpoints (use `integration-Integration-testing`)
 
 ## Core Procedures
 
@@ -193,9 +193,9 @@ resource "aws_instance" "app_server" {
 
 ## Cross-Team Integration
 
-- **load-qualityforge-load-testing**: Share capacity data and load test results for scalability analysis
-- **performance-qualityforge-performance-testing**: Coordinate on performance baselines across scale levels
-- **profiler-qualityforge-performance-profiler**: Provide scaling test data for bottleneck profiling
+- **load-Load-testing**: Share capacity data and load test results for scalability analysis
+- **performance-Performance-testing**: Coordinate on performance baselines across scale levels
+- **profiler-Performance-profiler**: Provide scaling test data for bottleneck profiling
 - **automation-qualityforge-test-automation**: Integrate scalability tests into CI/CD for regression
 - **monitor-qualityforge-quality-monitor**: Feed scalability metrics into quality dashboards
 - **reporter-qualityforge-quality-reporter**: Provide scalability test results for capacity planning reports

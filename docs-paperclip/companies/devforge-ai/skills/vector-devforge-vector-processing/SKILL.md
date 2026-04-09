@@ -1,5 +1,5 @@
 ---
-name: vector-devforge-vector-processing
+name: vector-Vector-processing
 description: >
   Use when vector database management, embedding generation, similarity search, or
   vector indexing is needed within DevForge AI. This agent handles vector processing
@@ -34,7 +34,7 @@ Vector handles vector processing for DevForge AI, providing vector database mana
 - Vector indexing and performance tuning
 
 ## Agent Assignment
-**Primary Agent:** vector-devforge-vector-processing
+**Primary Agent:** vector-Vector-processing
 **Company:** DevForge AI
 **Role:** Vector Processing
 **Reports To:** dataforge-devforge-data-transformation

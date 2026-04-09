@@ -26,7 +26,7 @@ Use this skill when:
 **Don't use when:**
 - Writing individual unit tests (use `unittest-qualityforge-unit-testing`)
 - Performing end-to-end user journey tests (use `e2e-qualityforge-end-to-end-testing`)
-- Conducting performance or load testing (use `performance-qualityforge-performance-testing` or `load-qualityforge-load-testing`)
+- Conducting performance or load testing (use `performance-Performance-testing` or `load-Load-testing`)
 - Analyzing test coverage metrics (use `coverage-qualityforge-test-coverage-analyst`)
 
 ## Core Procedures
@@ -210,7 +210,7 @@ test-automation:
 
 - **unittest-qualityforge-unit-testing**: Collaborate on unit test framework selection and integration into automation pipeline
 - **e2e-qualityforge-end-to-end-testing**: Integrate E2E test suites into shared automation framework and CI/CD orchestration
-- **integration-qualityforge-integration-testing**: Coordinate API and service-level test automation strategies
+- **integration-Integration-testing**: Coordinate API and service-level test automation strategies
 - **coverage-qualityforge-test-coverage-analyst**: Feed automation execution data for coverage analysis and reporting
 - **monitor-qualityforge-quality-monitor**: Provide test execution metrics for quality dashboards and trend analysis
 - **reporter-qualityforge-quality-reporter**: Supply test results and automation metrics for quality reporting

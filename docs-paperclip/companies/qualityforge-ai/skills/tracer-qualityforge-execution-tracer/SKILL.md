@@ -24,8 +24,8 @@ Use this skill when:
 6. **Mapping service dependencies** through actual runtime call patterns
 
 **Don't use when:**
-- Profiling CPU/memory usage (use `profiler-qualityforge-performance-profiler`)
-- Running performance tests (use `performance-qualityforge-performance-testing`)
+- Profiling CPU/memory usage (use `profiler-Performance-profiler`)
+- Running performance tests (use `performance-Performance-testing`)
 - Testing functional correctness (use `unittest-qualityforge-unit-testing`)
 - Resolving issues without tracing data (use `resolver-qualityforge-issue-resolver`)
 
@@ -198,9 +198,9 @@ async function processOrder(orderId, items) {
 
 ## Cross-Team Integration
 
-- **profiler-qualityforge-performance-profiler**: Combine trace data with profiling data for deep analysis
-- **performance-qualityforge-performance-testing**: Provide trace data for performance bottleneck identification
+- **profiler-Performance-profiler**: Combine trace data with profiling data for deep analysis
+- **performance-Performance-testing**: Provide trace data for performance bottleneck identification
 - **resolver-qualityforge-issue-resolver**: Supply execution traces for issue root cause analysis
-- **diagnostics-qualityforge-diagnostics**: Share trace data for error diagnostics
+- **diagnostics-Diagnostics**: Share trace data for error diagnostics
 - **monitor-qualityforge-quality-monitor**: Feed trace metrics into quality dashboards
 - **reporter-qualityforge-quality-reporter**: Provide trace analysis results for quality reports

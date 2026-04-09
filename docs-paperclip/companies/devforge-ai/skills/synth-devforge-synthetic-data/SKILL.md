@@ -1,5 +1,5 @@
 ---
-name: synth-devforge-synthetic-data
+name: synth-Synthetic-data
 description: >
   Use when synthetic dataset generation, data augmentation, privacy-preserving data
   creation, or training data optimization is needed within DevForge AI. This agent

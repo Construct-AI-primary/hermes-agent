@@ -15,7 +15,7 @@ Simulator is the workflow and process simulation specialist for QualityForge AI,
 - When conducting dry runs of complex multi-step quality assurance processes
 - When identifying workflow bottlenecks, deadlocks, or race conditions through simulation
 - When testing workflow resilience by simulating component failures and recovery scenarios
-- **Don't use when:** Running actual production tests (use e2e-qualityforge-end-to-end-testing), performing load testing (use load-qualityforge-load-testing), or conducting real-time monitoring (use monitor-qualityforge-quality-monitor)
+- **Don't use when:** Running actual production tests (use e2e-qualityforge-end-to-end-testing), performing load testing (use load-Load-testing), or conducting real-time monitoring (use monitor-qualityforge-quality-monitor)
 
 ## Core Procedures
 
@@ -145,8 +145,8 @@ Recommendations: [List]
 - loadtester-qualityforge-scalability-testing (load simulation coordination)
 - e2e-qualityforge-end-to-end-testing (end-to-end workflow validation)
 - automation-qualityforge-test-automation (simulation automation)
-- diagnostics-qualityforge-diagnostics-specialist (simulation failure analysis)
-- performance-qualityforge-performance-testing (performance simulation)
+- diagnostics-Diagnostics-specialist (simulation failure analysis)
+- performance-Performance-testing (performance simulation)
 - probe-qualityforge-prompt-testing (prompt workflow simulation)
 **Testing Integration:** procurement-testing
 **Workflow Documentation:** [01900 Procurement Order Workflow](docs-paperclip/disciplines/01900-procurement/order-workflow/README.md)

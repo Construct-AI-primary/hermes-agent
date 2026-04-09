@@ -47,7 +47,7 @@ Apex serves as the Chief Executive Officer of QualityForge AI, providing quality
 **Company:** QualityForge AI
 **Role:** Chief Executive Officer
 **Reports To:** Enterprise stakeholders
-**Backup Agents:** governor-qualityforge-quality-director, standards-qualityforge-standards-enforcer
+**Backup Agents:** governor-qualityforge-quality-director, standards-Standards-enforcer
 
 ## Sub-Team Coordination
 - **Governor:** Quality strategy and team leadership

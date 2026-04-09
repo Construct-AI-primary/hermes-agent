@@ -242,6 +242,6 @@ Assessment:
 - **reporter-qualityforge-quality-reporter**: Receive quality data to identify training needs
 - **monitor-qualityforge-quality-monitor**: Monitor quality metrics for training impact assessment
 - **coverage-qualityforge-test-coverage-analyst**: Use coverage gaps to focus training efforts
-- **standards-qualityforge-standards**: Align training content with coding standards
-- **guardian-qualityforge-guardian**: Coordinate on quality gate requirements training
+- **standards-Standards**: Align training content with coding standards
+- **guardian-Guardian**: Coordinate on quality gate requirements training
 - **resolver-qualityforge-issue-resolver**: Use resolved issues as training case studies

@@ -15,7 +15,7 @@ Probe is the prompt testing and validation specialist for QualityForge AI, respo
 - When validating LLM response accuracy, consistency, and safety
 - When testing prompt variations and comparing output quality across versions
 - When conducting prompt regression testing after LLM model updates
-- **Don't use when:** Validating prompt syntax structure (use validator-qualityforge-validator), testing ethical AI compliance (use safetycheck-qualityforge-ethical-ai-testing), or simulating prompt workflows (use simulator-qualityforge-workflow-simulation)
+- **Don't use when:** Validating prompt syntax structure (use validator-Validator), testing ethical AI compliance (use safetycheck-qualityforge-ethical-ai-testing), or simulating prompt workflows (use simulator-qualityforge-workflow-simulation)
 
 ## Core Procedures
 
@@ -134,7 +134,7 @@ Recommendations: [List]
 2. Calculate output consistency score across runs
 3. If variance exceeds threshold, flag prompt as non-deterministic
 4. Recommend prompt refinement to improve output consistency
-5. Document variance patterns and coordinate with validator-qualityforge-validator for prompt structure review
+5. Document variance patterns and coordinate with validator-Validator for prompt structure review
 
 ### Error 3: Safety Violation in LLM Output
 **Scenario:** LLM produces output that violates safety guidelines (biased, harmful, inappropriate content)
@@ -150,10 +150,10 @@ Recommendations: [List]
 **OpenStinger Context:** Prompt testing patterns, LLM quality knowledge base
 **PARA Classification:** pages/disciplines/02200-quality-assurance, areas/test-execution, resources/testing-tools
 **Related Skills:**
-- validator-qualityforge-validator (prompt syntax validation)
+- validator-Validator (prompt syntax validation)
 - safetycheck-qualityforge-ethical-ai-testing (safety compliance)
 - simulator-qualityforge-workflow-simulation (prompt workflow testing)
 - loadtester-qualityforge-scalability-testing (prompt load testing)
-- standards-qualityforge-standards-enforcer (prompt quality standards)
+- standards-Standards-enforcer (prompt quality standards)
 - guardian-qualityforge-quality-guardian (prompt quality gates)
 **Last Updated:** 2026-03-30

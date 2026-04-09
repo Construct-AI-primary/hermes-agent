@@ -183,7 +183,7 @@ Status: [Pass/Fail/Conditional]
 **Related Skills:**
 - governor-qualityforge-quality-director (documentation governance)
 - reporter-qualityforge-quality-reporter (quality reporting documentation)
-- standards-qualityforge-standards-enforcer (documentation standards)
+- standards-Standards-enforcer (documentation standards)
 - reviewer-qualityforge-code-reviewer (code documentation review)
 - trainer-qualityforge-quality-trainer (training material coordination)
 - auditor-qualityforge-quality-auditor (documentation compliance audit)

@@ -25,8 +25,8 @@ Use this skill when:
 
 **Don't use when:**
 - Testing individual functions or methods (use `unittest-qualityforge-unit-testing`)
-- Testing single API endpoints in isolation (use `integration-qualityforge-integration-testing`)
-- Performance or load testing (use `performance-qualityforge-performance-testing`)
+- Testing single API endpoints in isolation (use `integration-Integration-testing`)
+- Performance or load testing (use `performance-Performance-testing`)
 - Designing test automation frameworks (use `automation-qualityforge-test-automation`)
 
 ## Core Procedures
@@ -205,9 +205,9 @@ describe('User Purchase Flow', () => {
 ## Cross-Team Integration
 
 - **automation-qualityforge-test-automation**: Integrate E2E tests into shared automation framework and CI/CD pipeline
-- **integration-qualityforge-integration-testing**: Coordinate on API-level testing that supports E2E journey validation
-- **compatibility-qualityforge-compatibility-testing**: Collaborate on cross-browser and cross-platform E2E test execution
-- **performance-qualityforge-performance-testing**: Share performance data collected during E2E test execution
+- **integration-Integration-testing**: Coordinate on API-level testing that supports E2E journey validation
+- **compatibility-Compatibility-testing**: Collaborate on cross-browser and cross-platform E2E test execution
+- **performance-Performance-testing**: Share performance data collected during E2E test execution
 - **resolver-qualityforge-issue-resolver**: Escalate E2E test failures for root cause analysis and resolution
 - **reporter-qualityforge-quality-reporter**: Provide E2E test results for quality reporting and dashboards
 **Testing Integration:** procurement-testing

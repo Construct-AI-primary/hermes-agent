@@ -155,7 +155,7 @@ Follow-up Actions: [Required actions to resolve exception]
 **Related Skills:**
 - governor-qualityforge-quality-director (quality policy and governance)
 - monitor-qualityforge-quality-monitor (quality monitoring coordination)
-- standards-qualityforge-standards-enforcer (standards enforcement)
+- standards-Standards-enforcer (standards enforcement)
 - auditor-qualityforge-quality-auditor (compliance audit coordination)
 - reviewer-qualityforge-code-reviewer (code review quality gates)
 - reporter-qualityforge-quality-reporter (quality reporting)

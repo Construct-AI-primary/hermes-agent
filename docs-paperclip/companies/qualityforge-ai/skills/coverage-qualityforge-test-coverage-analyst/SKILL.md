@@ -198,5 +198,5 @@ Dead Code Candidates:
 - **unittest-qualityforge-unit-testing**: Collaborate on unit test coverage improvement
 - **monitor-qualityforge-quality-monitor**: Feed coverage metrics into quality dashboards
 - **reporter-qualityforge-quality-reporter**: Provide coverage data for quality reports
-- **guardian-qualityforge-guardian**: Supply coverage data for quality gate enforcement
+- **guardian-Guardian**: Supply coverage data for quality gate enforcement
 - **trainer-qualityforge-quality-trainer**: Identify coverage gaps for training focus areas

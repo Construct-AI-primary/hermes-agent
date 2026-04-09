@@ -1,5 +1,5 @@
 ---
-name: compatibility-qualityforge-compatibility-testing
+name: compatibility-Compatibility-testing
 description: Cross-browser testing, cross-platform compatibility, device testing
 category: qualityforge-testing
 division: Testing Division
@@ -24,9 +24,9 @@ Use this skill when:
 6. **Performing device farm testing** on real devices and emulators
 
 **Don't use when:**
-- Testing API integrations (use `integration-qualityforge-integration-testing`)
+- Testing API integrations (use `integration-Integration-testing`)
 - Testing complete user journeys (use `e2e-qualityforge-end-to-end-testing`)
-- Performance testing under load (use `performance-qualityforge-performance-testing`)
+- Performance testing under load (use `performance-Performance-testing`)
 - Testing individual unit functions (use `unittest-qualityforge-unit-testing`)
 
 ## Core Procedures
@@ -190,7 +190,7 @@ module.exports = {
 
 - **e2e-qualityforge-end-to-end-testing**: Execute E2E test suites across multiple browsers and platforms
 - **automation-qualityforge-test-automation**: Integrate cross-browser tests into shared automation framework
-- **performance-qualityforge-performance-testing**: Share performance data collected across different browsers
-- **accessibility-qualityforge-accessibility-testing**: Coordinate on accessibility testing across platforms
+- **performance-Performance-testing**: Share performance data collected across different browsers
+- **accessibility-Accessibility-testing**: Coordinate on accessibility testing across platforms
 - **resolver-qualityforge-issue-resolver**: Escalate platform-specific bugs for resolution
 - **reporter-qualityforge-quality-reporter**: Provide compatibility test results for quality reporting

@@ -197,5 +197,5 @@ Pipeline | Deploy Success Rate | >99% | <99% | <95% | CD Pipeline
 - **coverage-qualityforge-test-coverage-analyst**: Monitor coverage trends and alert on drops
 - **automation-qualityforge-test-automation**: Monitor test execution metrics and pipeline health
 - **resolver-qualityforge-issue-resolver**: Alert on quality issues requiring resolution
-- **guardian-qualityforge-guardian**: Feed quality data for gate enforcement decisions
+- **guardian-Guardian**: Feed quality data for gate enforcement decisions
 - **trainer-qualityforge-quality-trainer**: Provide quality trend data for training needs assessment

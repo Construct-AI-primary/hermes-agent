@@ -22,6 +22,6 @@ Responsible for core development, system architecture, and technical infrastruct
 - reviewer-devforge-code-review-qa
 - fixer-devforge-bug-fixing
 - cortex-devforge-ai-reasoning
-- synth-devforge-synthetic-data
-- vector-devforge-vector-processing
+- synth-Synthetic-data
+- vector-Vector-processing
 - promptsmith-devforge-prompt-engineering

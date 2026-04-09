@@ -1,5 +1,5 @@
 ---
-name: load-qualityforge-load-testing
+name: load-Load-testing
 description: Load testing, capacity planning, performance under load
 category: qualityforge-testing
 division: Testing Division
@@ -24,9 +24,9 @@ Use this skill when:
 6. **Conducting endurance/soak testing** to identify memory leaks and resource degradation
 
 **Don't use when:**
-- Testing individual API endpoints functionally (use `integration-qualityforge-integration-testing`)
+- Testing individual API endpoints functionally (use `integration-Integration-testing`)
 - Testing user journey flows (use `e2e-qualityforge-end-to-end-testing`)
-- Profiling specific code paths for optimization (use `profiler-qualityforge-performance-profiler`)
+- Profiling specific code paths for optimization (use `profiler-Performance-profiler`)
 - Testing scalability with growing user base over time (use `loadtester-qualityforge-scalability-testing`)
 
 ## Core Procedures
@@ -194,9 +194,9 @@ Success Criteria:
 
 ## Cross-Team Integration
 
-- **performance-qualityforge-performance-testing**: Coordinate on performance baselines and bottleneck identification
+- **performance-Performance-testing**: Coordinate on performance baselines and bottleneck identification
 - **loadtester-qualityforge-scalability-testing**: Share capacity data for scalability analysis
-- **profiler-qualityforge-performance-profiler**: Provide load test data for detailed profiling
+- **profiler-Performance-profiler**: Provide load test data for detailed profiling
 - **automation-qualityforge-test-automation**: Integrate load tests into CI/CD pipeline for regression
 - **monitor-qualityforge-quality-monitor**: Feed load test metrics into quality dashboards
 - **reporter-qualityforge-quality-reporter**: Provide load test results for capacity planning reports

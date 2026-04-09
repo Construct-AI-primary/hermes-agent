@@ -205,5 +205,5 @@ Auditor | Compliance Report | As needed | Compliance status, audit findings, rem
 - **coverage-qualityforge-test-coverage-analyst**: Include coverage metrics in quality reports
 - **resolver-qualityforge-issue-resolver**: Include resolution metrics and trends in reports
 - **automation-qualityforge-test-automation**: Include test automation metrics in reports
-- **guardian-qualityforge-guardian**: Include quality gate compliance in reports
+- **guardian-Guardian**: Include quality gate compliance in reports
 - **trainer-qualityforge-quality-trainer**: Provide quality data for training needs assessment

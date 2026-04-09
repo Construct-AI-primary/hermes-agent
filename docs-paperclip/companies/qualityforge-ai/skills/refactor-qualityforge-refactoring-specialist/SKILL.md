@@ -1,5 +1,5 @@
 ---
-name: refactor-qualityforge-refactoring-specialist
+name: refactor-Refactoring-specialist
 description: >
   Use when code refactoring, refactoring planning, refactoring validation, or refactoring risk assessment is needed within QualityForge AI. This agent handles refactoring.
 ---
@@ -24,7 +24,7 @@ Refactor handles refactoring for QualityForge AI, providing refactoring planning
 5. **Deliver Results** - Return completed work
 
 ## Agent Assignment
-**Primary Agent:** refactor-qualityforge-refactoring-specialist
+**Primary Agent:** refactor-Refactoring-specialist
 **Company:** QualityForge AI
 **Role:** Refactoring Specialist
 **Reports To:** optimizer-qualityforge-code-optimizer

@@ -1,5 +1,5 @@
 ---
-name: debugger-qualityforge-debugger-specialist
+name: debugger-Debugger-specialist
 description: >
   Use when debugging support, debug session coordination, root cause analysis, or debugging tool management is needed within QualityForge AI. This agent handles debugging.
 ---
@@ -24,7 +24,7 @@ Debugger handles debugging for QualityForge AI, providing debug session coordina
 5. **Deliver Results** - Return completed work
 
 ## Agent Assignment
-**Primary Agent:** debugger-qualityforge-debugger-specialist
+**Primary Agent:** debugger-Debugger-specialist
 **Company:** QualityForge AI
 **Role:** Debugger Specialist
 **Reports To:** resolver-qualityforge-issue-resolver

@@ -1,5 +1,5 @@
 ---
-name: integrator-qualityforge-integration-specialist
+name: integrator-Integration-specialist
 description: >
   Use when quality system integration, tool integration, integration pattern validation, API integration testing coordination, or cross-system interoperability validation is needed within QualityForge AI. This agent handles system integration quality assurance.
 ---
@@ -15,7 +15,7 @@ Integrator is the system integration quality specialist for QualityForge AI, res
 - When assessing cross-system data flow integrity and contract compliance
 - When validating API design quality, versioning strategies, and backward compatibility
 - When troubleshooting integration failures and identifying root causes in distributed systems
-- **Don't use when:** Writing unit tests (use unittest-qualityforge-unit-testing), performing security penetration testing (use security-test-qualityforge-security-testing), or conducting accessibility audits (use accessibility-qualityforge-accessibility-testing)
+- **Don't use when:** Writing unit tests (use unittest-qualityforge-unit-testing), performing security penetration testing (use security-test-Sentineling), or conducting accessibility audits (use accessibility-Accessibility-testing)
 
 ## Core Procedures
 
@@ -49,7 +49,7 @@ Recommendations: [List]
 ```
 
 ### Step 3: Integration Test Coordination
-- Coordinate with integration-qualityforge-integration-testing for test execution
+- Coordinate with integration-Integration-testing for test execution
 - Define integration test scenarios covering happy path, edge cases, and failure modes
 - Establish test data requirements and environment configuration
 - Monitor test execution and collect results
@@ -91,7 +91,7 @@ Issues Found: [List with severity]
 - [ ] Report delivered to requesting agent
 
 ## Agent Assignment
-**Primary Agent:** integrator-qualityforge-integration-specialist
+**Primary Agent:** integrator-Integration-specialist
 **Company:** QualityForge AI
 **Division:** Coding Division
 **Role:** System Integration and API Quality Assurance
@@ -130,7 +130,7 @@ Issues Found: [List with severity]
 **Response:**
 1. Isolate the corruption point in the data flow chain
 2. Determine root cause (transformation error, encoding issue, truncation, race condition)
-3. Coordinate with diagnostics-qualityforge-diagnostics-specialist for root cause analysis
+3. Coordinate with diagnostics-Diagnostics-specialist for root cause analysis
 4. Implement data validation fix and re-run affected integration tests
 5. Add data integrity checks to integration test suite to prevent recurrence
 
@@ -139,10 +139,10 @@ Issues Found: [List with severity]
 **OpenStinger Context:** Integration pattern recognition, cross-system quality knowledge
 **PARA Classification:** pages/disciplines/02200-quality-assurance, areas/code-review, resources/testing-tools
 **Related Skills:**
-- integration-qualityforge-integration-testing (test execution partner)
+- integration-Integration-testing (test execution partner)
 - architect-qualityforge-system-architect (architecture validation)
 - codesmith-qualityforge-code-architect (API implementation quality)
-- diagnostics-qualityforge-diagnostics-specialist (integration troubleshooting)
+- diagnostics-Diagnostics-specialist (integration troubleshooting)
 - guardian-qualityforge-quality-guardian (quality gate enforcement)
-- standards-qualityforge-standards-enforcer (integration standards compliance)
+- standards-Standards-enforcer (integration standards compliance)
 **Last Updated:** 2026-03-30

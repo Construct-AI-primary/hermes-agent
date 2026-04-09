@@ -25,7 +25,7 @@ Use this skill when:
 
 **Don't use when:**
 - Writing tests to find defects (use `unittest-qualityforge-unit-testing`)
-- Profiling performance issues (use `profiler-qualityforge-performance-profiler`)
+- Profiling performance issues (use `profiler-Performance-profiler`)
 - Tracing execution paths (use `tracer-qualityforge-execution-tracer`)
 - Monitoring quality metrics (use `monitor-qualityforge-quality-monitor`)
 
@@ -180,9 +180,9 @@ Contributing Factors: No migration verification step, connection pool monitoring
 
 ## Cross-Team Integration
 
-- **diagnostics-qualityforge-diagnostics**: Receive diagnostic data for issue investigation
-- **profiler-qualityforge-performance-profiler**: Use profiling data for performance issue resolution
+- **diagnostics-Diagnostics**: Receive diagnostic data for issue investigation
+- **profiler-Performance-profiler**: Use profiling data for performance issue resolution
 - **tracer-qualityforge-execution-tracer**: Use execution traces for root cause analysis
 - **monitor-qualityforge-quality-monitor**: Receive alerts on quality issues requiring resolution
 - **reporter-qualityforge-quality-reporter**: Provide resolution data for quality reports
-- **guardian-qualityforge-guardian**: Coordinate on quality gate enforcement for resolved issues
+- **guardian-Guardian**: Coordinate on quality gate enforcement for resolved issues

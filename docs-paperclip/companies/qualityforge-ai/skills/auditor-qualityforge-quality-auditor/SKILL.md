@@ -45,5 +45,5 @@ Auditor handles quality auditing for QualityForge AI, providing compliance audit
 **Gigabrain Tags:** qualityforge, quality-auditing, compliance-audit, process-audit
 **OpenStinger Context:** Session continuity, knowledge sharing
 **PARA Classification:** Quality auditing, compliance
-**Related Skills:** governor-qualityforge-quality-director, standards-qualityforge-standards-enforcer
+**Related Skills:** governor-qualityforge-quality-director, standards-Standards-enforcer
 **Last Updated:** 2026-03-04

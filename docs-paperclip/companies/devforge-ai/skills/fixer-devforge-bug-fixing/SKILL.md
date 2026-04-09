@@ -79,5 +79,5 @@ Deployment: [how to deploy, any migration needed]
   **Response:** Work around the issue, report to dependency maintainer, consider alternative dependency
 
 ## Cross-Team Integration
-**Related Skills:** reviewer-devforge-code-review-qa, debugger-qualityforge-debugger-specialist, resolver-qualityforge-issue-resolver, codesmith-devforge-backend-engineer
+**Related Skills:** reviewer-devforge-code-review-qa, debugger-Debugger-specialist, resolver-qualityforge-issue-resolver, codesmith-devforge-backend-engineer
 **Used By:** Reviewer (bug detection), ALL agents reporting bugs, QualityForge AI (validation)

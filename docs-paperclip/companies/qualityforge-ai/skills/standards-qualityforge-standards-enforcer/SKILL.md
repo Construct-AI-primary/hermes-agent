@@ -1,5 +1,5 @@
 ---
-name: standards-qualityforge-standards-enforcer
+name: standards-Standards-enforcer
 description: >
   Use when quality standards development, standards enforcement, coding standards validation, or quality policy creation is needed within QualityForge AI. This agent handles standards enforcement.
 ---
@@ -24,7 +24,7 @@ Standards handles standards enforcement for QualityForge AI, providing standards
 5. **Deliver Results** - Return completed work
 
 ## Agent Assignment
-**Primary Agent:** standards-qualityforge-standards-enforcer
+**Primary Agent:** standards-Standards-enforcer
 **Company:** QualityForge AI
 **Role:** Standards Enforcer
 **Reports To:** governor-qualityforge-quality-director

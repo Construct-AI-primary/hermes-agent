@@ -111,7 +111,7 @@ All agent slugs are unique and follow the pattern `{name}-{company}-{role}`. No 
 | Strategic Planning | DevForge, DomainForge (`strategos-*`) | Different scope — DevForge = business strategy, DomainForge = engineering strategy |
 | Quality Assurance | DomainForge, KnowledgeForge, QualityForge | Different scope — DomainForge = engineering QA, KnowledgeForge = cross-discipline QA, QualityForge = comprehensive QA |
 | Weekly Review | DevForge, DomainForge, InfraForge, PromptForge, QualityForge, Org Template AI | **Expected** — recurring task pattern, not a skill duplication |
-| Accessibility Testing | QualityForge (`accessibility-qualityforge-accessibility-testing`), Shared (`accessibility-standards`) | Shared skill is generic, QualityForge version is QA-specific |
+| Accessibility Testing | QualityForge (`accessibility-Accessibility-testing`), Shared (`accessibility-standards`) | Shared skill is generic, QualityForge version is QA-specific |
 
 **Result**: Conceptual overlap is expected and intentional. Each company's skills are scoped to their domain. The `shared/` folder correctly provides generic skills that any company can reference.
 

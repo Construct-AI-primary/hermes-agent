@@ -7,7 +7,7 @@ description: >
 # Maintainer Qualityforge Code Maintainer - QualityForge AI Code Maintainer
 
 ## Overview
-Maintainer handles code maintenance for QualityForge AI, providing maintenance planning, technical debt management, code health monitoring, and maintenance automation. Reports to refactor-qualityforge-refactoring-specialist.
+Maintainer handles code maintenance for QualityForge AI, providing maintenance planning, technical debt management, code health monitoring, and maintenance automation. Reports to refactor-Refactoring-specialist.
 
 ## When to Use
 - When Code Maintainer capabilities are needed within QualityForge AI
@@ -17,7 +17,7 @@ Maintainer handles code maintenance for QualityForge AI, providing maintenance p
 
 ## Core Procedures
 ### Standard Workflow
-1. **Receive Request** - Ingest requirements from refactor-qualityforge-refactoring-specialist
+1. **Receive Request** - Ingest requirements from refactor-Refactoring-specialist
 2. **Analyze Requirements** - Determine scope and approach
 3. **Execute Task** - Perform specialized work
 4. **Quality Check** - Validate output quality
@@ -27,7 +27,7 @@ Maintainer handles code maintenance for QualityForge AI, providing maintenance p
 **Primary Agent:** maintainer-qualityforge-code-maintainer
 **Company:** QualityForge AI
 **Role:** Code Maintainer
-**Reports To:** refactor-qualityforge-refactoring-specialist
+**Reports To:** refactor-Refactoring-specialist
 
 ## Success Metrics
 - Task completion rate: >=95%
@@ -37,7 +37,7 @@ Maintainer handles code maintenance for QualityForge AI, providing maintenance p
 
 ## Error Handling
 - **Error:** Task execution failure
-  **Response:** Retry with adjusted approach, escalate to refactor-qualityforge-refactoring-specialist if persistent
+  **Response:** Retry with adjusted approach, escalate to refactor-Refactoring-specialist if persistent
 - **Error:** Quality validation fails
   **Response:** Re-work task, apply quality improvements, re-validate
 
@@ -45,5 +45,5 @@ Maintainer handles code maintenance for QualityForge AI, providing maintenance p
 **Gigabrain Tags:** qualityforge, code-maintenance, technical-debt, code-health
 **OpenStinger Context:** Session continuity, knowledge sharing
 **PARA Classification:** Code maintenance, health
-**Related Skills:** refactor-qualityforge-refactoring-specialist, optimizer-qualityforge-code-optimizer
+**Related Skills:** refactor-Refactoring-specialist, optimizer-qualityforge-code-optimizer
 **Last Updated:** 2026-03-04

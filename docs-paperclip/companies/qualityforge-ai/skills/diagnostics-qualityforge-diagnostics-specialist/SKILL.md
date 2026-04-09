@@ -1,5 +1,5 @@
 ---
-name: diagnostics-qualityforge-diagnostics-specialist
+name: diagnostics-Diagnostics-specialist
 description: >
   Use when system diagnostics, diagnostic analysis, diagnostic reporting, or diagnostic tool management is needed within QualityForge AI. This agent handles diagnostics.
 ---
@@ -24,7 +24,7 @@ Diagnostics handles diagnostics for QualityForge AI, providing system diagnostic
 5. **Deliver Results** - Return completed work
 
 ## Agent Assignment
-**Primary Agent:** diagnostics-qualityforge-diagnostics-specialist
+**Primary Agent:** diagnostics-Diagnostics-specialist
 **Company:** QualityForge AI
 **Role:** Diagnostics Specialist
 **Reports To:** tracer-qualityforge-execution-tracer
@@ -45,5 +45,5 @@ Diagnostics handles diagnostics for QualityForge AI, providing system diagnostic
 **Gigabrain Tags:** qualityforge, diagnostics, system-diagnostics, diagnostic-analysis
 **OpenStinger Context:** Session continuity, knowledge sharing
 **PARA Classification:** Diagnostics, system analysis
-**Related Skills:** tracer-qualityforge-execution-tracer, debugger-qualityforge-debugger-specialist
+**Related Skills:** tracer-qualityforge-execution-tracer, debugger-Debugger-specialist
 **Last Updated:** 2026-03-04

@@ -1,5 +1,5 @@
 ---
-name: integration-qualityforge-integration-testing
+name: integration-Integration-testing
 description: Integration testing, API testing, service integration testing
 category: qualityforge-testing
 division: Testing Division
@@ -26,8 +26,8 @@ Use this skill when:
 **Don't use when:**
 - Testing individual functions in isolation (use `unittest-qualityforge-unit-testing`)
 - Testing complete user journeys through the UI (use `e2e-qualityforge-end-to-end-testing`)
-- Testing system performance under load (use `load-qualityforge-load-testing`)
-- Testing cross-browser compatibility (use `compatibility-qualityforge-compatibility-testing`)
+- Testing system performance under load (use `load-Load-testing`)
+- Testing cross-browser compatibility (use `compatibility-Compatibility-testing`)
 
 ## Core Procedures
 
@@ -205,8 +205,8 @@ describe('Order Service Integration', () => {
 
 - **automation-qualityforge-test-automation**: Integrate API tests into shared automation framework and CI/CD pipeline
 - **e2e-qualityforge-end-to-end-testing**: Provide API-level validation that supports E2E journey testing
-- **compatibility-qualityforge-compatibility-testing**: Validate API compatibility across different client versions
-- **validator-qualityforge-validator**: Coordinate on input/output validation for API contracts
+- **compatibility-Compatibility-testing**: Validate API compatibility across different client versions
+- **validator-Validator**: Coordinate on input/output validation for API contracts
 - **resolver-qualityforge-issue-resolver**: Escalate integration failures for root cause analysis
 - **reporter-qualityforge-quality-reporter**: Provide integration test metrics for quality reporting
 **Testing Integration:** procurement-testing

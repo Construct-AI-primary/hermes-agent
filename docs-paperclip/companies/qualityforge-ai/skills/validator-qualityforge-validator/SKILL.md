@@ -1,5 +1,5 @@
 ---
-name: validator-qualityforge-validator
+name: validator-Validator
 description: Validation frameworks, input validation, output validation
 category: qualityforge-testing
 division: Testing Division / Quality Division
@@ -24,7 +24,7 @@ Use this skill when:
 6. **Implementing contract validation** between service producers and consumers
 
 **Don't use when:**
-- Testing API endpoints functionally (use `integration-qualityforge-integration-testing`)
+- Testing API endpoints functionally (use `integration-Integration-testing`)
 - Testing complete user journeys (use `e2e-qualityforge-end-to-end-testing`)
 - Analyzing test coverage (use `coverage-qualityforge-test-coverage-analyst`)
 - Resolving validation defects (use `resolver-qualityforge-issue-resolver`)
@@ -192,10 +192,10 @@ const OrderSchema = z.object({
 
 ## Cross-Team Integration
 
-- **integration-qualityforge-integration-testing**: Coordinate on API input/output validation
+- **integration-Integration-testing**: Coordinate on API input/output validation
 - **automation-qualityforge-test-automation**: Integrate validation tests into automation pipeline
 - **resolver-qualityforge-issue-resolver**: Escalate validation failures for root cause analysis
-- **standards-qualityforge-standards**: Align validation rules with coding standards
+- **standards-Standards**: Align validation rules with coding standards
 - **monitor-qualityforge-quality-monitor**: Feed validation metrics into quality dashboards
 - **reporter-qualityforge-quality-reporter**: Provide validation results for quality reports
 **Testing Integration:** procurement-testing

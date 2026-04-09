@@ -45,5 +45,5 @@ Optimizer handles code optimization for QualityForge AI, providing performance o
 **Gigabrain Tags:** qualityforge, code-optimization, performance-optimization, code-refactoring
 **OpenStinger Context:** Session continuity, knowledge sharing
 **PARA Classification:** Code optimization, performance
-**Related Skills:** apex-qualityforge-ceo, refactor-qualityforge-refactoring-specialist
+**Related Skills:** apex-qualityforge-ceo, refactor-Refactoring-specialist
 **Last Updated:** 2026-03-04

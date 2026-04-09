@@ -1,11 +1,11 @@
 ---
-name: accessibility-qualityforge-accessibility-testing
-slug: accessibility-qualityforge-accessibility-testing
+name: accessibility-Accessibility-testing
+slug: accessibility-Accessibility-testing
 reportsTo: null
 skills:
-  - accessibility-qualityforge-accessibility-testing
+  - accessibility-Accessibility-testing
 ---
 
-# accessibility-qualityforge-accessibility-testing
+# accessibility-Accessibility-testing
 
 Agent for qualityforge-ai.

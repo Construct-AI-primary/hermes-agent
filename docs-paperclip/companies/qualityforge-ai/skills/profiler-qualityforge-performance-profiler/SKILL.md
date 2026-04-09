@@ -1,5 +1,5 @@
 ---
-name: profiler-qualityforge-performance-profiler
+name: profiler-Performance-profiler
 description: Performance profiling, bottleneck identification, profiling tools
 category: qualityforge-testing
 division: Debugging Division
@@ -24,7 +24,7 @@ Use this skill when:
 6. **Comparing performance** before and after code changes with empirical data
 
 **Don't use when:**
-- Running load tests against the system (use `load-qualityforge-load-testing`)
+- Running load tests against the system (use `load-Load-testing`)
 - Testing system scalability (use `loadtester-qualityforge-scalability-testing`)
 - Testing functional correctness (use `unittest-qualityforge-unit-testing`)
 - Monitoring production quality metrics (use `monitor-qualityforge-quality-monitor`)
@@ -189,8 +189,8 @@ I/O Analysis:
 
 ## Cross-Team Integration
 
-- **performance-qualityforge-performance-testing**: Receive performance test results for targeted profiling
-- **load-qualityforge-load-testing**: Profile system behavior under load conditions
+- **performance-Performance-testing**: Receive performance test results for targeted profiling
+- **load-Load-testing**: Profile system behavior under load conditions
 - **tracer-qualityforge-execution-tracer**: Combine profiling data with execution traces
 - **resolver-qualityforge-issue-resolver**: Provide profiling data for performance issue resolution
 - **optimizer-qualityforge-optimization**: Collaborate on implementing optimization recommendations
