@@ -48,6 +48,7 @@ import { assertBoard, assertCompanyAccess, assertInstanceAdmin, getActorInfo } f
 import { findServerAdapter, listAdapterModels, detectAdapterModel } from "../adapters/index.js";
 import { redactEventPayload } from "../redaction.js";
 import { redactCurrentUserValue } from "../log-redaction.js";
+import { logger } from "../middleware/logger.js";
 import { renderOrgChartSvg, renderOrgChartPng, type OrgNode, type OrgChartStyle, ORG_CHART_STYLES } from "./org-chart-svg.js";
 import { instanceSettingsService } from "../services/instance-settings.js";
 import { runClaudeLogin } from "@paperclipai/adapter-claude-local/server";
@@ -1054,14 +1055,27 @@ export function agentRoutes(db: Db) {
   });
 
   router.get("/agents/:id/config-revisions", async (req, res) => {
-    const id = req.params.id as string;
-    const agent = await svc.getById(id);
+    const idOrUrlKey = req.params.id as string;
+
+    // Try direct UUID lookup first
+    let agent = await svc.getById(idOrUrlKey);
+
+    // If not found and companyId is provided, try shortname lookup
+    if (!agent && req.query.companyId) {
+      const companyId = req.query.companyId as string;
+      const resolved = await svc.resolveByReference(companyId, idOrUrlKey);
+      if (resolved.agent) {
+        agent = resolved.agent;
+      }
+    }
+
     if (!agent) {
       res.status(404).json({ error: "Agent not found" });
       return;
     }
+
     await assertCanReadConfigurations(req, agent.companyId);
-    const revisions = await svc.listConfigRevisions(id);
+    const revisions = await svc.listConfigRevisions(agent.id);
     res.json(revisions.map((revision) => redactConfigRevision(revision)));
   });
 
@@ -1420,14 +1434,18 @@ export function agentRoutes(db: Db) {
 
   router.patch("/agents/:id/permissions", validate(updateAgentPermissionsSchema), async (req, res) => {
     const idOrUrlKey = req.params.id as string;
-    
+    logger.info(`[DEBUG] Permissions update attempt for agent: ${idOrUrlKey}, companyId: ${req.query.companyId}`);
+
     // Try direct UUID lookup first
     let existing = await svc.getById(idOrUrlKey);
-    
+    logger.info(`[DEBUG] Direct UUID lookup result: ${existing ? 'FOUND' : 'NOT FOUND'}`);
+
     // If not found and companyId is provided, try shortname lookup
     if (!existing && req.query.companyId) {
       const companyId = req.query.companyId as string;
+      logger.info(`[DEBUG] Attempting shortname lookup for: ${idOrUrlKey} in company: ${companyId}`);
       const resolved = await svc.resolveByReference(companyId, idOrUrlKey);
+      logger.info(`[DEBUG] Shortname lookup result: ${resolved.agent ? 'FOUND' : 'NOT FOUND'}, ambiguous: ${resolved.ambiguous}`);
       if (resolved.ambiguous) {
         res.status(409).json({ error: "Agent shortname is ambiguous in this company. Use the agent ID." });
         return;
@@ -1436,8 +1454,9 @@ export function agentRoutes(db: Db) {
         existing = resolved.agent;
       }
     }
-    
+
     if (!existing) {
+      logger.error(`[DEBUG] Agent not found: ${idOrUrlKey}`);
       res.status(404).json({ error: "Agent not found" });
       return;
     }
@@ -1455,7 +1474,7 @@ export function agentRoutes(db: Db) {
       }
     }
 
-    const agent = await svc.updatePermissions(id, req.body);
+    const agent = await svc.updatePermissions(existing.id, req.body);
     if (!agent) {
       res.status(404).json({ error: "Agent not found" });
       return;
@@ -1943,8 +1962,26 @@ export function agentRoutes(db: Db) {
 
   router.get("/agents/:id/keys", async (req, res) => {
     assertBoard(req);
-    const id = req.params.id as string;
-    const keys = await svc.listKeys(id);
+    const idOrUrlKey = req.params.id as string;
+
+    // Try direct UUID lookup first
+    let agent = await svc.getById(idOrUrlKey);
+
+    // If not found and companyId is provided, try shortname lookup
+    if (!agent && req.query.companyId) {
+      const companyId = req.query.companyId as string;
+      const resolved = await svc.resolveByReference(companyId, idOrUrlKey);
+      if (resolved.agent) {
+        agent = resolved.agent;
+      }
+    }
+
+    if (!agent) {
+      res.status(404).json({ error: "Agent not found" });
+      return;
+    }
+
+    const keys = await svc.listKeys(agent.id);
     res.json(keys);
   });
 
