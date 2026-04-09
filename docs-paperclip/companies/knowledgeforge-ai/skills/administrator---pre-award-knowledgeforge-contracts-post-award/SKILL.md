@@ -1,7 +1,7 @@
 ---
 name: Administrator - pre-award
 role: contracts-post-award
-capabilities: Contracts Post Award
+capabilities: 
 company: knowledgeforge-ai
 ---
 
@@ -13,7 +13,7 @@ company: knowledgeforge-ai
 
 ## Capabilities
 
-Contracts Post Award
+
 
 ## Implementation Notes
 

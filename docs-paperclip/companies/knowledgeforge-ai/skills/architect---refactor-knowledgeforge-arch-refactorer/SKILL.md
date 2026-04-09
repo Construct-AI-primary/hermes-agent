@@ -1,23 +1,23 @@
 ---
-name: Architect
-role: architectural
-capabilities: Architectural
+name: Architect - refactor
+role: arch-refactorer
+capabilities: 
 company: knowledgeforge-ai
 ---
 
-# Architect Skill
+# Architect - refactor Skill
 
-**Agent:** Architect  
-**Role:** architectural  
+**Agent:** Architect - refactor  
+**Role:** arch-refactorer  
 **Company:** KnowledgeForge AI
 
 ## Capabilities
 
-Architectural
+
 
 ## Implementation Notes
 
-This skill represents the specialized capabilities of the Architect agent within the KnowledgeForge AI company, focused on institutional memory and QA automation for multi-discipline engineering.
+This skill represents the specialized capabilities of the Architect - refactor agent within the KnowledgeForge AI company, focused on institutional memory and QA automation for multi-discipline engineering.
 
 ## Metadata
 
