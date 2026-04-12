@@ -11,17 +11,43 @@ import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-// Company configurations
-const COMPANIES = {
-  domainforge: {
-    id: '2d7d9c60-c02f-42a7-8f6a-7db86ecc879d',
-    path: path.join(__dirname, '../../docs-paperclip/companies/domainforge-ai/agents')
-  },
-  infraforge: {
-    id: '09f438a3-4041-46f2-b3cc-96fc9446e666',
-    path: path.join(__dirname, '../../docs-paperclip/companies/infraforge-ai/agents')
-  }
+// Company configurations - dynamically load all companies
+const COMPANIES = {};
+const companiesDir = path.join(__dirname, '../../docs-paperclip/companies');
+
+// Company ID mappings - updated to match local database IDs
+const COMPANY_ID_MAP = {
+  'contentforge-ai': '550e8400-e29b-41d4-a716-446655440008',
+  'devforge-ai': 'f97b30e8-b022-4350-b4b0-30d43e2ebcf4',
+  'domainforge-ai': '2d7d9c60-c02f-42a7-8f6a-7db86ecc879d',
+  'execforge-ai': '550e8400-e29b-41d4-a716-446655440010',
+  'infraforge-ai': '09f438a3-4041-46f2-b3cc-96fc9446e666',
+  'knowledgeforge-ai': '550e8400-e29b-41d4-a716-446655440007',
+  'loopy-ai': '0a40625e-78f9-4b0a-82e4-169a8befa021',
+  'mobileforge-ai': '550e8400-e29b-41d4-a716-446655440009',
+  'org-template-ai': 'c4d52645-a0ea-4a26-b381-baf0b3042f34',
+  'paperclipforge-ai': '550e8400-e29b-41d4-a716-446655440001',
+  'promptforge-ai': 'f02b83a8-e0db-4332-b507-22f85e71ebf5',
+  'qualityforge-ai': 'a4f9d4c6-33f5-4552-b32d-054552144edf',
+  'saasforge-ai': '550e8400-e29b-41d4-a716-446655440011',
+  'voiceforge-ai': '550e8400-e29b-41d4-a716-446655440012'
 };
+
+// Load all companies dynamically
+const companyDirs = fs.readdirSync(companiesDir).filter(dir => dir.endsWith('-ai') && fs.existsSync(path.join(companiesDir, dir, 'agents')));
+
+companyDirs.forEach(companyDir => {
+  const companyKey = companyDir.replace('-ai', '');
+  const agentsPath = path.join(companiesDir, companyDir, 'agents');
+  const companyId = COMPANY_ID_MAP[companyDir];
+
+  if (companyId && fs.existsSync(agentsPath)) {
+    COMPANIES[companyKey] = {
+      id: companyId,
+      path: agentsPath
+    };
+  }
+});
 
 // Global map to store consistent UUIDs for each slug
 const slugToUuidMap = new Map();
@@ -111,12 +137,6 @@ function generateAgentSQL(agentData, companyId, teamName) {
     title = title.replace(/-specialist/g, '').trim() + ' Specialist';
   }
 
-  // Generate reports_to ID if reportsTo is not null
-  let reportsToId = null;
-  if (reportsTo) {
-    reportsToId = generateAgentId(reportsTo);
-  }
-
   const capabilities = `${name} - Specialized in ${skills.join(', ')}`;
   const metadata = JSON.stringify({
     team: teamName,
@@ -141,19 +161,6 @@ function generateAgentSQL(agentData, companyId, teamName) {
     canCreateAgents: false
   });
 
-  const modelConfig = JSON.stringify({
-    model: 'anthropic/claude-3-opus',
-    provider: 'openrouter',
-    max_tokens: 4096,
-    temperature: 0.7,
-    fallback_models: ['anthropic/claude-3-sonnet']
-  });
-
-  const deviceConfig = JSON.stringify({
-    priority: 1,
-    device_id: 'device-1'
-  });
-
   return `(
   '${id}',
   '${companyId}',
@@ -161,7 +168,7 @@ function generateAgentSQL(agentData, companyId, teamName) {
   '${role}',
   '${title}',
   'active',
-  ${reportsToId ? `'${reportsToId}'` : 'NULL'},
+  NULL,
   '${capabilities.replace(/'/g, "''")}',
   'http',
   '${adapterConfig.replace(/'/g, "''")}',
@@ -175,11 +182,7 @@ function generateAgentSQL(agentData, companyId, teamName) {
   '${permissions.replace(/'/g, "''")}',
   NULL,
   NULL,
-  NULL,
-  '${modelConfig.replace(/'/g, "''")}',
-  '${deviceConfig.replace(/'/g, "''")}',
-  NULL,
-  true
+  NULL
 )`;
 }
 
@@ -218,7 +221,14 @@ function main() {
     }
 
     // Generate complete SQL
-    const sql = allAgentSQLs.join(',\n') + '\nON CONFLICT (id) DO UPDATE SET\n  name = EXCLUDED.name,\n  role = EXCLUDED.role,\n  title = EXCLUDED.title,\n  reports_to = EXCLUDED.reports_to,\n  capabilities = EXCLUDED.capabilities,\n  metadata = EXCLUDED.metadata,\n  updated_at = EXCLUDED.updated_at;';
+    const sql = `INSERT INTO agents (
+  id, company_id, name, role, title, status, reports_to, capabilities,
+  adapter_type, adapter_config, budget_monthly_cents, spent_monthly_cents,
+  last_heartbeat_at, metadata, created_at, updated_at, runtime_config,
+  permissions, icon, pause_reason, paused_at
+) VALUES
+${allAgentSQLs.join(',\n')}
+ON CONFLICT (id) DO NOTHING;`;
 
     // Write to file
     const outputPath = path.join(__dirname, 'all_agents_insert.sql');
