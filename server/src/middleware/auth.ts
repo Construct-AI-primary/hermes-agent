@@ -101,11 +101,10 @@ export function actorMiddleware(db: Db, opts: ActorMiddlewareOptions): RequestHa
       }
     }
 
-    const tokenHash = hashToken(token);
     const key = await db
       .select()
       .from(agentApiKeys)
-      .where(and(eq(agentApiKeys.keyHash, tokenHash), isNull(agentApiKeys.revokedAt)))
+      .where(and(eq(agentApiKeys.keyHash, token), isNull(agentApiKeys.revokedAt)))
       .then((rows) => rows[0] ?? null);
 
     if (!key) {

@@ -24,10 +24,6 @@ import { conflict, notFound, unprocessable } from "../errors.js";
 import { normalizeAgentPermissions } from "./agent-permissions.js";
 import { REDACTED_EVENT_VALUE, sanitizeRecord } from "../redaction.js";
 
-function hashToken(token: string) {
-  return createHash("sha256").update(token).digest("hex");
-}
-
 function createToken() {
   return `pcp_${randomBytes(24).toString("hex")}`;
 }
@@ -590,15 +586,24 @@ export function agentService(db: Db) {
         throw conflict("Cannot create keys for terminated agents");
       }
 
+      // Check for duplicate key names for this agent
+      const existingKeys = await db
+        .select()
+        .from(agentApiKeys)
+        .where(and(eq(agentApiKeys.agentId, id), eq(agentApiKeys.name, name)))
+        .then((rows) => rows[0] ?? null);
+      if (existingKeys) {
+        throw conflict(`A key with name '${name}' already exists for this agent`);
+      }
+
       const token = createToken();
-      const keyHash = hashToken(token);
       const created = await db
         .insert(agentApiKeys)
         .values({
           agentId: id,
           companyId: existing.companyId,
           name,
-          keyHash,
+          keyHash: token, // Store plain token instead of hash
         })
         .returning()
         .then((rows) => rows[0]);
