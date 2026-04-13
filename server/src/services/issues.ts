@@ -1123,7 +1123,7 @@ export function issueService(db: Db) {
 
       if (!contextUserId) {
         return withRuns.map((row) => {
-          const activity = lastActivityByIssueId.get(row.id);
+          const activity = lastActivityByIssueId.get(row.id)!;
           const lastActivityAt = latestIssueActivityAt(
             row.updatedAt,
             activity?.latestCommentAt ?? null,
@@ -1138,23 +1138,23 @@ export function issueService(db: Db) {
 
       const readByIssueId = new Map(readRows.map((row): [string, Date | null] => [row.issueId, row.myLastReadAt]));
 
-      return withRuns.map((row) => {
-        const activity = lastActivityByIssueId.get(row.id);
-        const lastActivityAt = latestIssueActivityAt(
-          row.updatedAt,
-          activity?.latestCommentAt ?? null,
-          activity?.latestLogAt ?? null,
-        ) ?? row.updatedAt;
-        return {
-          ...row,
-          lastActivityAt,
-          ...deriveIssueUserContext(row, contextUserId, {
-            myLastCommentAt: statsByIssueId.get(row.id)?.myLastCommentAt ?? null,
-            myLastReadAt: readByIssueId.get(row.id) ?? null,
-            lastExternalCommentAt: statsByIssueId.get(row.id)?.lastExternalCommentAt ?? null,
-          }),
-        };
-      });
+        return withRuns.map((row) => {
+          const activity = lastActivityByIssueId.get(row.id) as IssueLastActivityStat | undefined;
+          const lastActivityAt = latestIssueActivityAt(
+            row.updatedAt,
+            activity?.latestCommentAt ?? null,
+            activity?.latestLogAt ?? null,
+          ) ?? row.updatedAt;
+          return {
+            ...row,
+            lastActivityAt,
+            ...deriveIssueUserContext(row, contextUserId, {
+              myLastCommentAt: (statsByIssueId.get(row.id) as IssueUserCommentStats | undefined)?.myLastCommentAt ?? null,
+              myLastReadAt: readByIssueId.get(row.id) ?? null,
+              lastExternalCommentAt: (statsByIssueId.get(row.id) as IssueUserCommentStats | undefined)?.lastExternalCommentAt ?? null,
+            }),
+          };
+        });
     },
 
     countUnreadTouchedByUser: async (companyId: string, userId: string, status?: string) => {
