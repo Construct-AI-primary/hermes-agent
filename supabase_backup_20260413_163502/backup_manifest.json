@@ -1,0 +1,458 @@
+{
+  "backup_timestamp": "2026-04-13T16:35:22.507429",
+  "backup_directory": "supabase_backup_20260413_163502",
+  "supabase_url": "https://gmorarhibiptvcrnvrpi.supabase.co",
+  "total_tables": 62,
+  "successful_exports": 9,
+  "failed_exports": 53,
+  "total_rows": 1168,
+  "total_size_bytes": 1670458,
+  "table_stats": [
+    {
+      "table": "companies",
+      "success": true,
+      "row_count": 14,
+      "file_size": 11556,
+      "file_path": "supabase_backup_20260413_163502/companies.json"
+    },
+    {
+      "table": "agents",
+      "success": true,
+      "row_count": 409,
+      "file_size": 577810,
+      "file_path": "supabase_backup_20260413_163502/agents.json"
+    },
+    {
+      "table": "issues",
+      "success": false,
+      "error": "{'message': 'permission denied for table issues', 'code': '42501', 'hint': None, 'details': None}",
+      "row_count": 0,
+      "file_size": 0
+    },
+    {
+      "table": "projects",
+      "success": false,
+      "error": "{'message': 'permission denied for table projects', 'code': '42501', 'hint': None, 'details': None}",
+      "row_count": 0,
+      "file_size": 0
+    },
+    {
+      "table": "agent_api_keys",
+      "success": true,
+      "row_count": 345,
+      "file_size": 127627,
+      "file_path": "supabase_backup_20260413_163502/agent_api_keys.json"
+    },
+    {
+      "table": "agent_config_revisions",
+      "success": false,
+      "error": "{'message': 'permission denied for table agent_config_revisions', 'code': '42501', 'hint': None, 'details': None}",
+      "row_count": 0,
+      "file_size": 0
+    },
+    {
+      "table": "agent_runtime_state",
+      "success": false,
+      "error": "{'message': 'permission denied for table agent_runtime_state', 'code': '42501', 'hint': None, 'details': None}",
+      "row_count": 0,
+      "file_size": 0
+    },
+    {
+      "table": "agent_task_sessions",
+      "success": true,
+      "row_count": 0,
+      "file_size": 2,
+      "file_path": "supabase_backup_20260413_163502/agent_task_sessions.json",
+      "used_pagination": true
+    },
+    {
+      "table": "agent_wakeup_requests",
+      "success": false,
+      "error": "{'message': 'permission denied for table agent_wakeup_requests', 'code': '42501', 'hint': None, 'details': None}",
+      "row_count": 0,
+      "file_size": 0
+    },
+    {
+      "table": "board_api_keys",
+      "success": false,
+      "error": "{'message': 'permission denied for table board_api_keys', 'code': '42501', 'hint': None, 'details': None}",
+      "row_count": 0,
+      "file_size": 0
+    },
+    {
+      "table": "company_memberships",
+      "success": false,
+      "error": "{'message': 'permission denied for table company_memberships', 'code': '42501', 'hint': None, 'details': None}",
+      "row_count": 0,
+      "file_size": 0
+    },
+    {
+      "table": "principal_permission_grants",
+      "success": false,
+      "error": "{'message': 'permission denied for table principal_permission_grants', 'code': '42501', 'hint': None, 'details': None}",
+      "row_count": 0,
+      "file_size": 0
+    },
+    {
+      "table": "instance_user_roles",
+      "success": false,
+      "error": "{'message': 'permission denied for table instance_user_roles', 'code': '42501', 'hint': None, 'details': None}",
+      "row_count": 0,
+      "file_size": 0
+    },
+    {
+      "table": "issue_comments",
+      "success": true,
+      "row_count": 0,
+      "file_size": 2,
+      "file_path": "supabase_backup_20260413_163502/issue_comments.json",
+      "used_pagination": true
+    },
+    {
+      "table": "issue_attachments",
+      "success": false,
+      "error": "{'message': 'permission denied for table issue_attachments', 'code': '42501', 'hint': None, 'details': None}",
+      "row_count": 0,
+      "file_size": 0
+    },
+    {
+      "table": "issue_approvals",
+      "success": false,
+      "error": "{'message': 'permission denied for table issue_approvals', 'code': '42501', 'hint': None, 'details': None}",
+      "row_count": 0,
+      "file_size": 0
+    },
+    {
+      "table": "issue_execution_decisions",
+      "success": false,
+      "error": "{'message': 'permission denied for table issue_execution_decisions', 'code': '42501', 'hint': None, 'details': None}",
+      "row_count": 0,
+      "file_size": 0
+    },
+    {
+      "table": "issue_inbox_archives",
+      "success": false,
+      "error": "{'message': 'permission denied for table issue_inbox_archives', 'code': '42501', 'hint': None, 'details': None}",
+      "row_count": 0,
+      "file_size": 0
+    },
+    {
+      "table": "issue_labels",
+      "success": false,
+      "error": "{'message': 'permission denied for table issue_labels', 'code': '42501', 'hint': None, 'details': None}",
+      "row_count": 0,
+      "file_size": 0
+    },
+    {
+      "table": "issue_read_states",
+      "success": false,
+      "error": "{'message': 'permission denied for table issue_read_states', 'code': '42501', 'hint': None, 'details': None}",
+      "row_count": 0,
+      "file_size": 0
+    },
+    {
+      "table": "issue_relations",
+      "success": false,
+      "error": "{'message': 'permission denied for table issue_relations', 'code': '42501', 'hint': None, 'details': None}",
+      "row_count": 0,
+      "file_size": 0
+    },
+    {
+      "table": "issue_work_products",
+      "success": false,
+      "error": "{'message': 'permission denied for table issue_work_products', 'code': '42501', 'hint': None, 'details': None}",
+      "row_count": 0,
+      "file_size": 0
+    },
+    {
+      "table": "issue_documents",
+      "success": false,
+      "error": "{'message': 'permission denied for table issue_documents', 'code': '42501', 'hint': None, 'details': None}",
+      "row_count": 0,
+      "file_size": 0
+    },
+    {
+      "table": "heartbeat_runs",
+      "success": false,
+      "error": "{'message': 'permission denied for table heartbeat_runs', 'code': '42501', 'hint': None, 'details': None}",
+      "row_count": 0,
+      "file_size": 0
+    },
+    {
+      "table": "heartbeat_run_events",
+      "success": true,
+      "row_count": 0,
+      "file_size": 2,
+      "file_path": "supabase_backup_20260413_163502/heartbeat_run_events.json",
+      "used_pagination": true
+    },
+    {
+      "table": "execution_workspaces",
+      "success": false,
+      "error": "{'message': 'permission denied for table execution_workspaces', 'code': '42501', 'hint': None, 'details': None}",
+      "row_count": 0,
+      "file_size": 0
+    },
+    {
+      "table": "approvals",
+      "success": false,
+      "error": "{'message': 'permission denied for table approvals', 'code': '42501', 'hint': None, 'details': None}",
+      "row_count": 0,
+      "file_size": 0
+    },
+    {
+      "table": "approval_comments",
+      "success": false,
+      "error": "{'message': 'permission denied for table approval_comments', 'code': '42501', 'hint': None, 'details': None}",
+      "row_count": 0,
+      "file_size": 0
+    },
+    {
+      "table": "assets",
+      "success": false,
+      "error": "{'message': 'permission denied for table assets', 'code': '42501', 'hint': None, 'details': None}",
+      "row_count": 0,
+      "file_size": 0
+    },
+    {
+      "table": "documents",
+      "success": false,
+      "error": "{'message': 'permission denied for table documents', 'code': '42501', 'hint': None, 'details': None}",
+      "row_count": 0,
+      "file_size": 0
+    },
+    {
+      "table": "document_revisions",
+      "success": false,
+      "error": "{'message': 'permission denied for table document_revisions', 'code': '42501', 'hint': None, 'details': None}",
+      "row_count": 0,
+      "file_size": 0
+    },
+    {
+      "table": "company_skills",
+      "success": true,
+      "row_count": 400,
+      "file_size": 953455,
+      "file_path": "supabase_backup_20260413_163502/company_skills.json"
+    },
+    {
+      "table": "budget_policies",
+      "success": false,
+      "error": "{'message': 'permission denied for table budget_policies', 'code': '42501', 'hint': None, 'details': None}",
+      "row_count": 0,
+      "file_size": 0
+    },
+    {
+      "table": "budget_incidents",
+      "success": false,
+      "error": "{'message': 'permission denied for table budget_incidents', 'code': '42501', 'hint': None, 'details': None}",
+      "row_count": 0,
+      "file_size": 0
+    },
+    {
+      "table": "cost_events",
+      "success": true,
+      "row_count": 0,
+      "file_size": 2,
+      "file_path": "supabase_backup_20260413_163502/cost_events.json",
+      "used_pagination": true
+    },
+    {
+      "table": "goals",
+      "success": false,
+      "error": "{'message': 'permission denied for table goals', 'code': '42501', 'hint': None, 'details': None}",
+      "row_count": 0,
+      "file_size": 0
+    },
+    {
+      "table": "project_goals",
+      "success": false,
+      "error": "{'message': 'permission denied for table project_goals', 'code': '42501', 'hint': None, 'details': None}",
+      "row_count": 0,
+      "file_size": 0
+    },
+    {
+      "table": "project_workspaces",
+      "success": false,
+      "error": "{'message': 'permission denied for table project_workspaces', 'code': '42501', 'hint': None, 'details': None}",
+      "row_count": 0,
+      "file_size": 0
+    },
+    {
+      "table": "workspace_operations",
+      "success": false,
+      "error": "{'message': 'permission denied for table workspace_operations', 'code': '42501', 'hint': None, 'details': None}",
+      "row_count": 0,
+      "file_size": 0
+    },
+    {
+      "table": "workspace_runtime_services",
+      "success": false,
+      "error": "{'message': 'permission denied for table workspace_runtime_services', 'code': '42501', 'hint': None, 'details': None}",
+      "row_count": 0,
+      "file_size": 0
+    },
+    {
+      "table": "plugins",
+      "success": false,
+      "error": "{'message': 'permission denied for table plugins', 'code': '42501', 'hint': None, 'details': None}",
+      "row_count": 0,
+      "file_size": 0
+    },
+    {
+      "table": "plugin_config",
+      "success": false,
+      "error": "{'message': 'permission denied for table plugin_config', 'code': '42501', 'hint': None, 'details': None}",
+      "row_count": 0,
+      "file_size": 0
+    },
+    {
+      "table": "plugin_company_settings",
+      "success": false,
+      "error": "{'message': 'permission denied for table plugin_company_settings', 'code': '42501', 'hint': None, 'details': None}",
+      "row_count": 0,
+      "file_size": 0
+    },
+    {
+      "table": "plugin_entities",
+      "success": false,
+      "error": "{'message': 'permission denied for table plugin_entities', 'code': '42501', 'hint': None, 'details': None}",
+      "row_count": 0,
+      "file_size": 0
+    },
+    {
+      "table": "plugin_jobs",
+      "success": false,
+      "error": "{'message': 'permission denied for table plugin_jobs', 'code': '42501', 'hint': None, 'details': None}",
+      "row_count": 0,
+      "file_size": 0
+    },
+    {
+      "table": "plugin_logs",
+      "success": false,
+      "error": "{'message': 'permission denied for table plugin_logs', 'code': '42501', 'hint': None, 'details': None}",
+      "row_count": 0,
+      "file_size": 0
+    },
+    {
+      "table": "plugin_state",
+      "success": false,
+      "error": "{'message': 'permission denied for table plugin_state', 'code': '42501', 'hint': None, 'details': None}",
+      "row_count": 0,
+      "file_size": 0
+    },
+    {
+      "table": "plugin_webhooks",
+      "success": false,
+      "error": "{'message': \"Could not find the table 'public.plugin_webhooks' in the schema cache\", 'code': 'PGRST205', 'hint': \"Perhaps you meant the table 'public.plugin_webhook_deliveries'\", 'details': None}",
+      "row_count": 0,
+      "file_size": 0
+    },
+    {
+      "table": "feedback_votes",
+      "success": false,
+      "error": "{'message': 'permission denied for table feedback_votes', 'code': '42501', 'hint': None, 'details': None}",
+      "row_count": 0,
+      "file_size": 0
+    },
+    {
+      "table": "feedback_exports",
+      "success": false,
+      "error": "{'message': 'permission denied for table feedback_exports', 'code': '42501', 'hint': None, 'details': None}",
+      "row_count": 0,
+      "file_size": 0
+    },
+    {
+      "table": "inbox_dismissals",
+      "success": false,
+      "error": "{'message': 'permission denied for table inbox_dismissals', 'code': '42501', 'hint': None, 'details': None}",
+      "row_count": 0,
+      "file_size": 0
+    },
+    {
+      "table": "routines",
+      "success": false,
+      "error": "{'message': 'permission denied for table routines', 'code': '42501', 'hint': None, 'details': None}",
+      "row_count": 0,
+      "file_size": 0
+    },
+    {
+      "table": "company_logos",
+      "success": false,
+      "error": "{'message': 'permission denied for table company_logos', 'code': '42501', 'hint': None, 'details': None}",
+      "row_count": 0,
+      "file_size": 0
+    },
+    {
+      "table": "company_secrets",
+      "success": false,
+      "error": "{'message': 'permission denied for table company_secrets', 'code': '42501', 'hint': None, 'details': None}",
+      "row_count": 0,
+      "file_size": 0
+    },
+    {
+      "table": "company_secret_versions",
+      "success": false,
+      "error": "{'message': 'permission denied for table company_secret_versions', 'code': '42501', 'hint': None, 'details': None}",
+      "row_count": 0,
+      "file_size": 0
+    },
+    {
+      "table": "activity_log",
+      "success": true,
+      "row_count": 0,
+      "file_size": 2,
+      "file_path": "supabase_backup_20260413_163502/activity_log.json",
+      "used_pagination": true
+    },
+    {
+      "table": "instance_settings",
+      "success": false,
+      "error": "{'message': 'permission denied for table instance_settings', 'code': '42501', 'hint': None, 'details': None}",
+      "row_count": 0,
+      "file_size": 0
+    },
+    {
+      "table": "invites",
+      "success": false,
+      "error": "{'message': 'permission denied for table invites', 'code': '42501', 'hint': None, 'details': None}",
+      "row_count": 0,
+      "file_size": 0
+    },
+    {
+      "table": "join_requests",
+      "success": false,
+      "error": "{'message': 'permission denied for table join_requests', 'code': '42501', 'hint': None, 'details': None}",
+      "row_count": 0,
+      "file_size": 0
+    },
+    {
+      "table": "cli_auth_challenges",
+      "success": false,
+      "error": "{'message': 'permission denied for table cli_auth_challenges', 'code': '42501', 'hint': None, 'details': None}",
+      "row_count": 0,
+      "file_size": 0
+    },
+    {
+      "table": "labels",
+      "success": false,
+      "error": "{'message': 'permission denied for table labels', 'code': '42501', 'hint': None, 'details': None}",
+      "row_count": 0,
+      "file_size": 0
+    },
+    {
+      "table": "finance_events",
+      "success": false,
+      "error": "{'message': 'permission denied for table finance_events', 'code': '42501', 'hint': None, 'details': None}",
+      "row_count": 0,
+      "file_size": 0
+    }
+  ],
+  "backup_script_version": "1.0.0",
+  "notes": [
+    "This backup contains all Paperclip database tables",
+    "Data is exported as JSON for easy restoration",
+    "Large tables were exported using pagination",
+    "Timestamps are stored as ISO format strings"
+  ]
+}
