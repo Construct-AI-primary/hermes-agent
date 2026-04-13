@@ -4,3 +4,6 @@
 [submodule "hermes_agent"]
 	path = hermes_agent
 	url = https://github.com/tennantalistair/hermes-agent.git
+[submodule "docs-paperclip"]
+	path = docs-paperclip
+	url = https://github.com/Construct-AI-primary/docs-paperclip.git
