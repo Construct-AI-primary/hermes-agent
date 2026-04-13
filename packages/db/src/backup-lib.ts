@@ -1,6 +1,9 @@
 import { createReadStream, createWriteStream, existsSync, mkdirSync, readdirSync, statSync, unlinkSync } from "node:fs";
 import { basename, resolve } from "node:path";
 import { resolve4 } from "node:dns/promises";
+import { pipeline } from "node:stream/promises";
+import { createGzip, createGunzip } from "node:zlib";
+import { createInterface } from "node:readline";
 import postgres from "postgres";
 
 export type BackupRetentionPolicy = {
@@ -81,146 +84,6 @@ function timestamp(date: Date = new Date()): string {
   return `${date.getFullYear()}${pad(date.getMonth() + 1)}${pad(date.getDate())}-${pad(date.getHours())}${pad(date.getMinutes())}${pad(date.getSeconds())}`;
 }
 
-/**
- * ISO week key for grouping backups by calendar week (ISO 8601).
- */
-function isoWeekKey(date: Date): string {
-  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
-  d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
-  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
-  const weekNo = Math.ceil(((d.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
-  return `${d.getUTCFullYear()}-W${String(weekNo).padStart(2, "0")}`;
-}
-
-function monthKey(date: Date): string {
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
-}
-
-/**
- * Tiered backup pruning:
- * - Daily tier: keep ALL backups from the last `dailyDays` days
- * - Weekly tier: keep the NEWEST backup per calendar week for `weeklyWeeks` weeks
- * - Monthly tier: keep the NEWEST backup per calendar month for `monthlyMonths` months
- * - Everything else is deleted
- */
-function pruneOldBackups(backupDir: string, retention: BackupRetentionPolicy, filenamePrefix: string): number {
-  if (!existsSync(backupDir)) return 0;
-
-  const now = Date.now();
-  const dailyCutoff = now - Math.max(1, retention.dailyDays) * 24 * 60 * 60 * 1000;
-  const weeklyCutoff = now - Math.max(1, retention.weeklyWeeks) * 7 * 24 * 60 * 60 * 1000;
-  const monthlyCutoff = now - Math.max(1, retention.monthlyMonths) * 30 * 24 * 60 * 60 * 1000;
-
-  type BackupEntry = { name: string; fullPath: string; mtimeMs: number };
-  const entries: BackupEntry[] = [];
-
-  for (const name of readdirSync(backupDir)) {
-    if (!name.startsWith(`${filenamePrefix}-`)) continue;
-    if (!name.endsWith(".sql") && !name.endsWith(".sql.gz")) continue;
-    const fullPath = resolve(backupDir, name);
-    const stat = statSync(fullPath);
-    entries.push({ name, fullPath, mtimeMs: stat.mtimeMs });
-  }
-
-  // Sort newest first so the first entry per week/month bucket is the one we keep
-  entries.sort((a, b) => b.mtimeMs - a.mtimeMs);
-
-  const keepWeekBuckets = new Set<string>();
-  const keepMonthBuckets = new Set<string>();
-  const toDelete: string[] = [];
-
-  for (const entry of entries) {
-    // Daily tier — keep everything within dailyDays
-    if (entry.mtimeMs >= dailyCutoff) continue;
-
-    const date = new Date(entry.mtimeMs);
-    const week = isoWeekKey(date);
-    const month = monthKey(date);
-
-    // Weekly tier — keep newest per calendar week
-    if (entry.mtimeMs >= weeklyCutoff) {
-      if (keepWeekBuckets.has(week)) {
-        toDelete.push(entry.fullPath);
-      } else {
-        keepWeekBuckets.add(week);
-      }
-      continue;
-    }
-
-    // Monthly tier — keep newest per calendar month
-    if (entry.mtimeMs >= monthlyCutoff) {
-      if (keepMonthBuckets.has(month)) {
-        toDelete.push(entry.fullPath);
-      } else {
-        keepMonthBuckets.add(month);
-      }
-      continue;
-    }
-
-    // Beyond all retention tiers — delete
-    toDelete.push(entry.fullPath);
-  }
-
-  for (const filePath of toDelete) {
-    unlinkSync(filePath);
-  }
-
-  return toDelete.length;
-}
-
-function formatBackupSize(sizeBytes: number): string {
-  if (sizeBytes < 1024) return `${sizeBytes}B`;
-  if (sizeBytes < 1024 * 1024) return `${(sizeBytes / 1024).toFixed(1)}K`;
-  return `${(sizeBytes / (1024 * 1024)).toFixed(1)}M`;
-}
-
-function formatSqlLiteral(value: string): string {
-  const sanitized = value.replace(/\u0000/g, "");
-  let tag = "$paperclip$";
-  while (sanitized.includes(tag)) {
-    tag = `$paperclip_${Math.random().toString(36).slice(2, 8)}$`;
-  }
-  return `${tag}${sanitized}${tag}`;
-}
-
-function normalizeTableNameSet(values: string[] | undefined): Set<string> {
-  return new Set(
-    (values ?? [])
-      .map((value) => value.trim())
-      .filter((value) => value.length > 0),
-  );
-}
-
-function normalizeNullifyColumnMap(values: Record<string, string[]> | undefined): Map<string, Set<string>> {
-  const out = new Map<string, Set<string>>();
-  if (!values) return out;
-  for (const [tableName, columns] of Object.entries(values)) {
-    const normalizedTable = tableName.trim();
-    if (normalizedTable.length === 0) continue;
-    const normalizedColumns = new Set(
-      columns
-        .map((column) => column.trim())
-        .filter((column) => column.length > 0),
-    );
-    if (normalizedColumns.size > 0) {
-      out.set(normalizedTable, normalizedColumns);
-    }
-  }
-  return out;
-}
-
-function quoteIdentifier(value: string): string {
-  return `"${value.replaceAll("\"", "\"\"")}"`;
-}
-
-function quoteQualifiedName(schemaName: string, objectName: string): string {
-  return `${quoteIdentifier(schemaName)}.${quoteIdentifier(objectName)}`;
-}
-
-function tableKey(schemaName: string, tableName: string): string {
-  return `${schemaName}.${tableName}`;
-}
-
 async function resolveToIPv4(url: string): Promise<string> {
   try {
     const parsed = new URL(url);
@@ -240,23 +103,44 @@ export async function runDatabaseBackup(opts: RunDatabaseBackupOptions): Promise
   const retention = opts.retention;
   const connectTimeout = Math.max(1, Math.trunc(opts.connectTimeoutSeconds ?? 5));
   const includeMigrationJournal = opts.includeMigrationJournal === true;
-  const excludedTableNames = normalizeTableNameSet(opts.excludeTables);
-  const nullifiedColumnsByTable = normalizeNullifyColumnMap(opts.nullifyColumns);
+  const excludedTableNames = new Set((opts.excludeTables ?? []).map(v => v.trim()).filter(v => v.length > 0));
+  const nullifiedColumnsByTable = new Map<string, Set<string>>();
+  if (opts.nullifyColumns) {
+    for (const [tableName, columns] of Object.entries(opts.nullifyColumns)) {
+      const normalizedTable = tableName.trim();
+      if (normalizedTable.length === 0) continue;
+      const normalizedColumns = new Set(columns.map(c => c.trim()).filter(c => c.length > 0));
+      if (normalizedColumns.size > 0) {
+        nullifiedColumnsByTable.set(normalizedTable, normalizedColumns);
+      }
+    }
+  }
   const resolvedConnectionString = await resolveToIPv4(opts.connectionString);
   const sql = postgres(resolvedConnectionString, {
     max: 1,
     connect_timeout: connectTimeout,
     connection: {
-      // Force IPv4 socket connection to prevent ENETUNREACH errors
-      // when IPv6 addresses are returned but not reachable
       family: 4,
     },
   });
 
+  // Generate backup file paths
+  const timestampStr = timestamp();
+  const sqlFile = resolve(opts.backupDir, `${filenamePrefix}-${timestampStr}.sql`);
+  const backupFile = `${sqlFile}.gz`;
+
+  // Ensure backup directory exists
+  if (!existsSync(opts.backupDir)) {
+    mkdirSync(opts.backupDir, { recursive: true });
+  }
+
+  // Create write stream for SQL output
+  const writer = createWriteStream(sqlFile, { highWaterMark: DEFAULT_BACKUP_WRITE_BUFFER_BYTES });
+
   try {
     await sql`SELECT 1`;
 
-    const emit = (line: string) => writer.emit(line);
+    const emit = (line: string) => writer.write(`${line}\n`);
     const emitStatement = (statement: string) => {
       emit(statement);
       emit(STATEMENT_BREAKPOINT);
@@ -284,7 +168,7 @@ export async function runDatabaseBackup(opts: RunDatabaseBackupOptions): Promise
       ORDER BY table_schema, table_name
     `;
     const tables = allTables;
-    const includedTableNames = new Set(tables.map(({ schema_name, tablename }) => tableKey(schema_name, tablename)));
+    const includedTableNames = new Set(tables.map(({ schema_name, tablename }) => `${schema_name}.${tablename}`));
 
     // Get all enums
     const enums = await sql<{ typname: string; labels: string[] }[]>`
@@ -328,7 +212,7 @@ export async function runDatabaseBackup(opts: RunDatabaseBackupOptions): Promise
       ORDER BY s.sequence_schema, s.sequence_name
     `;
     const sequences = allSequences.filter(
-      (seq) => !seq.owner_table || includedTableNames.has(tableKey(seq.owner_schema ?? "public", seq.owner_table)),
+      (seq) => !seq.owner_table || includedTableNames.has(`${seq.owner_schema ?? "public"}.${seq.owner_table}`),
     );
 
     const schemas = new Set<string>();
@@ -338,7 +222,7 @@ export async function runDatabaseBackup(opts: RunDatabaseBackupOptions): Promise
     if (extraSchemas.length > 0) {
       emit("-- Schemas");
       for (const schemaName of extraSchemas) {
-        emitStatement(`CREATE SCHEMA IF NOT EXISTS ${quoteIdentifier(schemaName)};`);
+        emitStatement(`CREATE SCHEMA IF NOT EXISTS "${schemaName}";`);
       }
       emit("");
     }
@@ -356,7 +240,7 @@ export async function runDatabaseBackup(opts: RunDatabaseBackupOptions): Promise
       emit("-- Extensions");
       for (const extension of extensions) {
         emitStatement(
-          `CREATE EXTENSION IF NOT EXISTS ${quoteIdentifier(extension.extension_name)} WITH SCHEMA ${quoteIdentifier(extension.schema_name)};`,
+          `CREATE EXTENSION IF NOT EXISTS "${extension.extension_name}" WITH SCHEMA "${extension.schema_name}";`,
         );
       }
       emit("");
@@ -365,7 +249,9 @@ export async function runDatabaseBackup(opts: RunDatabaseBackupOptions): Promise
     if (sequences.length > 0) {
       emit("-- Sequences");
       for (const seq of sequences) {
-        const qualifiedSequenceName = quoteQualifiedName(seq.sequence_schema, seq.sequence_name);
+        const qualifiedSequenceName = seq.sequence_schema === "public"
+          ? `"${seq.sequence_name}"`
+          : `"${seq.sequence_schema}"."${seq.sequence_name}"`;
         emitStatement(`DROP SEQUENCE IF EXISTS ${qualifiedSequenceName} CASCADE;`);
         emitStatement(
           `CREATE SEQUENCE ${qualifiedSequenceName} AS ${seq.data_type} INCREMENT BY ${seq.increment} MINVALUE ${seq.minimum_value} MAXVALUE ${seq.maximum_value} START WITH ${seq.start_value}${seq.cycle_option === "YES" ? " CYCLE" : " NO CYCLE"};`,
@@ -376,7 +262,9 @@ export async function runDatabaseBackup(opts: RunDatabaseBackupOptions): Promise
 
     // Get full CREATE TABLE DDL via column info
     for (const { schema_name, tablename } of tables) {
-      const qualifiedTableName = quoteQualifiedName(schema_name, tablename);
+      const qualifiedTableName = schema_name === "public"
+        ? `"${tablename}"`
+        : `"${schema_name}"."${tablename}"`;
       const columns = await sql<{
         column_name: string;
         data_type: string;
@@ -450,8 +338,14 @@ export async function runDatabaseBackup(opts: RunDatabaseBackupOptions): Promise
     if (ownedSequences.length > 0) {
       emit("-- Sequence ownership");
       for (const seq of ownedSequences) {
+        const seqName = seq.sequence_schema === "public"
+          ? `"${seq.sequence_name}"`
+          : `"${seq.sequence_schema}"."${seq.sequence_name}"`;
+        const tableName = seq.owner_schema === "public"
+          ? `"${seq.owner_table}"`
+          : `"${seq.owner_schema}"."${seq.owner_table}"`;
         emitStatement(
-          `ALTER SEQUENCE ${quoteQualifiedName(seq.sequence_schema, seq.sequence_name)} OWNED BY ${quoteQualifiedName(seq.owner_schema ?? "public", seq.owner_table!)}.${quoteIdentifier(seq.owner_column!)};`,
+          `ALTER SEQUENCE ${seqName} OWNED BY ${tableName}."${seq.owner_column}";`,
         );
       }
       emit("");
@@ -494,17 +388,23 @@ export async function runDatabaseBackup(opts: RunDatabaseBackupOptions): Promise
       ORDER BY srcn.nspname, src.relname, c.conname
     `;
     const fks = allForeignKeys.filter(
-      (fk) => includedTableNames.has(tableKey(fk.source_schema, fk.source_table))
-        && includedTableNames.has(tableKey(fk.target_schema, fk.target_table)),
+      (fk) => includedTableNames.has(`${fk.source_schema}.${fk.source_table}`)
+        && includedTableNames.has(`${fk.target_schema}.${fk.target_table}`),
     );
 
     if (fks.length > 0) {
       emit("-- Foreign keys");
       for (const fk of fks) {
+        const srcTable = fk.source_schema === "public"
+          ? `"${fk.source_table}"`
+          : `"${fk.source_schema}"."${fk.source_table}"`;
+        const tgtTable = fk.target_schema === "public"
+          ? `"${fk.target_table}"`
+          : `"${fk.target_schema}"."${fk.target_table}"`;
         const srcCols = fk.source_columns.map((c) => `"${c}"`).join(", ");
         const tgtCols = fk.target_columns.map((c) => `"${c}"`).join(", ");
         emitStatement(
-          `ALTER TABLE ${quoteQualifiedName(fk.source_schema, fk.source_table)} ADD CONSTRAINT "${fk.constraint_name}" FOREIGN KEY (${srcCols}) REFERENCES ${quoteQualifiedName(fk.target_schema, fk.target_table)} (${tgtCols}) ON UPDATE ${fk.update_rule} ON DELETE ${fk.delete_rule};`,
+          `ALTER TABLE ${srcTable} ADD CONSTRAINT "${fk.constraint_name}" FOREIGN KEY (${srcCols}) REFERENCES ${tgtTable} (${tgtCols}) ON UPDATE ${fk.update_rule} ON DELETE ${fk.delete_rule};`,
         );
       }
       emit("");
@@ -532,13 +432,16 @@ export async function runDatabaseBackup(opts: RunDatabaseBackupOptions): Promise
       GROUP BY c.conname, n.nspname, t.relname
       ORDER BY n.nspname, t.relname, c.conname
     `;
-    const uniques = allUniqueConstraints.filter((entry) => includedTableNames.has(tableKey(entry.schema_name, entry.tablename)));
+    const uniques = allUniqueConstraints.filter((entry) => includedTableNames.has(`${entry.schema_name}.${entry.tablename}`));
 
     if (uniques.length > 0) {
       emit("-- Unique constraints");
       for (const u of uniques) {
+        const tableName = u.schema_name === "public"
+          ? `"${u.tablename}"`
+          : `"${u.schema_name}"."${u.tablename}"`;
         const cols = u.column_names.map((c) => `"${c}"`).join(", ");
-        emitStatement(`ALTER TABLE ${quoteQualifiedName(u.schema_name, u.tablename)} ADD CONSTRAINT "${u.constraint_name}" UNIQUE (${cols});`);
+        emitStatement(`ALTER TABLE ${tableName} ADD CONSTRAINT "${u.constraint_name}" UNIQUE (${cols});`);
       }
       emit("");
     }
@@ -558,7 +461,7 @@ export async function runDatabaseBackup(opts: RunDatabaseBackupOptions): Promise
         )
       ORDER BY schemaname, tablename, indexname
     `;
-    const indexes = allIndexes.filter((entry) => includedTableNames.has(tableKey(entry.schema_name, entry.tablename)));
+    const indexes = allIndexes.filter((entry) => includedTableNames.has(`${entry.schema_name}.${entry.tablename}`));
 
     if (indexes.length > 0) {
       emit("-- Indexes");
@@ -570,7 +473,9 @@ export async function runDatabaseBackup(opts: RunDatabaseBackupOptions): Promise
 
     // Dump data for each table
     for (const { schema_name, tablename } of tables) {
-      const qualifiedTableName = quoteQualifiedName(schema_name, tablename);
+      const qualifiedTableName = schema_name === "public"
+        ? `"${tablename}"`
+        : `"${schema_name}"."${tablename}"`;
       const count = await sql.unsafe<{ n: number }[]>(`SELECT count(*)::int AS n FROM ${qualifiedTableName}`);
       if (excludedTableNames.has(tablename) || (count[0]?.n ?? 0) === 0) continue;
 
@@ -594,9 +499,9 @@ export async function runDatabaseBackup(opts: RunDatabaseBackupOptions): Promise
           if (val === null || val === undefined) return "NULL";
           if (typeof val === "boolean") return val ? "true" : "false";
           if (typeof val === "number") return String(val);
-          if (val instanceof Date) return formatSqlLiteral(val.toISOString());
-          if (typeof val === "object") return formatSqlLiteral(JSON.stringify(val));
-          return formatSqlLiteral(String(val));
+          if (val instanceof Date) return `'${val.toISOString()}'`;
+          if (typeof val === "object") return `'${JSON.stringify(val).replace(/'/g, "''")}'`;
+          return `'${String(val).replace(/'/g, "''")}'`;
         });
         emitStatement(`INSERT INTO ${qualifiedTableName} (${colNames}) VALUES (${values.join(", ")});`);
       }
@@ -607,7 +512,9 @@ export async function runDatabaseBackup(opts: RunDatabaseBackupOptions): Promise
     if (sequences.length > 0) {
       emit("-- Sequence values");
       for (const seq of sequences) {
-        const qualifiedSequenceName = quoteQualifiedName(seq.sequence_schema, seq.sequence_name);
+        const qualifiedSequenceName = seq.sequence_schema === "public"
+          ? `"${seq.sequence_name}"`
+          : `"${seq.sequence_schema}"."${seq.sequence_name}"`;
         const val = await sql.unsafe<{ last_value: string; is_called: boolean }[]>(
           `SELECT last_value::text, is_called FROM ${qualifiedSequenceName}`,
         );
@@ -615,7 +522,7 @@ export async function runDatabaseBackup(opts: RunDatabaseBackupOptions): Promise
           seq.owner_table !== null
             && excludedTableNames.has(seq.owner_table);
         if (val[0] && !skipSequenceValue) {
-          emitStatement(`SELECT setval('${qualifiedSequenceName.replaceAll("'", "''")}', ${val[0].last_value}, ${val[0].is_called ? "true" : "false"});`);
+          emitStatement(`SELECT setval('${qualifiedSequenceName.replace(/"/g, "")}', ${val[0].last_value}, ${val[0].is_called ? "true" : "false"});`);
         }
       }
       emit("");
@@ -624,7 +531,12 @@ export async function runDatabaseBackup(opts: RunDatabaseBackupOptions): Promise
     emitStatement("COMMIT;");
     emit("");
 
-    await writer.close();
+    await new Promise<void>((resolve, reject) => {
+      writer.end((error) => {
+        if (error) reject(error);
+        else resolve();
+      });
+    });
 
     // Compress the SQL file with gzip
     const sqlReadStream = createReadStream(sqlFile);
@@ -641,7 +553,7 @@ export async function runDatabaseBackup(opts: RunDatabaseBackupOptions): Promise
       prunedCount,
     };
   } catch (error) {
-    await writer.abort();
+    writer.destroy();
     if (existsSync(backupFile)) {
       try { unlinkSync(backupFile); } catch { /* ignore */ }
     }
@@ -654,6 +566,48 @@ export async function runDatabaseBackup(opts: RunDatabaseBackupOptions): Promise
   }
 }
 
+async function* readRestoreStatements(backupFile: string): AsyncGenerator<string> {
+  const isGzipped = backupFile.endsWith('.gz');
+  const inputStream = createReadStream(backupFile);
+  const decompressedStream = isGzipped ? inputStream.pipe(createGunzip()) : inputStream;
+
+  const rl = createInterface({
+    input: decompressedStream,
+    crlfDelay: Infinity,
+  });
+
+  let currentStatement = '';
+
+  for await (const line of rl) {
+    const trimmedLine = line.trim();
+
+    // Skip empty lines and comments (except our special breakpoint)
+    if (trimmedLine === '' || (trimmedLine.startsWith('--') && trimmedLine !== STATEMENT_BREAKPOINT)) {
+      continue;
+    }
+
+    // Check for statement breakpoint
+    if (trimmedLine === STATEMENT_BREAKPOINT) {
+      if (currentStatement.trim()) {
+        yield currentStatement.trim();
+        currentStatement = '';
+      }
+      continue;
+    }
+
+    // Accumulate the statement
+    if (currentStatement) {
+      currentStatement += '\n';
+    }
+    currentStatement += line;
+  }
+
+  // Yield any remaining statement
+  if (currentStatement.trim()) {
+    yield currentStatement.trim();
+  }
+}
+
 export async function runDatabaseRestore(opts: RunDatabaseRestoreOptions): Promise<void> {
   const connectTimeout = Math.max(1, Math.trunc(opts.connectTimeoutSeconds ?? 5));
   const resolvedConnectionString = await resolveToIPv4(opts.connectionString);
@@ -661,8 +615,6 @@ export async function runDatabaseRestore(opts: RunDatabaseRestoreOptions): Promi
     max: 1,
     connect_timeout: connectTimeout,
     connection: {
-      // Force IPv4 socket connection to prevent ENETUNREACH errors
-      // when IPv6 addresses are returned but not reachable
       family: 4,
     },
   });
@@ -691,4 +643,87 @@ export function formatDatabaseBackupResult(result: RunDatabaseBackupResult): str
   const size = formatBackupSize(result.sizeBytes);
   const pruned = result.prunedCount > 0 ? `; pruned ${result.prunedCount} old backup(s)` : "";
   return `${result.backupFile} (${size}${pruned})`;
+}
+
+function pruneOldBackups(backupDir: string, retention: BackupRetentionPolicy, filenamePrefix: string): number {
+  if (!existsSync(backupDir)) return 0;
+
+  const now = Date.now();
+  const dailyCutoff = now - Math.max(1, retention.dailyDays) * 24 * 60 * 60 * 1000;
+  const weeklyCutoff = now - Math.max(1, retention.weeklyWeeks) * 7 * 24 * 60 * 60 * 1000;
+  const monthlyCutoff = now - Math.max(1, retention.monthlyMonths) * 30 * 24 * 60 * 60 * 1000;
+
+  type BackupEntry = { name: string; fullPath: string; mtimeMs: number };
+  const entries: BackupEntry[] = [];
+
+  for (const name of readdirSync(backupDir)) {
+    if (!name.startsWith(`${filenamePrefix}-`)) continue;
+    if (!name.endsWith(".sql") && !name.endsWith(".sql.gz")) continue;
+    const fullPath = resolve(backupDir, name);
+    const stat = statSync(fullPath);
+    entries.push({ name, fullPath, mtimeMs: stat.mtimeMs });
+  }
+
+  // Sort newest first so the first entry per week/month bucket is the one we keep
+  entries.sort((a, b) => b.mtimeMs - a.mtimeMs);
+
+  const keepWeekBuckets = new Set<string>();
+  const keepMonthBuckets = new Set<string>();
+  const toDelete: string[] = [];
+
+  for (const entry of entries) {
+    // Daily tier — keep everything within dailyDays
+    if (entry.mtimeMs >= dailyCutoff) continue;
+
+    const date = new Date(entry.mtimeMs);
+    const week = isoWeekKey(date);
+    const month = monthKey(date);
+
+    // Weekly tier — keep newest per calendar week
+    if (entry.mtimeMs >= weeklyCutoff) {
+      if (keepWeekBuckets.has(week)) {
+        toDelete.push(entry.fullPath);
+      } else {
+        keepWeekBuckets.add(week);
+      }
+      continue;
+    }
+
+    // Monthly tier — keep newest per calendar month
+    if (entry.mtimeMs >= monthlyCutoff) {
+      if (keepMonthBuckets.has(month)) {
+        toDelete.push(entry.fullPath);
+      } else {
+        keepMonthBuckets.add(month);
+      }
+      continue;
+    }
+
+    // Beyond all retention tiers — delete
+    toDelete.push(entry.fullPath);
+  }
+
+  for (const filePath of toDelete) {
+    unlinkSync(filePath);
+  }
+
+  return toDelete.length;
+}
+
+function formatBackupSize(sizeBytes: number): string {
+  if (sizeBytes < 1024) return `${sizeBytes}B`;
+  if (sizeBytes < 1024 * 1024) return `${(sizeBytes / 1024).toFixed(1)}K`;
+  return `${(sizeBytes / (1024 * 1024)).toFixed(1)}M`;
+}
+
+function isoWeekKey(date: Date): string {
+  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  const weekNo = Math.ceil(((d.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
+  return `${d.getUTCFullYear()}-W${String(weekNo).padStart(2, "0")}`;
+}
+
+function monthKey(date: Date): string {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
 }
