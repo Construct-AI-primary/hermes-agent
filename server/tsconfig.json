@@ -1,14 +1,14 @@
 {
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
+    "target": "es2015",
     "outDir": "dist",
     "rootDir": "src",
     "noImplicitAny": false,
     "skipLibCheck": true,
     "strict": true,
     "useUnknownInCatchVariables": false,
-    "noPropertyAccessFromIndexSignature": false,
-    "downlevelIteration": true
+    "noPropertyAccessFromIndexSignature": false
   },
   "include": ["src"],
   "exclude": ["src/__tests__"]
