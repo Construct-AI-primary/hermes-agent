@@ -387,81 +387,11 @@ WHERE a.reports_to IS NOT NULL
   AND boss.id IS NULL;
 ```
 
-### 7. Add Agent Model Assignments
+### 7. Assign Agent Models
 
-**Important**: Every agent must have model assignments in the `agent_models` table for proper AI model routing and performance tracking.
+**Important**: Every agent must have model assignments for proper AI model routing and performance tracking.
 
-#### Model Selection Guidelines
-
-Select the appropriate GLM model based on the agent's primary task complexity and requirements:
-
-| Task Complexity | GLM Model Selected | Reasoning |
-|----------------|-------------------|-----------|
-| Very Simple Tasks | GLM-3-Turbo | Cost-effective for basic queries ($0.30-0.70) |
-| Simple Coding | GLM-4-Plus | Good balance for straightforward code ($1.00-2.00) |
-| General Conversation | GLM-5.1 ⭐ | My default for most interactions ($1.50-3.00) |
-| Medium Coding | GLM-4-Plus | Handles API integration, etc. ($1.00-2.00) |
-| Complex Coding | GLM-5.1 ⭐ | Advanced reasoning for complex tasks ($1.50-3.00) |
-| Expert Coding | Qwen-3.6 ⭐ | Maximum capability for system design ($2.00-4.00) |
-| Creative Writing | GLM-4-Plus | Good for content generation ($1.00-2.00) |
-| Data Analysis | Qwen-3.6 ⭐ | Analytical reasoning capabilities ($2.00-4.00) |
-| Research & Learning | GLM-5.1 ⭐ | Deep understanding for explanations ($1.50-3.00) |
-| Chinese Language | GLM-5.1 ⭐ | Native Chinese language optimization ($1.50-3.00) |
-
-**Model Selection Tips:**
-- **GLM-3-Turbo**: Best for cost-sensitive, simple tasks
-- **GLM-4-Plus**: Balanced performance for most coding and content tasks
-- **GLM-5.1 ⭐**: Default choice for complex reasoning and general use
-- **Qwen-3.6 ⭐**: Specialized for expert-level coding and data analysis
-
-#### Required Model Assignment
-
-**Required Model Assignment:**
-```sql
--- Add primary model assignment for new agent
-INSERT INTO agent_models (
-  agent_id,
-  model_id,
-  assignment_type,
-  priority,
-  temperature,
-  max_tokens,
-  assigned_at,
-  assigned_by,
-  reason,
-  is_active
-) VALUES (
-  '<agent_name>',  -- Must match agent name exactly
-  'anthropic/claude-3.5-sonnet',  -- Default model (see guidelines above for alternatives)
-  'primary',
-  1,
-  0.7,  -- Standard temperature
-  4096, -- Standard token limit
-  NOW(),
-  'system',  -- Or your username
-  'Default model assignment for new agent - adjust model based on task complexity',
-  true
-) ON CONFLICT (agent_id, assignment_type) DO NOTHING;
-```
-
-**Model Assignment Guidelines:**
-- **agent_id**: Must exactly match the agent name in the `agents` table
-- **model_id**: Select from the table above based on agent's primary task complexity
-- **assignment_type**: Use `'primary'` for the main model assignment
-- **temperature**: Use `0.7` for balanced creativity vs consistency
-- **max_tokens**: Use `4096` for standard context window
-- **assigned_by**: Use your username or `'system'` for automated assignments
-
-**Validation Query:**
-```sql
--- Check for agents missing model assignments
-SELECT a.name, a.company_id, c.name as company_name
-FROM agents a
-JOIN companies c ON a.company_id = c.id
-LEFT JOIN agent_models am ON a.name = am.agent_id AND am.assignment_type = 'primary'
-WHERE am.id IS NULL
-ORDER BY c.name, a.name;
-```
+**See**: [Agent Model Assignment Procedure](agent-model-assignment-procedure.md) for complete model selection guidelines, assignment SQL, and validation queries.
 +++++++ REPLACE</parameter>
 +++++++ REPLACE</parameter>
 
