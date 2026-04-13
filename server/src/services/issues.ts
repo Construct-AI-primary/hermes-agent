@@ -1118,8 +1118,8 @@ export function issueService(db: Db) {
           return [...byIssueId.values()];
         }),
       ]);
-      const statsByIssueId = new Map(statsRows.map((row): [string, any] => [row.issueId, row]));
-      const lastActivityByIssueId = new Map(lastActivityRows.map((row): [string, any] => [row.issueId, row]));
+      const statsByIssueId = new Map(statsRows.map((row): [string, IssueUserCommentStats] => [row.issueId, row]));
+      const lastActivityByIssueId = new Map(lastActivityRows.map((row): [string, IssueLastActivityStat] => [row.issueId, row]));
 
       if (!contextUserId) {
         return withRuns.map((row) => {
