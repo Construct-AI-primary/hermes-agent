@@ -1118,8 +1118,8 @@ export function issueService(db: Db) {
           return [...byIssueId.values()];
         }),
       ]);
-      const statsByIssueId = new Map(statsRows.map((row) => [row.issueId, row]));
-      const lastActivityByIssueId = new Map(lastActivityRows.map((row) => [row.issueId, row]));
+      const statsByIssueId = new Map(statsRows.map((row): [string, any] => [row.issueId, row]));
+      const lastActivityByIssueId = new Map(lastActivityRows.map((row): [string, any] => [row.issueId, row]));
 
       if (!contextUserId) {
         return withRuns.map((row) => {
@@ -1136,7 +1136,7 @@ export function issueService(db: Db) {
         });
       }
 
-      const readByIssueId = new Map(readRows.map((row) => [row.issueId, row.myLastReadAt]));
+      const readByIssueId = new Map(readRows.map((row): [string, Date | null] => [row.issueId, row.myLastReadAt]));
 
       return withRuns.map((row) => {
         const activity = lastActivityByIssueId.get(row.id);

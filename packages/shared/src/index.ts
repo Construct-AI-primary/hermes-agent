@@ -697,3 +697,27 @@ export {
   type SecretsLocalEncryptedConfig,
   type ConfigMeta,
 } from "./config-schema.js";
+
+export { TelemetryClient } from "./telemetry/client.js";
+export { resolveTelemetryConfig } from "./telemetry/config.js";
+export { loadOrCreateState } from "./telemetry/state.js";
+export {
+  trackInstallStarted,
+  trackInstallCompleted,
+  trackCompanyImported,
+  trackProjectCreated,
+  trackRoutineCreated,
+  trackRoutineRun,
+  trackGoalCreated,
+  trackAgentCreated,
+  trackSkillImported,
+  trackAgentFirstHeartbeat,
+  trackAgentTaskCompleted,
+  trackErrorHandlerCrash,
+} from "./telemetry/events.js";
+export type {
+  TelemetryState,
+  TelemetryEvent,
+  TelemetryEventEnvelope,
+  TelemetryEventName,
+} from "./telemetry/types.js";

@@ -218,7 +218,6 @@ export async function reloadExternalAdapter(
   // Query-string trick (?t=...) works in Node; Bun may need the file:// URL
   // to be evicted from its internal registry first.
   try {
-    // @ts-expect-error -- Bun internal module cache
     const bunCache = globalThis.Bun?.__moduleCache as Map<string, unknown> | undefined;
     if (bunCache) {
       bunCache.delete(fileUrl);
