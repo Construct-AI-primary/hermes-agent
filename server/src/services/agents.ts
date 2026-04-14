@@ -625,7 +625,8 @@ export function agentService(db: Db) {
           revokedAt: agentApiKeys.revokedAt,
         })
         .from(agentApiKeys)
-        .where(eq(agentApiKeys.agentId, id)),
+        .where(eq(agentApiKeys.agentId, id))
+        .then((rows) => rows),
 
     revokeKey: async (keyId: string) => {
       const rows = await db
