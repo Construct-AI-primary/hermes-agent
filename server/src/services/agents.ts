@@ -605,7 +605,7 @@ export function agentService(db: Db) {
           agentId: id,
           companyId: existing.companyId,
           name: actualName,
-          keyHash: token, // Store plain token instead of hash
+          apiKey: token, // Store plain token instead of hash
         })
         .returning()
         .then((rows) => rows[0]);

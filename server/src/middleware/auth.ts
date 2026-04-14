@@ -104,7 +104,7 @@ export function actorMiddleware(db: Db, opts: ActorMiddlewareOptions): RequestHa
     const key = await db
       .select()
       .from(agentApiKeys)
-      .where(and(eq(agentApiKeys.keyHash, token), isNull(agentApiKeys.revokedAt)))
+      .where(and(eq(agentApiKeys.apiKey, token), isNull(agentApiKeys.revokedAt)))
       .then((rows) => rows[0] ?? null);
 
     if (!key) {

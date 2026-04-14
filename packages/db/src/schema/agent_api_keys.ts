@@ -9,13 +9,13 @@ export const agentApiKeys = pgTable(
     agentId: uuid("agent_id").notNull().references(() => agents.id),
     companyId: uuid("company_id").notNull().references(() => companies.id),
     name: text("name").notNull(),
-    keyHash: text("key_hash").notNull(),
+    apiKey: text("api_key").notNull(),
     lastUsedAt: timestamp("last_used_at", { withTimezone: true }),
     revokedAt: timestamp("revoked_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => ({
-    keyHashIdx: index("agent_api_keys_key_hash_idx").on(table.keyHash),
+    apiKeyIdx: index("agent_api_keys_api_key_idx").on(table.apiKey),
     companyAgentIdx: index("agent_api_keys_company_agent_idx").on(table.companyId, table.agentId),
   }),
 );
