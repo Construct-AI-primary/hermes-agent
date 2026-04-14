@@ -576,7 +576,9 @@ export function agentService(db: Db) {
       });
     },
 
-    createApiKey: async (id: string, name: string) => {
+    createApiKey: async (id: string, name?: string) => {
+      const actualName = name && name.trim().length > 0 ? name.trim() : "default";
+
       const existing = await getById(id);
       if (!existing) throw notFound("Agent not found");
       if (existing.status === "pending_approval") {
@@ -590,10 +592,10 @@ export function agentService(db: Db) {
       const existingKeys = await db
         .select()
         .from(agentApiKeys)
-        .where(and(eq(agentApiKeys.agentId, id), eq(agentApiKeys.name, name)))
+        .where(and(eq(agentApiKeys.agentId, id), eq(agentApiKeys.name, actualName)))
         .then((rows) => rows[0] ?? null);
       if (existingKeys) {
-        throw conflict(`A key with name '${name}' already exists for this agent`);
+        throw conflict(`A key with name '${actualName}' already exists for this agent`);
       }
 
       const token = createToken();
@@ -602,7 +604,7 @@ export function agentService(db: Db) {
         .values({
           agentId: id,
           companyId: existing.companyId,
-          name,
+          name: actualName,
           keyHash: token, // Store plain token instead of hash
         })
         .returning()
