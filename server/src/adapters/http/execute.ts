@@ -27,6 +27,17 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
     });
 
     if (!res.ok) {
+      // If status is configured as acceptable, return success anyway
+      const acceptableStatuses = parseObject(config.acceptableStatuses);
+      const acceptable = Array.isArray(acceptableStatuses) && acceptableStatuses.some((s) => s === res.status);
+      if (acceptable) {
+        return {
+          exitCode: 0,
+          signal: null,
+          timedOut: false,
+          summary: `HTTP ${method} ${url} (status ${res.status} accepted)`,
+        };
+      }
       throw new Error(`HTTP invoke failed with status ${res.status}`);
     }
 
