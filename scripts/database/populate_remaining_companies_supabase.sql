@@ -38,7 +38,13 @@ INSERT INTO companies (
   '#7c3aed',
   NOW(),
   NOW()
-);
+)
+ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name,
+  description = EXCLUDED.description,
+  status = EXCLUDED.status,
+  brand_color = EXCLUDED.brand_color,
+  updated_at = EXCLUDED.updated_at;
 
 -- MobileForge AI - Mobile application ecosystem
 INSERT INTO companies (
@@ -204,7 +210,7 @@ INSERT INTO companies (
   'DomainForge AI',
   'Multi-discipline autonomous AI company for civil engineering expertise, construction management, and infrastructure development',
   'active',
-  'DFG',
+  'DFA',
   0,
   0,
   0,
@@ -771,7 +777,7 @@ ON CONFLICT (id) DO UPDATE SET
 -- STEP 4: AGENT MODEL ASSIGNMENTS - Add model assignments for all new agents
 -- =============================================================================
 
--- ContentForge AI Agent Model Assignments (Using Model Selection Guidelines)
+-- ContentForge AI Agent Model Assignments
 INSERT INTO agent_models (
   agent_id,
   model_id,
@@ -784,40 +790,40 @@ INSERT INTO agent_models (
   reason,
   is_active
 ) VALUES
--- Executive Team (Complex creative strategy)
-('maya-loopy-content-strategist', 'GLM-5.1', 'primary', 1, 0.7, 4096, NOW(), 'system', 'CEO requires complex creative strategy and leadership', true),
-('creative-director', 'GLM-5.1', 'primary', 1, 0.7, 4096, NOW(), 'system', 'Creative director needs complex artistic reasoning', true),
-('content-architect', 'Qwen-3.6', 'primary', 1, 0.7, 4096, NOW(), 'system', 'Content architect requires expert system design', true),
+-- Executive Team
+('maya-loopy-content-strategist', 'anthropic/claude-3.5-sonnet', 'primary', 1, 0.7, 4096, NOW(), 'system', 'Default model assignment for CEO agent', true),
+('creative-director', 'anthropic/claude-3.5-sonnet', 'primary', 1, 0.7, 4096, NOW(), 'system', 'Default model assignment for creative director', true),
+('content-architect', 'anthropic/claude-3.5-sonnet', 'primary', 1, 0.7, 4096, NOW(), 'system', 'Default model assignment for content architect', true),
 
--- Content Creation Team (Creative content generation)
-('narrative-crafter', 'GLM-4-Plus', 'primary', 1, 0.7, 4096, NOW(), 'system', 'Narrative crafting involves creative writing', true),
-('visual-artist', 'GLM-4-Plus', 'primary', 1, 0.7, 4096, NOW(), 'system', 'Visual arts require creative content generation', true),
-('multimedia-producer', 'GLM-4-Plus', 'primary', 1, 0.7, 4096, NOW(), 'system', 'Multimedia production involves creative content', true),
-('content-optimizer', 'GLM-5.1', 'primary', 1, 0.7, 4096, NOW(), 'system', 'Content optimization requires analytical reasoning', true),
+-- Content Creation Team
+('narrative-crafter', 'anthropic/claude-3.5-sonnet', 'primary', 1, 0.7, 4096, NOW(), 'system', 'Default model assignment for narrative crafter', true),
+('visual-artist', 'anthropic/claude-3.5-sonnet', 'primary', 1, 0.7, 4096, NOW(), 'system', 'Default model assignment for visual artist', true),
+('multimedia-producer', 'anthropic/claude-3.5-sonnet', 'primary', 1, 0.7, 4096, NOW(), 'system', 'Default model assignment for multimedia producer', true),
+('content-optimizer', 'anthropic/claude-3.5-sonnet', 'primary', 1, 0.7, 4096, NOW(), 'system', 'Default model assignment for content optimizer', true),
 
--- Content Strategy Team (Strategy and analysis)
-('brand-strategist', 'GLM-5.1', 'primary', 1, 0.7, 4096, NOW(), 'system', 'Brand strategy requires complex reasoning', true),
-('audience-analyst', 'GLM-5.1', 'primary', 1, 0.7, 4096, NOW(), 'system', 'Audience analysis requires deep analytical reasoning', true),
-('trend-forecaster', 'GLM-5.1', 'primary', 1, 0.7, 4096, NOW(), 'system', 'Trend forecasting requires complex analysis', true),
-('content-scheduler', 'GLM-4-Plus', 'primary', 1, 0.7, 4096, NOW(), 'system', 'Content scheduling involves medium complexity planning', true),
+-- Content Strategy Team
+('brand-strategist', 'anthropic/claude-3.5-sonnet', 'primary', 1, 0.7, 4096, NOW(), 'system', 'Default model assignment for brand strategist', true),
+('audience-analyst', 'anthropic/claude-3.5-sonnet', 'primary', 1, 0.7, 4096, NOW(), 'system', 'Default model assignment for audience analyst', true),
+('trend-forecaster', 'anthropic/claude-3.5-sonnet', 'primary', 1, 0.7, 4096, NOW(), 'system', 'Default model assignment for trend forecaster', true),
+('content-scheduler', 'anthropic/claude-3.5-sonnet', 'primary', 1, 0.7, 4096, NOW(), 'system', 'Default model assignment for content scheduler', true),
 
--- Content Technology Team (Technical implementation)
-('content-platform-engineer', 'Qwen-3.6', 'primary', 1, 0.7, 4096, NOW(), 'system', 'Platform engineering requires expert coding', true),
-('ai-content-generator', 'Qwen-3.6', 'primary', 1, 0.7, 4096, NOW(), 'system', 'AI content generation requires expert system design', true),
-('content-quality-assurance', 'GLM-5.1', 'primary', 1, 0.7, 4096, NOW(), 'system', 'Quality assurance requires analytical reasoning', true),
-('content-analytics-engineer', 'Qwen-3.6', 'primary', 1, 0.7, 4096, NOW(), 'system', 'Analytics engineering requires expert data analysis', true),
+-- Content Technology Team
+('content-platform-engineer', 'anthropic/claude-3.5-sonnet', 'primary', 1, 0.7, 4096, NOW(), 'system', 'Default model assignment for platform engineer', true),
+('ai-content-generator', 'anthropic/claude-3.5-sonnet', 'primary', 1, 0.7, 4096, NOW(), 'system', 'Default model assignment for AI content generator', true),
+('content-quality-assurance', 'anthropic/claude-3.5-sonnet', 'primary', 1, 0.7, 4096, NOW(), 'system', 'Default model assignment for quality assurance', true),
+('content-analytics-engineer', 'anthropic/claude-3.5-sonnet', 'primary', 1, 0.7, 4096, NOW(), 'system', 'Default model assignment for analytics engineer', true),
 
--- MobileForge AI Agent Model Assignments (Using Model Selection Guidelines)
-('mobile-maestro', 'GLM-5.1', 'primary', 1, 0.7, 4096, NOW(), 'system', 'CEO requires complex mobile ecosystem strategy', true),
-('app-architecture-director', 'Qwen-3.6', 'primary', 1, 0.7, 4096, NOW(), 'system', 'Mobile architecture requires expert system design', true),
-('ux-mobile-director', 'GLM-5.1', 'primary', 1, 0.7, 4096, NOW(), 'system', 'UX direction requires deep understanding and analysis', true),
-('ios-developer', 'Qwen-3.6', 'primary', 1, 0.7, 4096, NOW(), 'system', 'iOS development requires expert coding skills', true),
-('android-developer', 'Qwen-3.6', 'primary', 1, 0.7, 4096, NOW(), 'system', 'Android development requires expert coding skills', true),
-('cross-platform-developer', 'Qwen-3.6', 'primary', 1, 0.7, 4096, NOW(), 'system', 'Cross-platform development requires expert coding', true),
-('mobile-qa-engineer', 'GLM-5.1', 'primary', 1, 0.7, 4096, NOW(), 'system', 'Mobile QA requires analytical reasoning and testing', true),
-('mobile-ui-designer', 'GLM-4-Plus', 'primary', 1, 0.7, 4096, NOW(), 'system', 'UI design involves creative interface design', true),
-('mobile-ux-researcher', 'GLM-5.1', 'primary', 1, 0.7, 4096, NOW(), 'system', 'UX research requires deep analytical reasoning', true),
-('mobile-accessibility-specialist', 'GLM-5.1', 'primary', 1, 0.7, 4096, NOW(), 'system', 'Accessibility requires deep understanding and analysis', true)
+-- MobileForge AI Agent Model Assignments
+('mobile-maestro', 'anthropic/claude-3.5-sonnet', 'primary', 1, 0.7, 4096, NOW(), 'system', 'Default model assignment for CEO agent', true),
+('app-architecture-director', 'anthropic/claude-3.5-sonnet', 'primary', 1, 0.7, 4096, NOW(), 'system', 'Default model assignment for architecture director', true),
+('ux-mobile-director', 'anthropic/claude-3.5-sonnet', 'primary', 1, 0.7, 4096, NOW(), 'system', 'Default model assignment for UX director', true),
+('ios-developer', 'anthropic/claude-3.5-sonnet', 'primary', 1, 0.7, 4096, NOW(), 'system', 'Default model assignment for iOS developer', true),
+('android-developer', 'anthropic/claude-3.5-sonnet', 'primary', 1, 0.7, 4096, NOW(), 'system', 'Default model assignment for Android developer', true),
+('cross-platform-developer', 'anthropic/claude-3.5-sonnet', 'primary', 1, 0.7, 4096, NOW(), 'system', 'Default model assignment for cross-platform developer', true),
+('mobile-qa-engineer', 'anthropic/claude-3.5-sonnet', 'primary', 1, 0.7, 4096, NOW(), 'system', 'Default model assignment for QA engineer', true),
+('mobile-ui-designer', 'anthropic/claude-3.5-sonnet', 'primary', 1, 0.7, 4096, NOW(), 'system', 'Default model assignment for UI designer', true),
+('mobile-ux-researcher', 'anthropic/claude-3.5-sonnet', 'primary', 1, 0.7, 4096, NOW(), 'system', 'Default model assignment for UX researcher', true),
+('mobile-accessibility-specialist', 'anthropic/claude-3.5-sonnet', 'primary', 1, 0.7, 4096, NOW(), 'system', 'Default model assignment for accessibility specialist', true)
 ON CONFLICT (agent_id, assignment_type) DO NOTHING;
 
 COMMIT;
@@ -826,11 +832,11 @@ COMMIT;
 -- SUCCESS MESSAGE
 -- =============================================================================
 
--- If you reach this point without errors, ContentForge AI and MobileForge AI
+-- If you reach this point without errors, the remaining companies and agents
 -- have been successfully inserted into the Paperclip database.
 
 -- Next steps:
--- 1. Continue with ExecForge AI, SaaSForge AI, VoiceForge AI, and DomainForge AI
--- 2. Run the verification script to confirm successful insertion
+-- 1. Run the verification script to confirm successful insertion
+-- 2. Continue with ExecForge AI, SaaSForge AI, VoiceForge AI, and DomainForge AI
 -- 3. Update AGENTS.md files with correct reportsTo field matching database
 -- 4. Test agent functionality in the Paperclip system

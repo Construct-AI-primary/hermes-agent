@@ -11,6 +11,12 @@ Examples:
 - User: `hermes run --model "anthropic/claude-opus-4.6" --task "deep analysis"`
   → Run: `./hermes_agent/run.sh --model "anthropic/claude-opus-4.6" --task "deep analysis"`
 
+- User: `hermes run --mode plan "analyze this project"`
+  → Run: `./hermes_agent/run.sh --mode plan "analyze this project"`
+
+- User: `hermes run --mode execute "implement this feature"`
+  → Run: `./hermes_agent/run.sh --mode execute "implement this feature"`
+
 ## Setup Required
 Before running Hermes, ensure:
 1. API key is set in `hermes_agent/.env` — uncomment `OPENROUTER_API_KEY=` and add your key

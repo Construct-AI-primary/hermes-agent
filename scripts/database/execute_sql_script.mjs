@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-import { createClient } from '@supabase/supabase-js';
+import pkg from 'pg';
+const { Client } = pkg;
 import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
@@ -7,61 +8,77 @@ import { dirname, join } from 'path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const SUPABASE_URL = 'https://gmorarhibiptvcrnvrpi.supabase.co';
-const SUPABASE_SERVICE_ROLE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdtb3JhcmhpYmlwdHZjcm52cnBpIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MzI4MzI0OSwiZXhwIjoyMDg4ODU5MjQ5fQ.LMTbfUtyurnJDfn_aW4UIXiyMLwTUMhc70jjRAZRpIQ';
-
-const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+const client = new Client({
+  connectionString: 'postgresql://postgres.gmorarhibiptvcrnvrpi:bmdPWI7wQ172Ch1m@aws-1-eu-west-1.pooler.supabase.com:6543/postgres',
+  ssl: {
+    rejectUnauthorized: false
+  }
+});
 
 async function executeSqlScript(scriptPath) {
   try {
+    await client.connect();
     console.log(`\n📝 Reading SQL script: ${scriptPath}\n`);
     const sqlContent = readFileSync(scriptPath, 'utf8');
-    
+
     // Split into statements (simple split by semicolon, works for most cases)
     const statements = sqlContent
       .split(';')
-      .map(s => s.trim())
-      .filter(s => s.length > 0 && !s.startsWith('--'));
-    
+      .map(s => {
+        // Remove leading comments and whitespace
+        let cleaned = s.trim();
+        while (cleaned.startsWith('--')) {
+          const lines = cleaned.split('\n');
+          // Remove the first line if it starts with --
+          if (lines[0].trim().startsWith('--')) {
+            lines.shift();
+            cleaned = lines.join('\n').trim();
+          } else {
+            break;
+          }
+        }
+        return cleaned;
+      })
+      .filter(s => s.length > 0);
+
     console.log(`✅ Found ${statements.length} SQL statements to execute\n`);
-    
+
     for (let i = 0; i < statements.length; i++) {
       const statement = statements[i];
       if (statement) {
         console.log(`\n[${i + 1}/${statements.length}] Executing statement...\n`);
-        
-        const { data, error } = await supabase.rpc('exec_sql', { 
-          sql_query: statement 
-        });
-        
-        if (error) {
-          // Try direct query for SELECT statements
+        console.log(`SQL: ${statement.substring(0, 100)}...`);
+
+        try {
+          const result = await client.query(statement);
+
           if (statement.trim().toUpperCase().startsWith('SELECT')) {
-            const { data: selectData, error: selectError } = await supabase
-              .from('raw_sql')
-              .select('*')
-              .limit(0); // This won't work, let me try a different approach
-            
-            console.log('⚠️  Note: SELECT queries may not return results via this method');
-            console.log('   Consider using psql directly for verification queries');
+            console.log('📊 Query results:');
+            console.log(`   Rows returned: ${result.rows.length}`);
+            if (result.rows.length > 0 && result.rows.length <= 10) {
+              console.table(result.rows);
+            } else if (result.rows.length > 10) {
+              console.log('   (Too many rows to display - showing first row)');
+              console.table([result.rows[0]]);
+            }
           } else {
-            console.error('❌ Error executing statement:', error.message);
-            console.error('Statement:', statement.substring(0, 200));
+            console.log(`✅ Statement executed successfully (${result.rowCount || 0} rows affected)`);
           }
-        } else {
-          console.log('✅ Statement executed successfully');
-          if (data) {
-            console.log('📊 Result:', JSON.stringify(data, null, 2));
-          }
+        } catch (err) {
+          console.error('❌ Error executing statement:', err.message);
+          console.error('Statement:', statement.substring(0, 200));
+          // Continue with next statement instead of exiting
         }
       }
     }
-    
+
     console.log('\n✨ Script execution complete!\n');
-    
+
   } catch (err) {
     console.error('❌ Fatal error:', err.message);
     process.exit(1);
+  } finally {
+    await client.end();
   }
 }
 

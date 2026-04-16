@@ -1,10 +1,8 @@
--- Supabase Agents Data Population
--- Populates DomainForge AI and InfraForge AI companies and agent data into Supabase tables
+-- New Agents Population: Atlas and Nimbus
+-- Populates PaperclipForge AI and InfraForge AI with the new Atlas and Nimbus agents
 -- Run this against your Supabase database
 
--- Insert companies first (required for foreign key constraints)
--- Note: DFA prefix already exists (DevForge AI: f97b30e8-b022-4350-b4b0-30d43e2ebcf4)
--- Using unique prefixes to avoid conflicts
+-- Insert required companies first (required for foreign key constraints)
 INSERT INTO companies (
   id,
   name,
@@ -20,18 +18,18 @@ INSERT INTO companies (
   updated_at
 ) VALUES
 (
-  '2d7d9c60-c02f-42a7-8f6a-7db86ecc879d',
-  'DomainForge AI',
-  'Multi-discipline autonomous AI company specializing in comprehensive engineering expertise across civil engineering disciplines',
+  '550e8400-e29b-41d4-a716-446655440000',
+  'PaperclipForge AI',
+  'Central Paperclip ecosystem management and orchestration company',
   'active',
-  'DOM',
+  'PFA',
   0,
   0,
   0,
   true,
-  '#2563eb',
-  '2026-03-30T15:53:00.000Z',
-  '2026-03-30T15:53:00.000Z'
+  '#8b5cf6',
+  NOW(),
+  NOW()
 ),
 (
   '09f438a3-4041-46f2-b3cc-96fc9446e666',
@@ -44,15 +42,16 @@ INSERT INTO companies (
   0,
   true,
   '#7c3aed',
-  '2026-03-30T15:54:00.000Z',
-  '2026-03-30T15:54:00.000Z'
+  NOW(),
+  NOW()
 )
 ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name,
   description = EXCLUDED.description,
   status = EXCLUDED.status,
   issue_prefix = EXCLUDED.issue_prefix,
-  brand_color = EXCLUDED.brand_color;
+  brand_color = EXCLUDED.brand_color,
+  updated_at = EXCLUDED.updated_at;
 
 -- Insert all agents from documentation
 INSERT INTO agents (
