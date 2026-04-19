@@ -23,7 +23,7 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
   console.log("[process-adapter] Execution starting", {
     runId,
     agentId: agent.id,
-    agentSlug: agent.slug,
+    agentName: agent.name,
     adapterType: agent.adapterType,
     command,
     args,
