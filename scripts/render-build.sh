@@ -31,25 +31,41 @@ ls -la hermes_agent/ 2>&1 || echo "Cannot list hermes_agent directory"
 echo "[4d] hermes_agent/.git exists: $(test -d hermes_agent/.git && echo YES || echo NO)"
 
 # Fallback: if hermes_agent is still empty, clone it directly
-if [ ! -f hermes_agent/run.sh ]; then
-    echo "=== [BUILD-STEP-5] FALLBACK: hermes_agent/run.sh not found, cloning directly ==="
-    rm -rf hermes_agent
-    echo "[5a] Cloning https://github.com/tennantalistair/hermes-agent.git..."
-    git clone https://github.com/tennantalistair/hermes-agent.git hermes_agent 2>&1
-    echo "[5b] Clone result: $?"
-    echo "[5c] hermes_agent/run.sh exists after clone: $(test -f hermes_agent/run.sh && echo YES || echo NO)"
-    echo "[5d] hermes_agent directory contents after clone:"
-    ls -la hermes_agent/ 2>&1
-else
+HERMES_AGENT_READY=false
+if [ -f hermes_agent/run.sh ]; then
     echo "=== [BUILD-STEP-5] SKIPPED: hermes_agent/run.sh already exists ==="
+    HERMES_AGENT_READY=true
+else
+    echo "=== [BUILD-STEP-5] FALLBACK: hermes_agent/run.sh not found, cloning directly ==="
+    rm -rf hermes_agent 2>/dev/null || true
+    echo "[5a] Cloning https://github.com/tennantalistair/hermes-agent.git..."
+    if git clone https://github.com/tennantalistair/hermes-agent.git hermes_agent 2>&1; then
+        echo "[5b] Clone SUCCESS"
+        if [ -f hermes_agent/run.sh ]; then
+            echo "[5c] hermes_agent/run.sh exists after clone: YES"
+            HERMES_AGENT_READY=true
+        else
+            echo "[5c] hermes_agent/run.sh exists after clone: NO"
+            echo "[5d] hermes_agent directory contents after clone:"
+            ls -la hermes_agent/ 2>&1 || echo "Cannot list directory"
+        fi
+    else
+        echo "[5b] Clone FAILED - hermes_agent will not be available"
+        echo "[5c] This may be because the repo is private or network issues"
+    fi
 fi
 
 echo "=== [BUILD-STEP-6] Final hermes_agent verification ==="
-echo "[6a] run.sh exists: $(test -f hermes_agent/run.sh && echo YES || echo NO)"
-echo "[6b] run.sh is executable: $(test -x hermes_agent/run.sh && echo YES || echo NO)"
-echo "[6c] run.sh first 5 lines:"
-head -5 hermes_agent/run.sh 2>&1 || echo "Cannot read run.sh"
-echo "[6d] hermes_agent file count: $(find hermes_agent -type f 2>/dev/null | wc -l)"
+echo "[6a] HERMES_AGENT_READY: $HERMES_AGENT_READY"
+if [ "$HERMES_AGENT_READY" = true ]; then
+    echo "[6b] run.sh exists: YES"
+    echo "[6c] run.sh is executable: $(test -x hermes_agent/run.sh && echo YES || echo NO)"
+    echo "[6d] run.sh first 5 lines:"
+    head -5 hermes_agent/run.sh 2>&1 || echo "Cannot read run.sh"
+    echo "[6e] hermes_agent file count: $(find hermes_agent -type f 2>/dev/null | wc -l)"
+else
+    echo "[6b] hermes_agent NOT available - agent runs will fail but server will start"
+fi
 
 echo "=== [BUILD-STEP-7] Installing pnpm ==="
 npm install -g pnpm@9.15.4
@@ -86,40 +102,46 @@ else
     echo "[10a] Python3 already available: $(python3 --version)"
 fi
 
-# Set up Hermes agent virtual environment
-echo "[10b] Setting up Hermes agent virtual environment..."
-cd hermes_agent
-echo "[10c] Current directory: $(pwd)"
-echo "[10d] Directory contents:"
-ls -la 2>&1
+# Only set up hermes_agent if the directory exists and has content
+if [ "$HERMES_AGENT_READY" = true ] && [ -d hermes_agent ]; then
+    echo "[10b] Setting up Hermes agent virtual environment..."
+    cd hermes_agent
+    echo "[10c] Current directory: $(pwd)"
+    echo "[10d] Directory contents:"
+    ls -la 2>&1
 
-python3 -m venv venv 2>&1
-echo "[10e] venv creation result: $?"
+    python3 -m venv venv 2>&1
+    echo "[10e] venv creation result: $?"
 
-source venv/bin/activate
-echo "[10f] venv activated: $(which python)"
+    source venv/bin/activate
+    echo "[10f] venv activated: $(which python)"
 
-# Install Hermes agent dependencies
-echo "[10g] Installing Hermes agent dependencies..."
-pip install --upgrade pip 2>&1 | tail -3
-echo "[10h] pip upgrade result: $?"
+    # Install Hermes agent dependencies
+    echo "[10g] Installing Hermes agent dependencies..."
+    pip install --upgrade pip 2>&1 | tail -3
+    echo "[10h] pip upgrade result: $?"
 
-pip install -e . 2>&1 | tail -10
-echo "[10i] pip install result: $?"
+    pip install -e . 2>&1 | tail -10
+    echo "[10i] pip install result: $?"
 
-# Verify hermes command is available
-echo "[10j] Verifying Hermes installation..."
-./hermes --version 2>&1 || echo "[10j] Hermes command not found, but continuing build"
+    # Verify hermes command is available
+    echo "[10j] Verifying Hermes installation..."
+    ./hermes --version 2>&1 || echo "[10j] Hermes command not found, but continuing build"
 
-# Return to project root
-cd ..
-deactivate
+    # Return to project root
+    cd ..
+    deactivate
+else
+    echo "[10b] SKIPPED: hermes_agent directory not available or not ready"
+    echo "[10c] The server will start but hermes agent runs will fail"
+    echo "[10d] To fix: ensure the hermes_agent submodule can be initialized or cloned"
+fi
 
 echo "=== [BUILD-STEP-11] Final deployment verification ==="
 echo "[11a] server/dist/index.js: $(test -f server/dist/index.js && echo EXISTS || echo MISSING)"
 echo "[11b] hermes_agent/run.sh: $(test -f hermes_agent/run.sh && echo EXISTS || echo MISSING)"
 echo "[11c] hermes_agent/venv: $(test -d hermes_agent/venv && echo EXISTS || echo MISSING)"
 echo "[11d] Full hermes_agent tree (top 2 levels):"
-find hermes_agent -maxdepth 2 -type f 2>&1 | head -30
+find hermes_agent -maxdepth 2 -type f 2>&1 | head -30 || echo "hermes_agent directory not found"
 
 echo "=== [BUILD-COMPLETE] Build finished ==="
