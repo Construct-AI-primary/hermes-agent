@@ -2,7 +2,17 @@
 set -e
 
 echo "=== Initializing git submodules ==="
-git submodule update --init --recursive
+# Initialize each submodule individually to avoid failures from unregistered .git directories
+git submodule update --init docs-construct-ai || echo "WARNING: docs-construct-ai submodule init failed"
+git submodule update --init docs-paperclip || echo "WARNING: docs-paperclip submodule init failed"
+git submodule update --init hermes_agent || echo "WARNING: hermes_agent submodule init failed"
+
+# Fallback: if hermes_agent is still empty, clone it directly
+if [ ! -f hermes_agent/run.sh ]; then
+    echo "=== Hermes agent submodule empty, cloning directly ==="
+    rm -rf hermes_agent
+    git clone https://github.com/tennantalistair/hermes-agent.git hermes_agent
+fi
 
 echo "=== Installing pnpm ==="
 npm install -g pnpm@9.15.4
