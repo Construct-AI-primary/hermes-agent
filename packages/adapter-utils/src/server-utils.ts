@@ -1097,8 +1097,56 @@ export async function runChildProcess(
     }
 
     const mergedEnv = ensurePathInEnv(rawMerged);
+    // Pre-spawn diagnostics for ENOENT debugging
+    const commandDiagnostic = async () => {
+      const resolved = await resolveCommandPath(command, opts.cwd, mergedEnv);
+      const hasSlash = command.includes("/") || command.includes("\\");
+      const absoluteCommand = hasSlash
+        ? (path.isAbsolute(command) ? command : path.resolve(opts.cwd, command))
+        : null;
+      let fileExists = false;
+      let fileStats: string | null = null;
+      if (absoluteCommand) {
+        try {
+          const stat = await fs.stat(absoluteCommand);
+          fileExists = true;
+          fileStats = `mode=${stat.mode.toString(8)}, size=${stat.size}, uid=${stat.uid}, gid=${stat.gid}, executable=${(stat.mode & 0o111) !== 0}`;
+        } catch {
+          fileExists = false;
+          fileStats = "stat failed";
+        }
+      }
+      return {
+        command,
+        resolvedCommand: resolved,
+        cwd: opts.cwd,
+        cwdAbsolute: path.resolve(opts.cwd),
+        absoluteCommand,
+        fileExists,
+        fileStats,
+        pathValue: (mergedEnv.PATH ?? mergedEnv.Path ?? "").substring(0, 500),
+      };
+    };
+
+    void commandDiagnostic()
+      .then((diag) => {
+        console.log("[runChildProcess] Pre-spawn diagnostics", {
+          runId,
+          ...diag,
+        });
+      })
+      .catch((err) => {
+        console.warn("[runChildProcess] Diagnostic check failed", { runId, error: String(err) });
+      });
+
     void resolveSpawnTarget(command, args, opts.cwd, mergedEnv)
       .then((target) => {
+        console.log("[runChildProcess] Spawning", {
+          runId,
+          targetCommand: target.command,
+          targetArgs: target.args,
+          cwd: opts.cwd,
+        });
         const child = spawn(target.command, target.args, {
           cwd: opts.cwd,
           env: mergedEnv,

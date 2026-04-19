@@ -18,6 +18,19 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
 
   const args = asStringArray(config.args);
   const cwd = asString(config.cwd, process.cwd());
+
+  // Granular pre-execution diagnostics
+  console.log("[process-adapter] Execution starting", {
+    runId,
+    agentId: agent.id,
+    agentSlug: agent.slug,
+    adapterType: agent.adapterType,
+    command,
+    args,
+    cwd,
+    configCwd: asString(config.cwd, ""),
+    processCwd: process.cwd(),
+  });
   const envConfig = parseObject(config.env);
   const env: Record<string, string> = { ...buildPaperclipEnv(agent) };
   for (const [k, v] of Object.entries(envConfig)) {
