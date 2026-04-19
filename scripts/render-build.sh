@@ -27,5 +27,31 @@ pnpm --filter @paperclipai/ui build
 # Skip preflight:workspace-links for server build - workspace links are already correct after pnpm install
 cd server && tsc && mkdir -p dist/onboarding-assets && cp -R src/onboarding-assets/. dist/onboarding-assets/ && cd ..
 
+echo "=== Setting up Python and Hermes Agent ==="
+# Install Python and pip if not available
+if ! command -v python3 &> /dev/null; then
+    echo "Installing Python3..."
+    apt-get update && apt-get install -y python3 python3-pip python3-venv
+fi
+
+# Set up Hermes agent virtual environment
+echo "Setting up Hermes agent virtual environment..."
+cd hermes_agent
+python3 -m venv venv
+source venv/bin/activate
+
+# Install Hermes agent dependencies
+echo "Installing Hermes agent dependencies..."
+pip install --upgrade pip
+pip install -e .
+
+# Verify hermes command is available
+echo "Verifying Hermes installation..."
+./hermes --version || echo "Hermes command not found, but continuing build"
+
+# Return to project root
+cd ..
+deactivate
+
 echo "=== Build complete ==="
 ls -la server/dist/index.js 2>/dev/null || echo "WARNING: server/dist/index.js not found!"

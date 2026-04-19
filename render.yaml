@@ -38,7 +38,9 @@ services:
         value: "true"
       - key: PAPERCLIP_DB_BACKUP_ENABLED
         value: "true"
-    disk:
-      name: paperclip-data
-      mountPath: /paperclip
-      sizeGB: 10
+      - key: OPENROUTER_API_KEY
+        sync: false
+     disk:
+       name: paperclip-data
+       mountPath: /paperclip
+       sizeGB: 10
