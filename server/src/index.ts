@@ -472,6 +472,23 @@ export async function startServer(): Promise<StartedServer> {
   if (config.deploymentMode === "local_trusted") {
     await ensureLocalTrustedBoardPrincipal(db as any);
   }
+
+  // Data migration: switch agents from process adapter (hermes_agent/run.sh) to hermes_local
+  // The hermes_local adapter is built into the server and doesn't need the submodule
+  try {
+    const hermesMigrationResult = await (db as any).execute(
+      // eslint-disable-next-line no-template-curly-in-string
+      `UPDATE agents SET adapter_type = 'hermes_local', adapter_config = '{}' WHERE adapter_type = 'process' AND adapter_config::text LIKE '%hermes_agent%'`
+    );
+    if (hermesMigrationResult.rowCount > 0) {
+      logger.info(
+        { migratedAgents: hermesMigrationResult.rowCount },
+        "Migrated agents from process adapter (hermes_agent/run.sh) to hermes_local adapter"
+      );
+    }
+  } catch (err) {
+    logger.warn({ err: String(err) }, "Failed to migrate agents to hermes_local adapter (non-fatal)");
+  }
   if (config.deploymentMode === "authenticated") {
     const {
       createBetterAuthHandler,
