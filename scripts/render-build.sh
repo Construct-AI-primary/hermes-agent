@@ -1,6 +1,9 @@
 #!/bin/bash
 set -e
 
+echo "=== Initializing git submodules ==="
+git submodule update --init --recursive
+
 echo "=== Installing pnpm ==="
 npm install -g pnpm@9.15.4
 
