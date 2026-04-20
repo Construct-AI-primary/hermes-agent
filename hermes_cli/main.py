@@ -8416,7 +8416,7 @@ Examples:
                 print(f"[cmd_serve] adapter.connect() raised:\n{tb}", file=_sys.stderr)
                 _sys.exit(1)
             if not success:
-                print("Failed to start API server. Check logs for details.", file=_sys.stderr)
+                print("Failed to start API server. Check logs for details.", file=sys.stderr)
                 sys.exit(1)
 
             try:
