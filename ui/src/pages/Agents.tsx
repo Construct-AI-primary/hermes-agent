@@ -70,7 +70,24 @@ export function Agents() {
 
   const { data: agents, isLoading, error } = useQuery({
     queryKey: queryKeys.agents.list(selectedCompanyId!),
-    queryFn: () => agentsApi.list(selectedCompanyId!),
+    queryFn: async () => {
+      console.log('[Agents] Fetching agents for company:', selectedCompanyId);
+      try {
+        const result = await agentsApi.list(selectedCompanyId!);
+        console.log('[Agents] Received agents:', {
+          companyId: selectedCompanyId,
+          count: result.length,
+          agents: result.map(a => ({ id: a.id, name: a.name, status: a.status, companyId: a.companyId }))
+        });
+        return result;
+      } catch (err) {
+        console.error('[Agents] Error fetching agents:', {
+          companyId: selectedCompanyId,
+          error: err
+        });
+        throw err;
+      }
+    },
     enabled: !!selectedCompanyId,
   });
 

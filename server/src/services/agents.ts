@@ -730,6 +730,15 @@ export function agentService(db: Db) {
         .from(heartbeatRuns)
         .where(and(eq(heartbeatRuns.agentId, agentId), inArray(heartbeatRuns.status, ["queued", "running"]))),
 
+    listForCompany: async (companyId: string) => {
+      const rows = await db
+        .select()
+        .from(agents)
+        .where(and(eq(agents.companyId, companyId), ne(agents.status, "terminated")));
+      const normalizedRows = rows.map(normalizeAgentRow);
+      return hydrateAgentSpend(normalizedRows);
+    },
+
     resolveByReference: async (companyId: string, reference: string) => {
       const raw = reference.trim();
       if (raw.length === 0) {

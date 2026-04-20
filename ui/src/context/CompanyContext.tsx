@@ -75,10 +75,19 @@ export function CompanyProvider({ children }: { children: ReactNode }) {
   }, [companies, selectedCompanyId, sidebarCompanies]);
 
   const setSelectedCompanyId = useCallback((companyId: string, options?: CompanySelectionOptions) => {
+    const prevCompanyId = selectedCompanyId;
+    const newCompany = companies.find(c => c.id === companyId);
+    console.log('🔵 [CompanyContext] setSelectedCompanyId:', {
+      prevCompanyId,
+      newCompanyId: companyId,
+      newCompanyName: newCompany?.name ?? 'unknown',
+      source: options?.source ?? 'manual',
+      availableCompanies: companies.map(c => ({ id: c.id, name: c.name, status: c.status }))
+    });
     setSelectedCompanyIdState(companyId);
     setSelectionSource(options?.source ?? "manual");
     localStorage.setItem(STORAGE_KEY, companyId);
-  }, []);
+  }, [selectedCompanyId, companies]);
 
   const reloadCompanies = useCallback(async () => {
     await queryClient.invalidateQueries({ queryKey: queryKeys.companies.all });

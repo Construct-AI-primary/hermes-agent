@@ -377,6 +377,32 @@ export function companyRoutes(db: Db, storage?: StorageService) {
     res.json(company);
   });
 
+  router.get("/:companyId/agents", async (req, res) => {
+    const companyId = req.params.companyId as string;
+    console.log('[GET /:companyId/agents] Request:', {
+      companyId,
+      actor: req.actor,
+      headers: {
+        authorization: req.headers.authorization ? 'Bearer [redacted]' : undefined,
+        cookie: req.headers.cookie ? 'present' : undefined,
+      }
+    });
+    try {
+      assertCompanyAccess(req, companyId);
+      console.log('[GET /:companyId/agents] Access granted, fetching agents for:', companyId);
+      const agentsList = await agents.listForCompany(companyId);
+      console.log('[GET /:companyId/agents] Response:', {
+        companyId,
+        agentCount: agentsList.length,
+        agents: agentsList.map(a => ({ id: a.id, name: a.name, status: a.status }))
+      });
+      res.json(agentsList);
+    } catch (err) {
+      console.error('[GET /:companyId/agents] Error:', { companyId, error: err });
+      throw err;
+    }
+  });
+
   router.post("/:companyId/archive", async (req, res) => {
     assertBoard(req);
     const companyId = req.params.companyId as string;

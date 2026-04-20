@@ -734,6 +734,13 @@ export function LiveUpdatesProvider({ children }: { children: ReactNode }) {
   const currentUserId = session?.user?.id ?? session?.session?.userId ?? null;
   const socketAuthKey = session?.session?.id ?? currentUserId ?? "signed_out";
   const liveCompanyId = resolveLiveCompanyId(selectedCompanyId, selectedCompany?.id ?? null);
+  console.log('[LiveUpdatesProvider] Company context:', {
+    selectedCompanyId,
+    selectedCompanyId2: selectedCompany?.id,
+    liveCompanyId,
+    sessionStatus,
+    hasSession: !!session
+  });
   const canConnectSocket = sessionStatus === "success" && session !== null && liveCompanyId !== null;
   const currentActorRef = useRef<{ userId: string | null; agentId: string | null }>({
     userId: currentUserId,

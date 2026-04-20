@@ -27,10 +27,29 @@ export function SidebarAgents() {
   const { isMobile, setSidebarOpen } = useSidebar();
   const location = useLocation();
 
-  const { data: agents } = useQuery({
+  const { data: agents, isLoading, error } = useQuery({
     queryKey: queryKeys.agents.list(selectedCompanyId!),
-    queryFn: () => agentsApi.list(selectedCompanyId!),
+    queryFn: async () => {
+      console.log('🔵 [SidebarAgents] FETCHING agents for:', selectedCompanyId);
+      try {
+        const result = await agentsApi.list(selectedCompanyId!);
+        console.log('🟢 [SidebarAgents] RECEIVED', result.length, 'agents:', result.map(a => a.name));
+        return result;
+      } catch (err) {
+        console.error('🔴 [SidebarAgents] ERROR:', err);
+        throw err;
+      }
+    },
     enabled: !!selectedCompanyId,
+  });
+
+  console.log('📊 [SidebarAgents] state:', {
+    selectedCompanyId,
+    isLoading,
+    hasError: !!error,
+    errorMsg: error?.message,
+    agentsCount: agents?.length ?? 0,
+    agents: agents?.map(a => ({ id: a.id, name: a.name, companyId: a.companyId }))
   });
   const { data: session } = useQuery({
     queryKey: queryKeys.auth.session,

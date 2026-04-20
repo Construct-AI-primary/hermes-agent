@@ -17,8 +17,13 @@ self.addEventListener("fetch", (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // Skip non-GET requests and API calls
+  // Skip non-GET requests, API calls, and WebSocket upgrades
   if (request.method !== "GET" || url.pathname.startsWith("/api")) {
+    return;
+  }
+
+  // Skip WebSocket connections - they cannot be proxied through fetch
+  if (url.protocol === "ws:" || url.protocol === "wss:") {
     return;
   }
 
@@ -34,7 +39,10 @@ self.addEventListener("fetch", (event) => {
       })
       .catch(() => {
         if (request.mode === "navigate") {
-          return caches.match("/") || new Response("Offline", { status: 503 });
+          return caches.match("/").then((cachedResponse) => {
+            if (cachedResponse) return cachedResponse;
+            return new Response("Offline", { status: 503 });
+          });
         }
         return caches.match(request);
       })
