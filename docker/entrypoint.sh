@@ -72,8 +72,9 @@ fi
 # Used by Render (dockerCommand) and other container deployments.
 case "${HERMES_MODE:-chat}" in
     serve|server|api)
-        # Render sets $RENDER_PORT; fall back to API_SERVER_PORT for local/docker dev
-        _port="${RENDER_PORT:-${PORT:-${API_SERVER_PORT:-8642}}}"
+        # Render sets $PORT; local/Docker fallbacks: API_SERVER_PORT, then 8642
+        _port="${PORT:-${API_SERVER_PORT:-8642}}"
+        echo "[entrypoint] Resolved port: $_port (RENDER_PORT=${RENDER_PORT:-unset}, PORT=${PORT:-unset}, API_SERVER_PORT=${API_SERVER_PORT:-unset})"
         exec hermes serve --host "${API_SERVER_HOST:-0.0.0.0}" --port "${_port}"
         ;;
     *)

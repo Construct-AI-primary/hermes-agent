@@ -8351,7 +8351,7 @@ Examples:
         
         # Build platform config from CLI args
         host = os.getenv("API_SERVER_HOST") or getattr(args, 'host', '0.0.0.0')
-        port = int(os.getenv("API_SERVER_PORT") or getattr(args, 'port', 8642))
+        port = int(os.getenv("PORT") or os.getenv("API_SERVER_PORT") or getattr(args, 'port', 8642))
         api_key = getattr(args, 'api_key', None)
         cors_origins = getattr(args, 'cors_origins', '')
         model_name = getattr(args, 'model_name', '')
