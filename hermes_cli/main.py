@@ -8350,8 +8350,8 @@ Examples:
         from gateway.platforms.api_server import APIServerAdapter
         
         # Build platform config from CLI args
-        host = getattr(args, 'host', '0.0.0.0')
-        port = getattr(args, 'port', 8642)
+        host = os.getenv("API_SERVER_HOST") or getattr(args, 'host', '0.0.0.0')
+        port = int(os.getenv("API_SERVER_PORT") or getattr(args, 'port', 8642))
         api_key = getattr(args, 'api_key', None)
         cors_origins = getattr(args, 'cors_origins', '')
         model_name = getattr(args, 'model_name', '')

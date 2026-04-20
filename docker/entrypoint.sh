@@ -68,4 +68,13 @@ if [ -d "$INSTALL_DIR/skills" ]; then
     python3 "$INSTALL_DIR/tools/skills_sync.py"
 fi
 
-exec hermes "$@"
+# Mode-driven execution: HERMES_MODE overrides default interactive CLI.
+# Used by Render (dockerCommand) and other container deployments.
+case "${HERMES_MODE:-chat}" in
+    serve|server|api)
+        exec hermes serve --host "${API_SERVER_HOST:-0.0.0.0}" --port "${API_SERVER_PORT:-10000}"
+        ;;
+    *)
+        exec hermes "$@"
+        ;;
+esac
