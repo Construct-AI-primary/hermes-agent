@@ -3,6 +3,14 @@
 // when PostgreSQL hostnames resolve to IPv6 addresses
 import { setDefaultResultOrder } from "node:dns";
 try { setDefaultResultOrder("ipv4first"); } catch { /* Node.js < 16.4 */ }
+
+// Ensure Python user bin is in PATH for hermes_local adapter
+// The hermes CLI is installed via `pip install --user` during build
+// and needs to be available when the server spawns hermes processes
+if (process.env.HOME && !process.env.PATH?.includes(`${process.env.HOME}/.local/bin`)) {
+  process.env.PATH = `${process.env.HOME}/.local/bin:${process.env.PATH || ''}`;
+}
+
 import { existsSync, readFileSync, rmSync } from "node:fs";
 import { createServer } from "node:http";
 import { resolve } from "node:path";

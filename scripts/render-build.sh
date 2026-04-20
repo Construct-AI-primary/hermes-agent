@@ -32,12 +32,17 @@ pnpm install --frozen-lockfile --prod=false
 
 echo "=== [BUILD-STEP-5.5] Installing Hermes Agent CLI ==="
 # The hermes_local adapter requires the hermes CLI command to be available
-# Install hermes-agent Python package globally
+# Install hermes-agent Python package with --user flag to ensure it goes to a PATH location
 # Note: Render auto-detects Python and may install Poetry, which can cause delays
 # Use --no-cache-dir to avoid caching issues and --timeout to prevent hangs
-python3 -m pip install --no-cache-dir --timeout=60 --upgrade pip 2>&1 | head -20
-python3 -m pip install --no-cache-dir --timeout=120 hermes-agent 2>&1 | head -50
-echo "Hermes installation complete. Version check: $(hermes --version 2>&1 || echo 'hermes command not in PATH yet')"
+python3 -m pip install --user --no-cache-dir --timeout=60 --upgrade pip 2>&1 | head -20
+python3 -m pip install --user --no-cache-dir --timeout=120 hermes-agent 2>&1 | head -50
+
+# Add Python user bin to PATH for runtime
+export PATH="$HOME/.local/bin:$PATH"
+echo "Python user bin added to PATH: $HOME/.local/bin"
+echo "Hermes installation complete. Version check: $(hermes --version 2>&1 || echo 'hermes command not in PATH')"
+echo "Hermes location: $(which hermes 2>&1 || echo 'not found in PATH')"
 
 echo "=== [BUILD-STEP-6] Building packages ==="
 # shared first - it has no internal workspace deps
