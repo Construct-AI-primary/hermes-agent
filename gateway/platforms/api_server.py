@@ -2629,46 +2629,6 @@ class APIServerAdapter(BasePlatformAdapter):
             if hasattr(sweep_task, "add_done_callback"):
                 sweep_task.add_done_callback(self._background_tasks.discard)
 
-            # Refuse to start network-accessible without authentication
-            if is_network_accessible(self._host) and not self._api_key:
-                msg = (
-                    f"[{self.name}] REJECTING start: host={self._host} is network-accessible "
-                    f"but no API_SERVER_KEY is set. Refusing to bind. "
-                    f"Set API_SERVER_KEY or use --host 127.0.0.1."
-                )
-                _sys.stderr.write(f"{msg}\n")
-                _sys.stderr.flush()
-                logger.error(
-                    "[%s] Refusing to start: binding to %s requires API_SERVER_KEY. "
-                    "Set API_SERVER_KEY or use the default 127.0.0.1.",
-                    self.name, self._host,
-                )
-                return False
-
-            # Refuse to start network-accessible with a placeholder key.
-            # Ported from openclaw/openclaw#64586.
-            if is_network_accessible(self._host) and self._api_key:
-                try:
-                    from hermes_cli.auth import has_usable_secret
-                    if not has_usable_secret(self._api_key, min_length=8):
-                        msg = (
-                            f"[{self.name}] REJECTING start: API_SERVER_KEY is a placeholder "
-                            f"(length={len(self._api_key)}). Generate a real secret with "
-                            f"`openssl rand -hex 32`."
-                        )
-                        _sys.stderr.write(f"{msg}\n")
-                        _sys.stderr.flush()
-                        logger.error(
-                            "[%s] Refusing to start: API_SERVER_KEY is set to a "
-                            "placeholder value. Generate a real secret "
-                            "(e.g. `openssl rand -hex 32`) and set API_SERVER_KEY "
-                            "before exposing the API server on %s.",
-                            self.name, self._host,
-                        )
-                        return False
-                except ImportError:
-                    pass
-
             # Port conflict detection — fail fast if port is already in use
             try:
                 with _socket.socket(_socket.AF_INET, _socket.SOCK_STREAM) as _s:

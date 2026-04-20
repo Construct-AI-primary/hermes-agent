@@ -75,7 +75,7 @@ case "${HERMES_MODE:-chat}" in
         # Render sets $PORT; local/Docker fallbacks: API_SERVER_PORT, then 8642
         _port="${PORT:-${API_SERVER_PORT:-8642}}"
         echo "[entrypoint] Resolved port: $_port (RENDER_PORT=${RENDER_PORT:-unset}, PORT=${PORT:-unset}, API_SERVER_PORT=${API_SERVER_PORT:-unset})"
-        exec hermes serve --host "${API_SERVER_HOST:-0.0.0.0}" --port "${_port}"
+        exec hermes serve --host "${HOST:-0.0.0.0}" --port "${_port}"
         ;;
     *)
         exec hermes "$@"
