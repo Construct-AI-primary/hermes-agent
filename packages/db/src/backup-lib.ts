@@ -119,9 +119,6 @@ export async function runDatabaseBackup(opts: RunDatabaseBackupOptions): Promise
   const sql = postgres(resolvedConnectionString, {
     max: 1,
     connect_timeout: connectTimeout,
-    connection: {
-      family: 4,
-    },
   });
 
   // Generate backup file paths
@@ -614,9 +611,6 @@ export async function runDatabaseRestore(opts: RunDatabaseRestoreOptions): Promi
   const sql = postgres(resolvedConnectionString, {
     max: 1,
     connect_timeout: connectTimeout,
-    connection: {
-      family: 4,
-    },
   });
 
   try {
