@@ -8407,11 +8407,18 @@ Examples:
         import asyncio
         
         async def run_server():
-            success = await adapter.connect()
+            try:
+                success = await adapter.connect()
+            except Exception:
+                import traceback
+                import sys as _sys
+                tb = ''.join(traceback.format_exception(*_sys.exc_info()))
+                print(f"[cmd_serve] adapter.connect() raised:\n{tb}", file=_sys.stderr)
+                _sys.exit(1)
             if not success:
-                print("Failed to start API server. Check logs for details.")
+                print("Failed to start API server. Check logs for details.", file=_sys.stderr)
                 sys.exit(1)
-            
+
             try:
                 # Keep running until interrupted
                 while True:
@@ -8420,11 +8427,12 @@ Examples:
                 pass
             finally:
                 await adapter.disconnect()
-        
+
         try:
             asyncio.run(run_server())
-        except KeyboardInterrupt:
-            print("\nServer stopped.")
+        except (KeyboardInterrupt, SystemExit):
+            pass
+        print("\nServer stopped.")
 
     # =========================================================================
     # profile command
