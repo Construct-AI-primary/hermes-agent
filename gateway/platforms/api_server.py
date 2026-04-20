@@ -2682,6 +2682,7 @@ class APIServerAdapter(BasePlatformAdapter):
             return True
 
         except Exception as e:
+            print(f"[APIServerAdapter] Failed to start API server: {e}")
             logger.error("[%s] Failed to start API server: %s", self.name, e)
             return False
 
