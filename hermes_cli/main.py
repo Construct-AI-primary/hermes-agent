@@ -8371,7 +8371,6 @@ Examples:
         }
         
         config = PlatformConfig(
-            platform=Platform.API_SERVER,
             enabled=True,
             extra=extra,
         )
