@@ -8377,48 +8377,52 @@ Examples:
         
         adapter = APIServerAdapter(config)
         
-        print()
-        print("╔══════════════════════════════════════════════════════════════════╗")
-        print("║                    Hermes API Server                             ║")
-        print("╠══════════════════════════════════════════════════════════════════╣")
-        print(f"║  URL:       http://{host}:{port}                                  ║")
-        print(f"║  Health:    http://{host}:{port}/health                           ║")
-        print(f"║  API Base:  http://{host}:{port}/v1                              ║")
-        print(f"║  Paperclip: http://{host}:{port}/api/adapters/hermes_local/config-schema ║")
-        print(f"║  WebSocket: ws://{host}:{port}/ws/live                            ║")
-        print("╠══════════════════════════════════════════════════════════════════╣")
-        print("║  Endpoints:                                                     ║")
-        print("║    POST /v1/chat/completions  - OpenAI Chat Completions          ║")
-        print("║    POST /v1/responses        - OpenAI Responses API             ║")
-        print("║    GET  /v1/models          - List available models             ║")
-        print("║    GET  /v1/runs            - Structured run events            ║")
-        print("║    GET  /health             - Health check                     ║")
-        print("╠══════════════════════════════════════════════════════════════════╣")
-        if api_key:
-            print("║  ⚠ API key authentication: ENABLED                            ║")
-        else:
-            print("║  ⚠ API key authentication: DISABLED (not recommended)         ║")
-        print("╚══════════════════════════════════════════════════════════════════╝")
-        print()
-        print("Press Ctrl+C to stop the server...")
-        print()
-        
-        # Run the server
+        # Run the server — banner prints AFTER successful connect
         import asyncio
-        
+
         async def run_server():
             try:
                 success = await adapter.connect()
             except Exception:
+                # connect() raised instead of returning False — show full traceback
                 import traceback
                 tb = ''.join(traceback.format_exception(*sys.exc_info()))
-                print(f"[cmd_serve] adapter.connect() raised:\n{tb}", flush=True)
+                sys.stderr.write(f"[cmd_serve] adapter.connect() raised:\n{tb}\n")
+                sys.stderr.flush()
+                sys.exit(1)
+            # success IS assigned — no NameError possible here
             if not success:
-                print("Failed to start API server. Check logs for details.", flush=True)
+                sys.stderr.write("Failed to start API server. Check logs for details.\n")
+                sys.stderr.flush()
                 sys.exit(1)
 
+            # Connect succeeded — print the banner (Render captures it alongside port binding)
+            sys.stdout.write("\n")
+            sys.stdout.write("╔══════════════════════════════════════════════════════════════════╗\n")
+            sys.stdout.write("║                    Hermes API Server                             ║\n")
+            sys.stdout.write("╠══════════════════════════════════════════════════════════════════╣\n")
+            sys.stdout.write(f"║  URL:       http://{host}:{port}                                  ║\n")
+            sys.stdout.write(f"║  Health:    http://{host}:{port}/health                           ║\n")
+            sys.stdout.write(f"║  API Base:  http://{host}:{port}/v1                              ║\n")
+            sys.stdout.write(f"║  Paperclip: http://{host}:{port}/api/adapters/hermes_local/config-schema ║\n")
+            sys.stdout.write(f"║  WebSocket: ws://{host}:{port}/ws/live                            ║\n")
+            sys.stdout.write("╠══════════════════════════════════════════════════════════════════╣\n")
+            sys.stdout.write("║  Endpoints:                                                     ║\n")
+            sys.stdout.write("║    POST /v1/chat/completions  - OpenAI Chat Completions          ║\n")
+            sys.stdout.write("║    POST /v1/responses        - OpenAI Responses API             ║\n")
+            sys.stdout.write("║    GET  /v1/models          - List available models             ║\n")
+            sys.stdout.write("║    GET  /v1/runs            - Structured run events            ║\n")
+            sys.stdout.write("║    GET  /health             - Health check                     ║\n")
+            sys.stdout.write("╠══════════════════════════════════════════════════════════════════╣\n")
+            if api_key:
+                sys.stdout.write("║  ⚠ API key authentication: ENABLED                            ║\n")
+            else:
+                sys.stdout.write("║  ⚠ API key authentication: DISABLED (not recommended)         ║\n")
+            sys.stdout.write("╚══════════════════════════════════════════════════════════════════╝\n")
+            sys.stdout.write("\nPress Ctrl+C to stop the server...\n\n")
+            sys.stdout.flush()
+
             try:
-                # Keep running until interrupted
                 while True:
                     await asyncio.sleep(3600)
             except (KeyboardInterrupt, asyncio.CancelledError):
@@ -8430,7 +8434,8 @@ Examples:
             asyncio.run(run_server())
         except (KeyboardInterrupt, SystemExit):
             pass
-        print("\nServer stopped.")
+        sys.stdout.write("\nServer stopped.\n")
+        sys.stdout.flush()
 
     # =========================================================================
     # profile command
