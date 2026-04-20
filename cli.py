@@ -3313,15 +3313,8 @@ class HermesCLI:
             
             if hasattr(self, 'agent') and self.agent and hasattr(self.agent, 'context_compressor'):
                 ctx_len = self.agent.context_compressor.context_length
->>>>>>> 71a68bca (Update agent configuration and CLI)
             # Get terminal working directory (where commands will execute)
             cwd = os.getenv("TERMINAL_CWD", os.getcwd())
-            if hasattr(self, 'agent') and self.agent and hasattr(self.agent, 'context_compressor'):
-                ctx_len = self.agent.context_compressor.context_length
-=======
-            if hasattr(self, 'agent') and self.agent and hasattr(self.agent, 'context_compressor'):
-                ctx_len = self.agent.context_compressor.context_length
->>>>>>> 71a68bca (Update agent configuration and CLI)
             
             # Build and display the banner
             build_welcome_banner(
