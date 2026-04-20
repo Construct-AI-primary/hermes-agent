@@ -77,6 +77,11 @@ case "${HERMES_MODE:-chat}" in
         echo "[entrypoint] Resolved port: $_port (RENDER_PORT=${RENDER_PORT:-unset}, PORT=${PORT:-unset}, API_SERVER_PORT=${API_SERVER_PORT:-unset})"
         exec hermes serve --host "${HOST:-0.0.0.0}" --port "${_port}"
         ;;
+    worker)
+        # Paperclip unified worker: poll Supabase for queued runs, execute with Hermes
+        echo "[entrypoint] Starting Paperclip worker mode (polls Supabase)"
+        exec python3 "$INSTALL_DIR/supabase_paperclip_worker.py"
+        ;;
     *)
         exec hermes "$@"
         ;;
