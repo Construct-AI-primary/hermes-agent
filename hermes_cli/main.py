@@ -8411,12 +8411,10 @@ Examples:
                 success = await adapter.connect()
             except Exception:
                 import traceback
-                import sys as _sys
-                tb = ''.join(traceback.format_exception(*_sys.exc_info()))
-                print(f"[cmd_serve] adapter.connect() raised:\n{tb}", file=_sys.stderr)
-                _sys.exit(1)
+                tb = ''.join(traceback.format_exception(*sys.exc_info()))
+                print(f"[cmd_serve] adapter.connect() raised:\n{tb}", flush=True)
             if not success:
-                print("Failed to start API server. Check logs for details.", file=sys.stderr)
+                print("Failed to start API server. Check logs for details.", flush=True)
                 sys.exit(1)
 
             try:
