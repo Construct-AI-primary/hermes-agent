@@ -30,6 +30,13 @@ echo "=== [BUILD-STEP-5] Installing dependencies ==="
 # that import vitest, and build runs tsc which checks those imports
 pnpm install --frozen-lockfile --prod=false
 
+echo "=== [BUILD-STEP-5.5] Installing Hermes Agent CLI ==="
+# The hermes_local adapter requires the hermes CLI command to be available
+# Install hermes-agent Python package globally
+python3 -m pip install --upgrade pip
+python3 -m pip install hermes-agent
+echo "Hermes version: $(hermes --version 2>&1 || echo 'installation verification pending')"
+
 echo "=== [BUILD-STEP-6] Building packages ==="
 # shared first - it has no internal workspace deps
 pnpm --filter @paperclipai/shared build
