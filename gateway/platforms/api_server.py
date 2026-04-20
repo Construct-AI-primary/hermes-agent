@@ -2682,8 +2682,10 @@ class APIServerAdapter(BasePlatformAdapter):
             return True
 
         except Exception as e:
-            print(f"[APIServerAdapter] Failed to start API server: {e}")
-            logger.error("[%s] Failed to start API server: %s", self.name, e)
+            import traceback
+            tb = traceback.format_exception(type(e), e, e.__traceback__)
+            print(f"[APIServerAdapter] Failed to start API server: {e}\n{''.join(tb)}")
+            logger.error("[%s] Failed to start API server: %s\n%s", self.name, e, ''.join(tb), exc_info=True)
             return False
 
     async def disconnect(self) -> None:
