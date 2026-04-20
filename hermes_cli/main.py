@@ -8343,6 +8343,90 @@ Examples:
 
     acp_parser.set_defaults(func=cmd_acp)
 
+    def cmd_serve(args):
+        """Start the HTTP API server for Paperclip and other integrations."""
+        import os
+        from gateway.config import Platform, PlatformConfig
+        from gateway.platforms.api_server import APIServerAdapter
+        
+        # Build platform config from CLI args
+        host = getattr(args, 'host', '0.0.0.0')
+        port = getattr(args, 'port', 8642)
+        api_key = getattr(args, 'api_key', None)
+        cors_origins = getattr(args, 'cors_origins', '')
+        model_name = getattr(args, 'model_name', '')
+        
+        # Get from env vars if not provided via CLI
+        if not api_key:
+            api_key = os.getenv("API_SERVER_KEY", "")
+        if not cors_origins:
+            cors_origins = os.getenv("API_SERVER_CORS_ORIGINS", "")
+        
+        extra = {
+            "host": host,
+            "port": port,
+            "key": api_key,
+            "cors_origins": cors_origins,
+            "model_name": model_name,
+        }
+        
+        config = PlatformConfig(
+            platform=Platform.API_SERVER,
+            enabled=True,
+            extra=extra,
+        )
+        
+        adapter = APIServerAdapter(config)
+        
+        print()
+        print("╔══════════════════════════════════════════════════════════════════╗")
+        print("║                    Hermes API Server                             ║")
+        print("╠══════════════════════════════════════════════════════════════════╣")
+        print(f"║  URL:       http://{host}:{port}                                  ║")
+        print(f"║  Health:    http://{host}:{port}/health                           ║")
+        print(f"║  API Base:  http://{host}:{port}/v1                              ║")
+        print(f"║  Paperclip: http://{host}:{port}/api/adapters/hermes_local/config-schema ║")
+        print(f"║  WebSocket: ws://{host}:{port}/ws/live                            ║")
+        print("╠══════════════════════════════════════════════════════════════════╣")
+        print("║  Endpoints:                                                     ║")
+        print("║    POST /v1/chat/completions  - OpenAI Chat Completions          ║")
+        print("║    POST /v1/responses        - OpenAI Responses API             ║")
+        print("║    GET  /v1/models          - List available models             ║")
+        print("║    GET  /v1/runs            - Structured run events            ║")
+        print("║    GET  /health             - Health check                     ║")
+        print("╠══════════════════════════════════════════════════════════════════╣")
+        if api_key:
+            print("║  ⚠ API key authentication: ENABLED                            ║")
+        else:
+            print("║  ⚠ API key authentication: DISABLED (not recommended)         ║")
+        print("╚══════════════════════════════════════════════════════════════════╝")
+        print()
+        print("Press Ctrl+C to stop the server...")
+        print()
+        
+        # Run the server
+        import asyncio
+        
+        async def run_server():
+            success = await adapter.connect()
+            if not success:
+                print("Failed to start API server. Check logs for details.")
+                sys.exit(1)
+            
+            try:
+                # Keep running until interrupted
+                while True:
+                    await asyncio.sleep(3600)
+            except (KeyboardInterrupt, asyncio.CancelledError):
+                pass
+            finally:
+                await adapter.disconnect()
+        
+        try:
+            asyncio.run(run_server())
+        except KeyboardInterrupt:
+            print("\nServer stopped.")
+
     # =========================================================================
     # profile command
     # =========================================================================
@@ -8470,6 +8554,37 @@ Examples:
         help="Allow binding to non-localhost (DANGEROUS: exposes API keys on the network)",
     )
     dashboard_parser.set_defaults(func=cmd_dashboard)
+
+    # =========================================================================
+    # serve command - HTTP API server for Paperclip and other integrations
+    # =========================================================================
+    serve_parser = subparsers.add_parser(
+        "serve",
+        help="Run Hermes Agent as an HTTP API server",
+        description="Start the HTTP API server with OpenAI-compatible endpoints. "
+                    "Use for Paperclip integration, web frontends, and programmatic access.",
+    )
+    serve_parser.add_argument(
+        "--host", default="0.0.0.0",
+        help="Host to bind to (default: 0.0.0.0 for network access)",
+    )
+    serve_parser.add_argument(
+        "--port", type=int, default=8642,
+        help="Port to listen on (default: 8642)",
+    )
+    serve_parser.add_argument(
+        "--key", dest="api_key", default=None,
+        help="API key for authentication (optional for local use)",
+    )
+    serve_parser.add_argument(
+        "--cors", dest="cors_origins", default="",
+        help="Comma-separated list of allowed CORS origins (or '*' for all)",
+    )
+    serve_parser.add_argument(
+        "--model", dest="model_name", default="",
+        help="Model name to advertise in /v1/models (default: profile name or 'hermes-agent')",
+    )
+    serve_parser.set_defaults(func=cmd_serve)
 
     # =========================================================================
     # logs command

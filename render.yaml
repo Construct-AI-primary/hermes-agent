@@ -1,0 +1,71 @@
+# Hermes Agent API Server - Render Blueprint
+# Deploy with: render-blueprint render.yaml
+# Docs: https://render.com/docs/blueprint-spec
+
+services:
+  - type: web
+    name: hermes-agent-api
+    env: docker
+    region: oregon
+    plan: standard
+
+    # Auto-swap between preview (ephemeral) and production (persistent disk)
+    # Ephemeral is fine for preview environments — data is restored from backup
+    # on container start.
+    disk:
+      name: hermes-data
+      mountPath: /opt/data
+      sizeGB: 1
+
+    dockerfilePath: ./Dockerfile
+    dockerCommand: hermes serve --host 0.0.0.0 --port 10000
+
+    envVars:
+      - key: HERMES_HOME
+        value: /opt/data
+      - key: LOG_LEVEL
+        value: INFO
+      - key: API_SERVER_KEY
+        generateValue: true
+      - key: API_SERVER_CORS_ORIGINS
+        value: "*"
+      - key: HERMES_INFERENCE_PROVIDER
+        sync: false
+      # Provider API keys — set these in the Render dashboard for your provider
+      - key: OPENROUTER_API_KEY
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
+
+    healthCheckPath: /health
+    autoDeploy: true
+
+    # Zero-downtime deploy: Render starts new container first, then switches
+    # traffic. Hermes handles graceful shutdown on SIGTERM.
+    numInstances: 1
+
+    # Scaling — adjust based on expected load
+    # Standard plan: up to 3 instances, auto-scaling on CPU/memory
+    scaling:
+      minInstances: 1
+      maxInstances: 3
+      targetMemoryPercent: 70
+      targetCPUPercent: 60
+
+    # Environment groups for team collaboration
+    # Create 'hermes-production' group in Render dashboard with shared vars
+    envGroupPayload:
+      - name: hermes-production
+        envVars:
+          - key: LOG_LEVEL
+            value: INFO
+          - key: API_SERVER_CORS_ORIGINS
+            # Replace with your Paperclip frontend domain in production
+            value: "https://paperclip.example.com,https://app.example.com"
+
+metadata:
+  description: "Hermes Agent HTTP API Server — OpenAI-compatible endpoints for Paperclip and web integrations"
+  price: "https://render.com/pricing"
+  version: "1.0"

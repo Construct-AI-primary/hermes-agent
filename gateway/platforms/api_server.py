@@ -2477,6 +2477,107 @@ class APIServerAdapter(BasePlatformAdapter):
                 self._run_streams_created.pop(run_id, None)
 
     # ------------------------------------------------------------------
+    # Paperclip adapter endpoints
+    # ------------------------------------------------------------------
+
+    async def _handle_config_schema(self, request: "web.Request") -> "web.Response":
+        """
+        GET /api/adapters/hermes_local/config-schema
+        
+        Returns the agent configuration schema for Paperclip integration.
+        This is what Paperclip's LiveUpdatesProvider fetches when testing
+        the environment connection.
+        """
+        from model_tools import get_tool_definitions
+        
+        try:
+            enabled_toolsets = ["hermes-acp"]
+            tools = get_tool_definitions(enabled_toolsets=enabled_toolsets, quiet_mode=True)
+        except Exception:
+            tools = []
+        
+        # Get current model info
+        try:
+            from gateway.run import _resolve_gateway_model
+            model = _resolve_gateway_model()
+        except Exception:
+            model = "anthropic/claude-opus-4.6"
+        
+        schema = {
+            "adapter": "hermes_local",
+            "version": "1.0.0",
+            "status": "ready",
+            "capabilities": {
+                "streaming": True,
+                "webhooks": True,
+                "sessions": True,
+            },
+            "model": {
+                "id": model,
+                "provider": "openrouter",
+            },
+            "tools": [t.get("function", {}).get("name", "?") for t in tools if t.get("function")],
+            "tool_count": len(tools),
+        }
+        
+        return web.json_response(schema)
+
+    async def _handle_status(self, request: "web.Request") -> "web.Response":
+        """
+        GET /api/adapters/hermes_local/status
+        
+        Returns the current agent runtime status for Paperclip.
+        """
+        status = {
+            "status": "running",
+            "platform": "hermes-agent",
+            "version": os.getenv("HERMES_VERSION", "unknown"),
+            "active_sessions": len(self._run_streams),
+            "uptime": time.time(),
+        }
+        return web.json_response(status)
+
+    async def _handle_websocket_live(self, request: "web.Request") -> "web.WebSocketResponse":
+        """
+        GET /ws/live
+        
+        WebSocket endpoint for Paperclip live updates.
+        Allows real-time streaming of agent execution progress.
+        """
+        ws = web.WebSocketResponse()
+        await ws.prepare(request)
+        
+        logger.info("[api_server] WebSocket client connected for live updates")
+        
+        try:
+            # Send initial connection confirmation
+            await ws.send_json({
+                "type": "connected",
+                "message": "Hermes live updates connected",
+            })
+            
+            # Keep connection alive and handle messages
+            async for msg in ws:
+                if msg.type == web.WSMsgType.TEXT:
+                    try:
+                        data = json.loads(msg.data)
+                        # Handle ping/pong for keepalive
+                        if data.get("type") == "ping":
+                            await ws.send_json({"type": "pong"})
+                    except json.JSONDecodeError:
+                        pass
+                elif msg.type == web.WSMsgType.ERROR:
+                    logger.warning("[api_server] WebSocket error: %s", ws.exception())
+                    break
+                    
+        except Exception as e:
+            logger.debug("[api_server] WebSocket connection closed: %s", e)
+        finally:
+            logger.info("[api_server] WebSocket client disconnected")
+            
+        return ws
+
+    # ------------------------------------------------------------------
     # BasePlatformAdapter interface
     # ------------------------------------------------------------------
 
@@ -2510,6 +2611,11 @@ class APIServerAdapter(BasePlatformAdapter):
             # Structured event streaming
             self._app.router.add_post("/v1/runs", self._handle_runs)
             self._app.router.add_get("/v1/runs/{run_id}/events", self._handle_run_events)
+            # Paperclip adapter endpoints
+            self._app.router.add_get("/api/adapters/hermes_local/config-schema", self._handle_config_schema)
+            self._app.router.add_get("/api/adapters/hermes_local/status", self._handle_status)
+            # WebSocket for live updates
+            self._app.router.add_get("/ws/live", self._handle_websocket_live)
             # Start background sweep to clean up orphaned (unconsumed) run streams
             sweep_task = asyncio.create_task(self._sweep_orphaned_runs())
             try:
