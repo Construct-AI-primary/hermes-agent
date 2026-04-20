@@ -72,7 +72,9 @@ fi
 # Used by Render (dockerCommand) and other container deployments.
 case "${HERMES_MODE:-chat}" in
     serve|server|api)
-        exec hermes serve --host "${API_SERVER_HOST:-0.0.0.0}" --port "${API_SERVER_PORT:-10000}"
+        # Render sets $PORT; fall back to API_SERVER_PORT for local/docker development
+        _port="${PORT:-${API_SERVER_PORT:-8642}}"
+        exec hermes serve --host "${API_SERVER_HOST:-0.0.0.0}" --port "${_port}"
         ;;
     *)
         exec hermes "$@"

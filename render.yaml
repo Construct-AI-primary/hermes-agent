@@ -24,10 +24,6 @@ services:
         value: /opt/data
       - key: HERMES_MODE
         value: serve
-      - key: API_SERVER_HOST
-        value: 0.0.0.0
-      - key: API_SERVER_PORT
-        value: 10000
       - key: LOG_LEVEL
         value: INFO
       - key: API_SERVER_KEY
