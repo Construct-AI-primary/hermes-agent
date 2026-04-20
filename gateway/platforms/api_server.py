@@ -2583,7 +2583,11 @@ class APIServerAdapter(BasePlatformAdapter):
 
     async def connect(self) -> bool:
         """Start the aiohttp web server."""
+        import sys as _sys
         if not AIOHTTP_AVAILABLE:
+            msg = f"[{self.name}] aiohttp not installed — cannot start API server"
+            _sys.stderr.write(f"{msg}\n")
+            _sys.stderr.flush()
             logger.warning("[%s] aiohttp not installed", self.name)
             return False
 
@@ -2627,6 +2631,13 @@ class APIServerAdapter(BasePlatformAdapter):
 
             # Refuse to start network-accessible without authentication
             if is_network_accessible(self._host) and not self._api_key:
+                msg = (
+                    f"[{self.name}] REJECTING start: host={self._host} is network-accessible "
+                    f"but no API_SERVER_KEY is set. Refusing to bind. "
+                    f"Set API_SERVER_KEY or use --host 127.0.0.1."
+                )
+                _sys.stderr.write(f"{msg}\n")
+                _sys.stderr.flush()
                 logger.error(
                     "[%s] Refusing to start: binding to %s requires API_SERVER_KEY. "
                     "Set API_SERVER_KEY or use the default 127.0.0.1.",
@@ -2640,6 +2651,13 @@ class APIServerAdapter(BasePlatformAdapter):
                 try:
                     from hermes_cli.auth import has_usable_secret
                     if not has_usable_secret(self._api_key, min_length=8):
+                        msg = (
+                            f"[{self.name}] REJECTING start: API_SERVER_KEY is a placeholder "
+                            f"(length={len(self._api_key)}). Generate a real secret with "
+                            f"`openssl rand -hex 32`."
+                        )
+                        _sys.stderr.write(f"{msg}\n")
+                        _sys.stderr.flush()
                         logger.error(
                             "[%s] Refusing to start: API_SERVER_KEY is set to a "
                             "placeholder value. Generate a real secret "
@@ -2656,6 +2674,9 @@ class APIServerAdapter(BasePlatformAdapter):
                 with _socket.socket(_socket.AF_INET, _socket.SOCK_STREAM) as _s:
                     _s.settimeout(1)
                     _s.connect(('127.0.0.1', self._port))
+                msg = f"[{self.name}] Port {self._port} already in use"
+                _sys.stderr.write(f"{msg}\n")
+                _sys.stderr.flush()
                 logger.error('[%s] Port %d already in use. Set a different port in config.yaml: platforms.api_server.port', self.name, self._port)
                 return False
             except (ConnectionRefusedError, OSError):
@@ -2684,7 +2705,8 @@ class APIServerAdapter(BasePlatformAdapter):
         except Exception as e:
             import traceback
             tb = traceback.format_exception(type(e), e, e.__traceback__)
-            print(f"[APIServerAdapter] Failed to start API server: {e}\n{''.join(tb)}")
+            _sys.stderr.write(f"[{self.name}] Exception during connect:\n{tb}\n")
+            _sys.stderr.flush()
             logger.error("[%s] Failed to start API server: %s\n%s", self.name, e, ''.join(tb), exc_info=True)
             return False
 
