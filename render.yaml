@@ -18,7 +18,27 @@ services:
       sizeGB: 1
 
     dockerfilePath: ./Dockerfile
-    dockerCommand: hermes serve --host 0.0.0.0 --port 10000
+
+    # Run directly as JSON array — bypasses entrypoint.sh shell interpretation.
+    # Uses the same Python venv that hermes wrapper activates.
+    dockerCommand:
+      - /opt/hermes/.venv/bin/python3
+      - -c
+      - |
+        import os, asyncio
+        from gateway.config import Platform, PlatformConfig
+        from gateway.platforms.api_server import APIServerAdapter
+        extra = {
+            "host": os.getenv("API_SERVER_HOST", "0.0.0.0"),
+            "port": int(os.getenv("API_SERVER_PORT", "10000")),
+            "key": os.getenv("API_SERVER_KEY", ""),
+            "cors_origins": os.getenv("API_SERVER_CORS_ORIGINS", "*"),
+            "model_name": os.getenv("API_SERVER_MODEL_NAME", ""),
+        }
+        cfg = PlatformConfig(platform=Platform.API_SERVER, enabled=True, extra=extra)
+        adapter = APIServerAdapter(cfg)
+        asyncio.get_event_loop().run_until_complete(adapter.connect())
+        asyncio.get_event_loop().run_forever()
 
     envVars:
       - key: HERMES_HOME
