@@ -758,6 +758,21 @@ class APIServerAdapter(BasePlatformAdapter):
     # HTTP Handlers
     # ------------------------------------------------------------------
 
+    async def _handle_root(self, request: "web.Request") -> "web.Response":
+        """GET/POST / — server info for availability probes (e.g. Paperclip)."""
+        return web.json_response({
+            "status": "ok",
+            "platform": "hermes-agent",
+            "version": os.getenv("HERMES_VERSION", "unknown"),
+            "endpoints": [
+                "POST /v1/chat/completions",
+                "POST /v1/responses",
+                "GET  /v1/models",
+                "GET  /health",
+                "GET  /api/adapters/hermes_local/config-schema",
+            ],
+        })
+
     async def _handle_health(self, request: "web.Request") -> "web.Response":
         """GET /health — simple health check."""
         return web.json_response({"status": "ok", "platform": "hermes-agent"})
@@ -2595,6 +2610,9 @@ class APIServerAdapter(BasePlatformAdapter):
             mws = [mw for mw in (cors_middleware, body_limit_middleware, security_headers_middleware) if mw is not None]
             self._app = web.Application(middlewares=mws)
             self._app["api_server_adapter"] = self
+            # Root handler — probes for server availability
+            self._app.router.add_get("/", self._handle_root)
+            self._app.router.add_post("/", self._handle_root)
             self._app.router.add_get("/health", self._handle_health)
             self._app.router.add_get("/health/detailed", self._handle_health_detailed)
             self._app.router.add_get("/v1/health", self._handle_health)
