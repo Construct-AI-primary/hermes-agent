@@ -1,6 +1,6 @@
 """
-Paperclip Unified Worker — polls heartbeat_runs for Hermes-type agents,
-executes issues by cloning repos and running Hermes, then posts results.
+Paperclip Unified Worker — polls issues for assigned agents,
+executes tasks via HTTP adapter or local Hermes CLI, then posts results.
 """
 import json
 import logging
@@ -68,187 +68,35 @@ def _get_data(res) -> List[Dict[str, Any]]:
 
 
 # =============================================================================
-# Paperclip data access — unified multi-agent
+# Agent data access
 # =============================================================================
 
-def _fetch_agent_models(supabase, agent_ids: List[str]) -> Dict[str, Dict[str, Any]]:
-    """Fetch agent_models rows for given agent IDs. Returns dict keyed by agent_id."""
-    if not agent_ids:
-        return {}
+def _fetch_agent_by_id(supabase, agent_id: str) -> Optional[Dict[str, Any]]:
+    """Fetch single agent by ID."""
     res = (
-        supabase.table("agent_models")
-        .select("agent_id, model_id, temperature, max_tokens")
-        .in_("agent_id", agent_ids)
-        .eq("is_active", True)
-        .eq("assignment_type", "primary")
-        .execute()
-    )
-    rows = _get_data(res)
-    return {r["agent_id"]: r for r in rows}
-
-
-def _select_next_runs(supabase) -> List[Dict[str, Any]]:
-    """
-    Fetch ALL queued runs for Hermes-type agents.
-    Filters to adapter_type IN ('hermes', 'hermes_local').
-    Returns runs across all companies and all agent roles.
-    """
-    # First, get all Hermes agent IDs
-    agent_res = (
         supabase.table("agents")
-        .select("id, adapter_type, company_id, role, name, runtime_config, capabilities")
-        .in_("adapter_type", ["hermes", "hermes_local", "http"])
-        .execute()
-    )
-    agents_rows = _get_data(agent_res)
-    if not agents_rows:
-        return []
-
-    hermes_agent_ids = [a["id"] for a in agents_rows]
-    agent_map = {a["id"]: a for a in agents_rows}
-
-    # Fetch agent_models for model/temperature/max_tokens config
-    agent_models_map = _fetch_agent_models(supabase, hermes_agent_ids)
-
-    # Fetch queued runs for these agents
-    res = (
-        supabase.table("heartbeat_runs")
-        .select("*")
-        .in_("agent_id", hermes_agent_ids)
-        .eq("status", "queued")
-        .order("created_at", desc=False)
-        .limit(10)  # batch up to 10 at a time
-        .execute()
-    )
-    runs = _get_data(res)
-
-    # Attach agent info + agent_models config to each run
-    for run in runs:
-        agent = agent_map.get(run.get("agent_id"), {})
-        run["_agent"] = agent
-
-        # Merge agent_models (model_id → model, preserve runtime_config as fallback)
-        model_row = agent_models_map.get(agent.get("id"), {})
-        runtime_cfg = dict(agent.get("runtime_config") or {})
-        if model_row.get("model_id"):
-            runtime_cfg["model"] = model_row["model_id"]
-        if model_row.get("temperature") is not None:
-            runtime_cfg["temperature"] = float(model_row["temperature"])
-        if model_row.get("max_tokens") is not None:
-            runtime_cfg["max_tokens"] = int(model_row["max_tokens"])
-        run["_runtime_config"] = runtime_cfg
-
-    return runs
-
-
-def _claim_run(supabase, run_id: str) -> bool:
-    """Atomic claim: update queued → running."""
-    res = (
-        supabase.table("heartbeat_runs")
-        .update({"status": "running", "started_at": "now()"})
-        .eq("id", run_id)
-        .eq("status", "queued")
-        .execute()
-    )
-    rows = _get_data(res)
-    return bool(rows)
-
-
-def _release_run_to_queued(supabase, run_id: str) -> bool:
-    """Release a run back to queued status (for orphaned runs without issues)."""
-    res = (
-        supabase.table("heartbeat_runs")
-        .update({"status": "queued", "started_at": None})
-        .eq("id", run_id)
-        .eq("status", "running")
-        .execute()
-    )
-    rows = _get_data(res)
-    return bool(rows)
-
-
-def _fetch_issue_context(supabase, run: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Walk the Paperclip join chain for this specific run.
-    Returns flat context dict for execution.
-    """
-    run_id = run["id"]
-    agent = run.get("_agent", {})
-
-    # Find the issue via execution_run_id
-    res = (
-        supabase.table("issues")
-        .select(
-            "id, title, description, project_workspace_id, "
-            "company_id, project_id, assignee_agent_id"
-        )
-        .eq("execution_run_id", run_id)
+        .select("id, adapter_type, company_id, role, name, runtime_config, capabilities, is_active")
+        .eq("id", agent_id)
         .limit(1)
         .execute()
     )
-    issue_rows = _get_data(res)
-    if not issue_rows:
-        return {"_error": "No issue found for this run", "_orphaned": True}
-    issue = issue_rows[0]
+    rows = _get_data(res)
+    return rows[0] if rows else None
 
-    workspace_id = issue.get("project_workspace_id")
-    repo_url = None
-    cwd = None
-    repo_ref = "main"
 
-    if workspace_id:
-        ws_res = (
-            supabase.table("project_workspaces")
-            .select("repo_url, cwd, repo_ref, default_ref")
-            .eq("id", workspace_id)
-            .limit(1)
-            .execute()
-        )
-        ws_rows = _get_data(ws_res)
-        if ws_rows:
-            ws = ws_rows[0]
-            repo_url = ws.get("repo_url")
-            cwd = ws.get("cwd") or ""
-            repo_ref = ws.get("repo_ref") or ws.get("default_ref") or "main"
-
-    # Fetch company info
-    company_id = issue.get("company_id")
-    company_name = None
-    if company_id:
-        comp_res = (
-            supabase.table("companies")
-            .select("name")
-            .eq("id", company_id)
-            .limit(1)
-            .execute()
-        )
-        comp_rows = _get_data(comp_res)
-        if comp_rows:
-            company_name = comp_rows[0].get("name")
-
-    # Prefer merged agent_models config, fall back to runtime_config
-    runtime_config = run.get("_runtime_config") or agent.get("runtime_config") or {}
-
-    return {
-        "issue_id": issue["id"],
-        "issue_title": issue.get("title", ""),
-        "issue_description": issue.get("description", ""),
-        "company_id": company_id,
-        "company_name": company_name,
-        "project_id": issue.get("project_id"),
-        "repo_url": repo_url,
-        "repo_ref": repo_ref,
-        "cwd": cwd,
-        "agent_id": run.get("agent_id"),
-        "agent_role": agent.get("role"),
-        "agent_name": agent.get("name"),
-        "agent_capabilities": agent.get("capabilities"),
-        "adapter_type": agent.get("adapter_type", "http"),  # NEW: include adapter_type
-        "agent_runtime_config": runtime_config,
-        "heartbeat_run_id": run_id,
-        "run_context": run.get("context_snapshot") or {},
-        "_orphaned": False,
-    }
+def _fetch_agent_model_config(supabase, agent_id: str) -> Dict[str, Any]:
+    """Fetch agent_models config for given agent."""
+    res = (
+        supabase.table("agent_models")
+        .select("model_id, temperature, max_tokens")
+        .eq("agent_id", agent_id)
+        .eq("is_active", True)
+        .eq("assignment_type", "primary")
+        .limit(1)
+        .execute()
+    )
+    rows = _get_data(res)
+    return rows[0] if rows else {}
 
 
 def _fetch_agent_api_key(supabase, agent_id: str, company_id: str) -> Optional[str]:
@@ -274,6 +122,199 @@ def _fetch_agent_api_key(supabase, agent_id: str, company_id: str) -> Optional[s
     )
     rows = _get_data(res)
     return rows[0].get("token") if rows else None
+
+
+# =============================================================================
+# Issue-based polling (NEW - primary path for CEO delegation)
+# =============================================================================
+
+def _select_next_issues(supabase) -> List[Dict[str, Any]]:
+    """
+    Fetch ALL queued/pending issues that have an assignee_agent_id.
+    This is the primary path for CEO delegation - each assigned issue becomes a task.
+    """
+    # Fetch issues assigned to active agents with http/hermes adapter types
+    res = (
+        supabase.table("issues")
+        .select("id, title, description, project_workspace_id, company_id, project_id, assignee_agent_id, status")
+        .in_("status", ["queued", "pending"])
+        .not_.is_("assignee_agent_id", "null")
+        .order("created_at", desc=False)
+        .limit(10)
+        .execute()
+    )
+    issues = _get_data(res)
+    
+    if not issues:
+        return []
+    
+    # Get all unique agent IDs
+    agent_ids = list(set(i.get("assignee_agent_id") for i in issues if i.get("assignee_agent_id")))
+    
+    if not agent_ids:
+        return []
+    
+    # Fetch agent info for all agents
+    agent_res = (
+        supabase.table("agents")
+        .select("id, adapter_type, company_id, role, name, runtime_config, capabilities, is_active")
+        .in_("id", agent_ids)
+        .in_("adapter_type", ["hermes", "hermes_local", "http"])
+        .execute()
+    )
+    agent_rows = _get_data(agent_res)
+    agent_map = {a["id"]: a for a in agent_rows}
+    
+    # Fetch agent_models for each agent
+    agent_models_map = {}
+    if agent_ids:
+        models_res = (
+            supabase.table("agent_models")
+            .select("agent_id, model_id, temperature, max_tokens")
+            .in_("agent_id", agent_ids)
+            .eq("is_active", True)
+            .eq("assignment_type", "primary")
+            .execute()
+        )
+        for row in _get_data(models_res):
+            agent_models_map[row["agent_id"]] = row
+    
+    # Attach agent info to each issue
+    enriched_issues = []
+    for issue in issues:
+        agent_id = issue.get("assignee_agent_id")
+        agent = agent_map.get(agent_id)
+        
+        if not agent:
+            logger.debug("Issue %s has assignee %s but no active HTTP agent found", 
+                        issue["id"][:8], agent_id[:8] if agent_id else "None")
+            continue
+        
+        # Skip inactive agents
+        if not agent.get("is_active", True):
+            logger.debug("Issue %s assignee agent %s is not active", 
+                        issue["id"][:8], agent.get("name", "?"))
+            continue
+        
+        # Merge agent_models config with agent runtime_config
+        model_row = agent_models_map.get(agent_id, {})
+        runtime_cfg = dict(agent.get("runtime_config") or {})
+        if model_row.get("model_id"):
+            runtime_cfg["model"] = model_row["model_id"]
+        if model_row.get("temperature") is not None:
+            runtime_cfg["temperature"] = float(model_row["temperature"])
+        if model_row.get("max_tokens") is not None:
+            runtime_cfg["max_tokens"] = int(model_row["max_tokens"])
+        
+        issue["_agent"] = agent
+        issue["_runtime_config"] = runtime_cfg
+        enriched_issues.append(issue)
+    
+    return enriched_issues
+
+
+def _claim_issue(supabase, issue_id: str) -> bool:
+    """Atomic claim: update queued/pending → running."""
+    res = (
+        supabase.table("issues")
+        .update({"status": "running", "started_at": "now()"})
+        .eq("id", issue_id)
+        .in_("status", ["queued", "pending"])
+        .execute()
+    )
+    rows = _get_data(res)
+    return bool(rows)
+
+
+def _fetch_issue_context(supabase, issue: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Enrich issue with workspace and company info.
+    Returns flat context dict for execution.
+    """
+    issue_id = issue["id"]
+    agent = issue.get("_agent", {})
+    
+    # Fetch workspace info
+    workspace_id = issue.get("project_workspace_id")
+    repo_url = None
+    cwd = None
+    repo_ref = "main"
+    
+    if workspace_id:
+        ws_res = (
+            supabase.table("project_workspaces")
+            .select("repo_url, cwd, repo_ref, default_ref")
+            .eq("id", workspace_id)
+            .limit(1)
+            .execute()
+        )
+        ws_rows = _get_data(ws_res)
+        if ws_rows:
+            ws = ws_rows[0]
+            repo_url = ws.get("repo_url")
+            cwd = ws.get("cwd") or ""
+            repo_ref = ws.get("repo_ref") or ws.get("default_ref") or "main"
+    
+    # Fetch company info
+    company_id = issue.get("company_id")
+    company_name = None
+    if company_id:
+        comp_res = (
+            supabase.table("companies")
+            .select("name")
+            .eq("id", company_id)
+            .limit(1)
+            .execute()
+        )
+        comp_rows = _get_data(comp_res)
+        if comp_rows:
+            company_name = comp_rows[0].get("name")
+    
+    # Prefer merged agent_models config, fall back to runtime_config
+    runtime_config = issue.get("_runtime_config") or agent.get("runtime_config") or {}
+    
+    return {
+        "issue_id": issue_id,
+        "issue_title": issue.get("title", ""),
+        "issue_description": issue.get("description", ""),
+        "company_id": company_id,
+        "company_name": company_name,
+        "project_id": issue.get("project_id"),
+        "repo_url": repo_url,
+        "repo_ref": repo_ref,
+        "cwd": cwd,
+        "agent_id": issue.get("assignee_agent_id"),
+        "agent_role": agent.get("role"),
+        "agent_name": agent.get("name"),
+        "agent_capabilities": agent.get("capabilities"),
+        "adapter_type": agent.get("adapter_type", "http"),
+        "agent_runtime_config": runtime_config,
+        "run_context": issue.get("context_snapshot") or {},
+    }
+
+
+def _update_issue_status(supabase, issue_id: str, status: str, result: Dict[str, Any]):
+    """Update issue with final status and result."""
+    payload = {
+        "status": status,
+        "finished_at": "now()",
+        "result_json": _safe_json({
+            "exit_code": result.get("exit_code"),
+            "pr_url": result.get("pr_url"),
+            "stdout_excerpt": (result.get("stdout") or "")[:1000],
+            "stderr_excerpt": (result.get("stderr") or "")[:500],
+        }),
+    }
+    if status == "completed":
+        payload["exit_code"] = 0
+    else:
+        payload["exit_code"] = result.get("exit_code", 1)
+        payload["error"] = result.get("error", "unknown error")
+    
+    try:
+        supabase.table("issues").update(payload).eq("id", issue_id).execute()
+    except Exception as exc:
+        logger.warning("Could not update issue status: %s", exc)
 
 
 # =============================================================================
@@ -436,7 +477,7 @@ def _run_http_adapter(
 ) -> Dict[str, Any]:
     """
     Execute via HTTP adapter endpoint.
-    The endpoint URL should be in runtime_config or agent config.
+    The endpoint URL should be in runtime_config or use default HERMES_ADAPTER_ENDPOINT.
     """
     import urllib.request
     import urllib.error
@@ -464,7 +505,6 @@ def _run_http_adapter(
         "agent_id": ctx.get("agent_id"),
         "company_id": ctx.get("company_id"),
         "issue_id": ctx.get("issue_id"),
-        "run_id": ctx.get("heartbeat_run_id"),
     }
 
     # Remove None values
@@ -514,10 +554,10 @@ def _run_http_adapter(
 
 
 # =============================================================================
-# Execute a single run
+# Execute a single issue
 # =============================================================================
 
-def _execute_run(
+def _execute_issue(
     ctx: Dict[str, Any], cfg: WorkerConfig, supabase
 ) -> Dict[str, Any]:
     """Execute one Paperclip issue with the resolved agent + company config."""
@@ -533,7 +573,7 @@ def _execute_run(
     agent_id = ctx.get("agent_id")
     runtime_config = ctx.get("agent_runtime_config", {})
     company_name = ctx.get("company_name") or "unknown"
-    adapter_type = ctx.get("adapter_type", "http")  # NEW: get adapter type
+    adapter_type = ctx.get("adapter_type", "http")
 
     prompt = issue_description.strip() if issue_description.strip() else issue_title
 
@@ -545,7 +585,7 @@ def _execute_run(
         except Exception as exc:
             logger.warning("Could not fetch agent API key: %s", exc)
 
-    # NEW: Check adapter type and execute accordingly
+    # Check adapter type and execute accordingly
     if adapter_type == "http":
         # Use HTTP adapter
         result = _run_http_adapter(ctx, runtime_config, api_key)
@@ -592,32 +632,8 @@ def _execute_run(
 
 
 # =============================================================================
-# Status updates
+# Comment posting
 # =============================================================================
-
-def _update_run_status(supabase, run_id: str, status: str, result: Dict[str, Any]):
-    """Update heartbeat_runs with final status + result snapshot."""
-    payload = {
-        "status": status,
-        "finished_at": "now()",
-        "result_json": _safe_json({
-            "exit_code": result.get("exit_code"),
-            "pr_url": result.get("pr_url"),
-            "stdout_excerpt": (result.get("stdout") or "")[:1000],
-            "stderr_excerpt": (result.get("stderr") or "")[:500],
-        }),
-    }
-    if status == "completed":
-        payload["exit_code"] = 0
-    else:
-        payload["exit_code"] = result.get("exit_code", 1)
-        payload["error"] = result.get("error", "unknown error")
-    
-    try:
-        supabase.table("heartbeat_runs").update(payload).eq("id", run_id).execute()
-    except Exception as exc:
-        logger.warning("Could not update run status: %s", exc)
-
 
 def _post_issue_comment(supabase, issue_id: str, body: str):
     try:
@@ -668,7 +684,7 @@ def run_forever():
 
     processed = 0
     skipped = 0
-    logger.info("Paperclip unified worker starting — polling every %.1fs", cfg.poll_interval_seconds)
+    logger.info("Paperclip unified worker starting — polling issues every %.1fs", cfg.poll_interval_seconds)
     logger.info("HTTP adapter endpoint: %s", os.getenv("HERMES_ADAPTER_ENDPOINT", "http://localhost:8000/invoke"))
 
     while True:
@@ -677,61 +693,59 @@ def run_forever():
             return
 
         try:
-            runs = _select_next_runs(supabase)
-            if not runs:
+            # Poll issues directly - this is the primary path for CEO delegation
+            issues = _select_next_issues(supabase)
+            if not issues:
                 time.sleep(cfg.poll_interval_seconds)
                 continue
 
-            for run in runs:
-                run_id = run["id"]
-                agent_name = run.get("_agent", {}).get("name", "?")
-                company = run.get("_agent", {}).get("company_id", "")[:8]
+            for issue in issues:
+                issue_id = issue["id"]
+                agent_name = issue.get("_agent", {}).get("name", "?")
+                company = issue.get("company_id", "")[:8] if issue.get("company_id") else "?"
 
-                claimed = _claim_run(supabase, run_id)
+                claimed = _claim_issue(supabase, issue_id)
                 if not claimed:
-                    logger.debug("Run %s already claimed by another worker", run_id[:8])
+                    logger.debug("Issue %s already claimed by another worker", issue_id[:8])
                     continue
 
                 logger.info(
-                    "Claimed run %s — agent=%s company=%s",
-                    run_id[:8], agent_name, company,
+                    "Claimed issue %s — agent=%s company=%s",
+                    issue_id[:8], agent_name, company,
                 )
 
-                ctx = _fetch_issue_context(supabase, run)
+                # Build execution context
+                ctx = _fetch_issue_context(supabase, issue)
 
-                # NEW: Handle orphaned runs (no issue) gracefully
-                if ctx.get("_orphaned"):
-                    logger.info("Run %s has no associated issue (orphaned run) — releasing back to queued", run_id[:8])
-                    _release_run_to_queued(supabase, run_id)
-                    skipped += 1
+                if not ctx.get("repo_url"):
+                    logger.warning("Skipping issue %s: no repo_url found", issue_id[:8])
+                    _update_issue_status(supabase, issue_id, "failed", {"error": "No repo_url found"})
+                    _post_issue_comment(supabase, issue_id, "⚠️ Task failed: No repository configured")
                     continue
 
-                if ctx.get("_error"):
-                    logger.warning("Skipping run %s: %s", run_id[:8], ctx["_error"])
-                    _update_run_status(supabase, run_id, "failed", {"error": ctx["_error"]})
-                    continue
+                # Execute the task
+                result = _execute_issue(ctx, cfg, supabase)
 
-                result = _execute_run(ctx, cfg, supabase)
-
+                # Update issue status
                 status = "completed" if result.get("exit_code") == 0 else "failed"
-                _update_run_status(supabase, run_id, status, result)
+                _update_issue_status(supabase, issue_id, status, result)
 
-                issue_id = ctx.get("issue_id")
-                if issue_id:
-                    pr = result.get("pr_url")
-                    if status == "completed" and pr:
-                        msg = f"✅ Hermes completed task — [View PR]({pr})"
-                    elif status == "completed":
-                        msg = "✅ Hermes completed task"
-                    else:
-                        msg = f"⚠️ Hermes task failed: {result.get('error', 'unknown error')}"
-                    _post_issue_comment(supabase, issue_id, msg)
+                # Post result comment
+                pr = result.get("pr_url")
+                if status == "completed" and pr:
+                    msg = f"✅ Task completed — [View PR]({pr})"
+                elif status == "completed":
+                    msg = "✅ Task completed"
+                else:
+                    error_msg = result.get('error') or 'unknown error'
+                    msg = f"⚠️ Task failed: {error_msg}"
+                _post_issue_comment(supabase, issue_id, msg)
 
                 processed += 1
 
             # Log stats periodically
             if skipped > 0 and skipped % 10 == 0:
-                logger.info("Stats: processed=%d, skipped_orphaned=%d", processed, skipped)
+                logger.info("Stats: processed=%d, skipped=%d", processed, skipped)
 
         except Exception:
             logger.exception("Worker loop error — retrying")
