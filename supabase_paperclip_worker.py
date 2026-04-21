@@ -487,8 +487,9 @@ def _run_http_adapter(
     # Get the HTTP adapter endpoint from runtime_config or use default
     endpoint = runtime_config.get("adapter_endpoint")
     if not endpoint:
-        # Default to Hermes adapter on same host or configured URL
-        endpoint = os.getenv("HERMES_ADAPTER_ENDPOINT", "http://localhost:8000/invoke")
+        # Default to Hermes API server on same host (or HERMES_ADAPTER_ENDPOINT env var)
+        # The API server runs on port 8642 by default
+        endpoint = os.getenv("HERMES_ADAPTER_ENDPOINT", "http://localhost:8642/invoke")
 
     model = runtime_config.get("model", "openrouter/qwen/qwen-3-6-plus")
     max_turns = runtime_config.get("max_turns", 20)
@@ -691,7 +692,7 @@ def run_forever():
     processed = 0
     skipped = 0
     logger.info("Paperclip unified worker starting — polling issues every %.1fs", cfg.poll_interval_seconds)
-    logger.info("HTTP adapter endpoint: %s", os.getenv("HERMES_ADAPTER_ENDPOINT", "http://localhost:8000/invoke"))
+    logger.info("HTTP adapter endpoint: %s", os.getenv("HERMES_ADAPTER_ENDPOINT", "http://localhost:8642/invoke"))
 
     while True:
         if cfg.max_runs_per_process and processed >= cfg.max_runs_per_process:

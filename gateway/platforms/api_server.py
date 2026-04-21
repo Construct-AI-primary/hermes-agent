@@ -1050,6 +1050,131 @@ class APIServerAdapter(BasePlatformAdapter):
 
         return web.json_response(response_data, headers={"X-Hermes-Session-Id": session_id})
 
+    async def _handle_invoke(self, request: "web.Request") -> "web.Response":
+        """
+        POST /invoke — Paperclip adapter endpoint.
+        
+        Accepts Paperclip-specific payload format and runs the agent.
+        This endpoint bridges the Paperclip worker to the Hermes agent.
+        
+        Expected payload:
+        {
+            "prompt": "task description",
+            "repo_url": "https://github.com/owner/repo",
+            "repo_ref": "main",
+            "cwd": "",
+            "model": "openrouter/qwen/qwen-3-6-plus",
+            "max_turns": 20,
+            "temperature": 0.7,
+            "max_tokens": 4096,
+            "agent_id": "uuid",
+            "company_id": "uuid",
+            "issue_id": "uuid"
+        }
+        """
+        auth_err = self._check_auth(request)
+        if auth_err:
+            return auth_err
+
+        # Parse request body
+        try:
+            body = await request.json()
+        except (json.JSONDecodeError, Exception):
+            return web.json_response({"error": "Invalid JSON in request body"}, status=400)
+
+        # Extract Paperclip payload
+        prompt = body.get("prompt", "")
+        repo_url = body.get("repo_url", "")
+        repo_ref = body.get("repo_ref", "main")
+        cwd = body.get("cwd", "")
+        model = body.get("model", self._model_name)
+        max_turns = body.get("max_turns", 20)
+        temperature = body.get("temperature")
+        max_tokens = body.get("max_tokens")
+        agent_id = body.get("agent_id")
+        company_id = body.get("company_id")
+        issue_id = body.get("issue_id")
+
+        if not prompt:
+            return web.json_response({"error": "Missing 'prompt' field"}, status=400)
+
+        # Build a system prompt that includes repo context
+        system_parts = []
+        if repo_url:
+            system_parts.append(f"You are working in a repository at {repo_url} (ref: {repo_ref})")
+            if cwd:
+                system_parts.append(f"Working directory: {cwd}")
+        system_parts.append(
+            "You are an autonomous coding agent. Analyze the task, write code, "
+            "run tests, and create a pull request when complete."
+        )
+        system_prompt = "\n".join(system_parts)
+
+        # Extract history if provided (for session continuation)
+        history = body.get("history", [])
+        if not isinstance(history, list):
+            history = []
+
+        # Derive session ID from issue_id if available for continuity
+        session_id = None
+        if issue_id:
+            session_id = f"paperclip-{issue_id}"
+            # Load existing session history if available
+            if self._api_key:  # Only load history if auth is configured
+                try:
+                    db = self._ensure_session_db()
+                    if db is not None:
+                        loaded_history = db.get_messages_as_conversation(session_id)
+                        if loaded_history:
+                            history = loaded_history
+                except Exception:
+                    pass
+
+        completion_id = f"paperclip-{uuid.uuid4().hex[:29]}"
+        created = int(time.time())
+
+        # Run the agent
+        async def _compute():
+            return await self._run_agent(
+                user_message=prompt,
+                conversation_history=history,
+                ephemeral_system_prompt=system_prompt,
+                session_id=session_id,
+            )
+
+        try:
+            result, usage = await _compute()
+        except Exception as e:
+            logger.error("Error running agent for invoke: %s", e, exc_info=True)
+            return web.json_response(
+                {"error": f"Internal server error: {e}"},
+                status=500,
+            )
+
+        final_response = result.get("final_response", "")
+        if not final_response:
+            final_response = result.get("error", "(No response generated)")
+
+        response_data = {
+            "id": completion_id,
+            "object": "paperclip.invoke",
+            "created": created,
+            "model": model,
+            "result": final_response,
+            "usage": {
+                "prompt_tokens": usage.get("input_tokens", 0),
+                "completion_tokens": usage.get("output_tokens", 0),
+                "total_tokens": usage.get("total_tokens", 0),
+            },
+            "metadata": {
+                "repo_url": repo_url,
+                "repo_ref": repo_ref,
+                "issue_id": issue_id,
+            }
+        }
+
+        return web.json_response(response_data)
+
     async def _write_sse_chat_completion(
         self, request: "web.Request", completion_id: str, model: str,
         created: int, stream_q, agent_task, agent_ref=None, session_id: str = None,
@@ -2634,6 +2759,7 @@ class APIServerAdapter(BasePlatformAdapter):
             self._app.router.add_post("/v1/runs", self._handle_runs)
             self._app.router.add_get("/v1/runs/{run_id}/events", self._handle_run_events)
             # Paperclip adapter endpoints
+            self._app.router.add_post("/invoke", self._handle_invoke)
             self._app.router.add_get("/api/adapters/hermes_local/config-schema", self._handle_config_schema)
             self._app.router.add_get("/api/adapters/hermes_local/status", self._handle_status)
             # WebSocket for live updates
