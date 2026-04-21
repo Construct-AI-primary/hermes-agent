@@ -82,6 +82,40 @@ case "${HERMES_MODE:-chat}" in
         echo "[entrypoint] Starting Paperclip worker mode (polls Supabase)"
         exec python3 "$INSTALL_DIR/supabase_paperclip_worker.py"
         ;;
+    both)
+        # Run both API server and worker concurrently
+        echo "[entrypoint] Starting both API server and Paperclip worker"
+
+        # Start API server in background
+        _port="${PORT:-${API_SERVER_PORT:-8642}}"
+        echo "[entrypoint] Starting API server on port $_port"
+        hermes serve --host "${HOST:-0.0.0.0}" --port "${_port}" &
+        API_SERVER_PID=$!
+
+        # Give API server time to start
+        sleep 3
+
+        # Start worker
+        echo "[entrypoint] Starting Paperclip worker"
+        python3 "$INSTALL_DIR/supabase_paperclip_worker.py" &
+        WORKER_PID=$!
+
+        # Wait for either process to exit
+        wait -n
+        EXIT_CODE=$?
+
+        # Kill the other process
+        if kill -0 $API_SERVER_PID 2>/dev/null; then
+            echo "[entrypoint] Stopping API server"
+            kill $API_SERVER_PID
+        fi
+        if kill -0 $WORKER_PID 2>/dev/null; then
+            echo "[entrypoint] Stopping worker"
+            kill $WORKER_PID
+        fi
+
+        exit $EXIT_CODE
+        ;;
     *)
         exec hermes "$@"
         ;;
