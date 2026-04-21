@@ -137,7 +137,7 @@ def _select_next_issues(supabase) -> List[Dict[str, Any]]:
     res = (
         supabase.table("issues")
         .select("id, title, description, project_workspace_id, company_id, project_id, assignee_agent_id, status")
-        .in_("status", ["queued", "pending"])
+        .in_("status", ["queued", "pending", "in_progress"])
         .not_.is_("assignee_agent_id", "null")
         .order("created_at", desc=False)
         .limit(10)
@@ -214,12 +214,12 @@ def _select_next_issues(supabase) -> List[Dict[str, Any]]:
 
 
 def _claim_issue(supabase, issue_id: str) -> bool:
-    """Atomic claim: update queued/pending → running."""
+    """Atomic claim: update queued/pending/in_progress → running."""
     res = (
         supabase.table("issues")
         .update({"status": "running", "started_at": "now()"})
         .eq("id", issue_id)
-        .in_("status", ["queued", "pending"])
+        .in_("status", ["queued", "pending", "in_progress"])
         .execute()
     )
     rows = _get_data(res)
