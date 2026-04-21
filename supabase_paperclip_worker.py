@@ -154,6 +154,19 @@ def _claim_run(supabase, run_id: str) -> bool:
     return bool(rows)
 
 
+def _release_run_to_queued(supabase, run_id: str) -> bool:
+    """Release a run back to queued status (for orphaned runs without issues)."""
+    res = (
+        supabase.table("heartbeat_runs")
+        .update({"status": "queued", "started_at": None})
+        .eq("id", run_id)
+        .eq("status", "running")
+        .execute()
+    )
+    rows = _get_data(res)
+    return bool(rows)
+
+
 def _fetch_issue_context(supabase, run: Dict[str, Any]) -> Dict[str, Any]:
     """
     Walk the Paperclip join chain for this specific run.
@@ -175,7 +188,7 @@ def _fetch_issue_context(supabase, run: Dict[str, Any]) -> Dict[str, Any]:
     )
     issue_rows = _get_data(res)
     if not issue_rows:
-        return {"_error": "No issue found for this run"}
+        return {"_error": "No issue found for this run", "_orphaned": True}
     issue = issue_rows[0]
 
     workspace_id = issue.get("project_workspace_id")
@@ -234,6 +247,7 @@ def _fetch_issue_context(supabase, run: Dict[str, Any]) -> Dict[str, Any]:
         "agent_runtime_config": runtime_config,
         "heartbeat_run_id": run_id,
         "run_context": run.get("context_snapshot") or {},
+        "_orphaned": False,
     }
 
 
@@ -412,7 +426,7 @@ def _run_hermes_agent(
 
 
 # =============================================================================
-# HTTP Adapter execution (NEW)
+# HTTP Adapter execution
 # =============================================================================
 
 def _run_http_adapter(
@@ -585,14 +599,20 @@ def _update_run_status(supabase, run_id: str, status: str, result: Dict[str, Any
     """Update heartbeat_runs with final status + result snapshot."""
     payload = {
         "status": status,
-        "completed_at": "now()",
-        "result_snapshot": _safe_json({
+        "finished_at": "now()",
+        "result_json": _safe_json({
             "exit_code": result.get("exit_code"),
             "pr_url": result.get("pr_url"),
             "stdout_excerpt": (result.get("stdout") or "")[:1000],
             "stderr_excerpt": (result.get("stderr") or "")[:500],
         }),
     }
+    if status == "completed":
+        payload["exit_code"] = 0
+    else:
+        payload["exit_code"] = result.get("exit_code", 1)
+        payload["error"] = result.get("error", "unknown error")
+    
     try:
         supabase.table("heartbeat_runs").update(payload).eq("id", run_id).execute()
     except Exception as exc:
@@ -647,7 +667,9 @@ def run_forever():
     supabase = _create_supabase_client(cfg)
 
     processed = 0
+    skipped = 0
     logger.info("Paperclip unified worker starting — polling every %.1fs", cfg.poll_interval_seconds)
+    logger.info("HTTP adapter endpoint: %s", os.getenv("HERMES_ADAPTER_ENDPOINT", "http://localhost:8000/invoke"))
 
     while True:
         if cfg.max_runs_per_process and processed >= cfg.max_runs_per_process:
@@ -677,6 +699,13 @@ def run_forever():
 
                 ctx = _fetch_issue_context(supabase, run)
 
+                # NEW: Handle orphaned runs (no issue) gracefully
+                if ctx.get("_orphaned"):
+                    logger.info("Run %s has no associated issue (orphaned run) — releasing back to queued", run_id[:8])
+                    _release_run_to_queued(supabase, run_id)
+                    skipped += 1
+                    continue
+
                 if ctx.get("_error"):
                     logger.warning("Skipping run %s: %s", run_id[:8], ctx["_error"])
                     _update_run_status(supabase, run_id, "failed", {"error": ctx["_error"]})
@@ -699,6 +728,10 @@ def run_forever():
                     _post_issue_comment(supabase, issue_id, msg)
 
                 processed += 1
+
+            # Log stats periodically
+            if skipped > 0 and skipped % 10 == 0:
+                logger.info("Stats: processed=%d, skipped_orphaned=%d", processed, skipped)
 
         except Exception:
             logger.exception("Worker loop error — retrying")
