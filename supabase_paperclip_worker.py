@@ -657,6 +657,11 @@ def _post_issue_comment(supabase, issue_id: str, body: str):
 # =============================================================================
 
 def _start_health_server():
+    # Skip health server if running in "both" mode - API server already provides health endpoints
+    if os.getenv("HERMES_MODE") == "both":
+        logger.info("Skipping health server in both mode (API server provides /health)")
+        return
+    
     port = int(os.getenv("PORT", "8080"))
 
     class HealthHandler(BaseHTTPRequestHandler):
