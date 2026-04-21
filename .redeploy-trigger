@@ -1,2 +1,2 @@
-trigger redeploy - 2026-04-13T15:45:00Z - fix agent api key 500 error
-# Force clean build - Mon Apr 20 07:48:26 SAST 2026
+trigger redeploy - 2026-04-21T13:01:00Z - fix agent visibility in error status
+# Force clean build - Mon Apr 21 13:01:00 SAST 2026
