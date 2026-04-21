@@ -488,8 +488,9 @@ def _run_http_adapter(
     endpoint = runtime_config.get("adapter_endpoint")
     if not endpoint:
         # Default to Hermes API server on same host (or HERMES_ADAPTER_ENDPOINT env var)
-        # The API server runs on port 8642 by default
-        endpoint = os.getenv("HERMES_ADAPTER_ENDPOINT", "http://localhost:8642/invoke")
+        # Use PORT env var (Render sets this) or fallback to 8642
+        port = os.getenv("PORT", "8642")
+        endpoint = os.getenv("HERMES_ADAPTER_ENDPOINT", f"http://localhost:{port}/invoke")
 
     model = runtime_config.get("model", "openrouter/qwen/qwen-3-6-plus")
     max_turns = runtime_config.get("max_turns", 20)
