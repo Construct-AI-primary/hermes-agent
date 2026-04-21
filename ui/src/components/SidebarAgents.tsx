@@ -104,46 +104,59 @@ export function SidebarAgents() {
               No agents found for this company
             </div>
           )}
-          {orderedAgents.map((agent: Agent) => {
-            const runCount = liveCountByAgent.get(agent.id) ?? 0;
-            return (
-              <NavLink
-                key={agent.id}
-                to={activeTab ? `${agentUrl(agent)}/${activeTab}` : agentUrl(agent)}
-                state={SIDEBAR_SCROLL_RESET_STATE}
-                onClick={() => {
-                  if (isMobile) setSidebarOpen(false);
-                }}
-                className={cn(
-                  "flex items-center gap-2.5 px-3 py-1.5 text-[13px] font-medium transition-colors",
-                  activeAgentId === agentRouteRef(agent)
-                    ? "bg-accent text-foreground"
-                    : "text-foreground/80 hover:bg-accent/50 hover:text-foreground"
-                )}
-              >
-                <AgentIcon icon={agent.icon} className="shrink-0 h-3.5 w-3.5 text-muted-foreground" />
-                <span className="flex-1 truncate">{agent.name}</span>
-                {(agent.pauseReason === "budget" || runCount > 0) && (
-                  <span className="ml-auto flex items-center gap-1.5 shrink-0">
-                    {agent.pauseReason === "budget" ? (
-                      <BudgetSidebarMarker title="Agent paused by budget" />
-                    ) : null}
-                    {runCount > 0 ? (
-                      <span className="relative flex h-2 w-2">
-                        <span className="animate-pulse absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75" />
-                        <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500" />
-                      </span>
-                    ) : null}
-                    {runCount > 0 ? (
-                      <span className="text-[11px] font-medium text-blue-600 dark:text-blue-400">
-                        {runCount} live
-                      </span>
-                    ) : null}
-                  </span>
-                )}
-              </NavLink>
-            );
-          })}
+           {orderedAgents.map((agent: Agent) => {
+             const runCount = liveCountByAgent.get(agent.id) ?? 0;
+
+             // Add error handling for URL generation
+             let agentUrlPath: string;
+             let agentRouteRefValue: string;
+             try {
+               agentUrlPath = activeTab ? `${agentUrl(agent)}/${activeTab}` : agentUrl(agent);
+               agentRouteRefValue = agentRouteRef(agent);
+             } catch (error) {
+               console.error(`Error generating URL for agent ${agent.name} (${agent.id}):`, error);
+               // Skip this agent if URL generation fails
+               return null;
+             }
+
+             return (
+               <NavLink
+                 key={agent.id}
+                 to={agentUrlPath}
+                 state={SIDEBAR_SCROLL_RESET_STATE}
+                 onClick={() => {
+                   if (isMobile) setSidebarOpen(false);
+                 }}
+                 className={cn(
+                   "flex items-center gap-2.5 px-3 py-1.5 text-[13px] font-medium transition-colors",
+                   activeAgentId === agentRouteRefValue
+                     ? "bg-accent text-foreground"
+                     : "text-foreground/80 hover:bg-accent/50 hover:text-foreground"
+                 )}
+               >
+                 <AgentIcon icon={agent.icon} className="shrink-0 h-3.5 w-3.5 text-muted-foreground" />
+                 <span className="flex-1 truncate">{agent.name}</span>
+                 {(agent.pauseReason === "budget" || runCount > 0) && (
+                   <span className="ml-auto flex items-center gap-1.5 shrink-0">
+                     {agent.pauseReason === "budget" ? (
+                       <BudgetSidebarMarker title="Agent paused by budget" />
+                     ) : null}
+                     {runCount > 0 ? (
+                       <span className="relative flex h-2 w-2">
+                         <span className="animate-pulse absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75" />
+                         <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500" />
+                       </span>
+                     ) : null}
+                     {runCount > 0 ? (
+                       <span className="text-[11px] font-medium text-blue-600 dark:text-blue-400">
+                         {runCount} live
+                       </span>
+                     ) : null}
+                   </span>
+                 )}
+               </NavLink>
+             );
+           }).filter(Boolean) /* Remove null entries from failed URL generation */}
         </div>
       </CollapsibleContent>
     </Collapsible>

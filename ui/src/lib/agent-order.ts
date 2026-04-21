@@ -91,6 +91,13 @@ export function sortAgentsByStoredOrder(agents: Agent[], orderedIds: string[]): 
   const defaultSorted = sortAgentsByDefaultSidebarOrder(agents);
   if (orderedIds.length === 0) return defaultSorted;
 
+  // If stored order is significantly smaller than total agents, it's likely incomplete/outdated
+  // Fall back to default sorting to avoid showing only a subset of agents
+  if (orderedIds.length < agents.length * 0.5) {
+    console.warn(`Stored agent order has only ${orderedIds.length} agents but there are ${agents.length} total agents. Using default sorting.`);
+    return defaultSorted;
+  }
+
   const byId = new Map(defaultSorted.map((agent) => [agent.id, agent]));
   const sorted: Agent[] = [];
 
