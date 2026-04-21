@@ -19,12 +19,14 @@ Optional:
     LOG_LEVEL                          (default: INFO)
 """
 
+import http.server
 import json
 import logging
 import os
 import subprocess
 import sys
 import tempfile
+import threading
 import time
 import uuid
 from dataclasses import dataclass, field
@@ -32,6 +34,36 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
+
+
+# =============================================================================
+# Health check HTTP server (satisfies Render's healthCheckPath: /health)
+# =============================================================================
+
+def _run_health_server(port: int = 10000):
+    """Simple HTTP server that responds to /health for Render health checks."""
+    class HealthHandler(http.server.BaseHTTPRequestHandler):
+        def do_GET(self):
+            if self.path == "/health":
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.end_headers()
+                self.wfile.write(b'{"status":"ok"}')
+            else:
+                self.send_response(404)
+                self.end_headers()
+
+        def log_message(self, format, *args):
+            pass  # Silence logs
+
+    server = http.server.HTTPServer(("0.0.0.0", port), HealthHandler)
+    server.serve_forever(poll_interval=1.0)
+
+
+def _start_health_server(port: int = 10000):
+    t = threading.Thread(target=_run_health_server, args=(port,), daemon=True)
+    t.start()
+    logger.info("Health check server listening on :%d/health", port)
 
 
 # =============================================================================
@@ -649,4 +681,5 @@ if __name__ == "__main__":
         except ImportError:
             pass
 
+    _start_health_server()
     run_forever()
