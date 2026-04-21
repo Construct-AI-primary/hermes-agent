@@ -29,27 +29,8 @@ export function SidebarAgents() {
 
   const { data: agents, isLoading, error } = useQuery({
     queryKey: queryKeys.agents.list(selectedCompanyId!),
-    queryFn: async () => {
-      console.log('🔵 [SidebarAgents] FETCHING agents for:', selectedCompanyId);
-      try {
-        const result = await agentsApi.list(selectedCompanyId!);
-        console.log('🟢 [SidebarAgents] RECEIVED', result.length, 'agents:', result.map(a => a.name));
-        return result;
-      } catch (err) {
-        console.error('🔴 [SidebarAgents] ERROR:', err);
-        throw err;
-      }
-    },
+    queryFn: () => agentsApi.list(selectedCompanyId!),
     enabled: !!selectedCompanyId,
-  });
-
-  console.log('📊 [SidebarAgents] state:', {
-    selectedCompanyId,
-    isLoading,
-    hasError: !!error,
-    errorMsg: error?.message,
-    agentsCount: agents?.length ?? 0,
-    agents: agents?.map(a => ({ id: a.id, name: a.name, companyId: a.companyId }))
   });
   const { data: session } = useQuery({
     queryKey: queryKeys.auth.session,
@@ -72,11 +53,10 @@ export function SidebarAgents() {
   }, [liveRuns]);
 
   const visibleAgents = useMemo(() => {
-    const filtered = (agents ?? []).filter(
-      (a: Agent) => a.status !== "terminated"
+    return (agents ?? []).filter(
+      (a: Agent) => a.status !== "terminated" && a.status !== "error"
     );
-    return filtered;
-  }, [agents]);
+  }, [agents, selectedCompanyId]);
   const currentUserId = session?.user?.id ?? session?.session?.userId ?? null;
   const { orderedAgents } = useAgentOrder({
     agents: visibleAgents,
@@ -119,6 +99,11 @@ export function SidebarAgents() {
 
       <CollapsibleContent>
         <div className="flex flex-col gap-0.5 mt-0.5">
+          {orderedAgents.length === 0 && (
+            <div className="text-xs text-muted-foreground px-3 py-2">
+              No agents found for this company
+            </div>
+          )}
           {orderedAgents.map((agent: Agent) => {
             const runCount = liveCountByAgent.get(agent.id) ?? 0;
             return (

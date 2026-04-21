@@ -68,6 +68,12 @@ export function sortAgentsByDefaultSidebarOrder(agents: Agent[]): Agent[] {
 
   const sorted: Agent[] = [];
   const queue = [...(childrenOf.get(null) ?? [])];
+
+  // If no root-level agents (all have invalid reportsTo), fall back to alphabetical sorting
+  if (queue.length === 0 && agents.length > 0) {
+    return [...agents].sort((left, right) => left.name.localeCompare(right.name));
+  }
+
   while (queue.length > 0) {
     const agent = queue.shift();
     if (!agent) continue;
