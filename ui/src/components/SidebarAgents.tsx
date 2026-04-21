@@ -53,8 +53,9 @@ export function SidebarAgents() {
   }, [liveRuns]);
 
   const visibleAgents = useMemo(() => {
+    // Always show error agents - don't filter them out
     return (agents ?? []).filter(
-      (a: Agent) => a.status !== "terminated" && a.status !== "error"
+      (a: Agent) => a.status !== "terminated"
     );
   }, [agents, selectedCompanyId]);
   const currentUserId = session?.user?.id ?? session?.session?.userId ?? null;
