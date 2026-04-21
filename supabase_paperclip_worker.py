@@ -125,7 +125,7 @@ def _select_next_runs(supabase) -> List[Dict[str, Any]]:
     agent_res = (
         supabase.table("agents")
         .select("id, adapter_type, company_id, role, name, runtime_config, capabilities")
-        .in_("adapter_type", ["hermes", "hermes_local"])
+        .in_("adapter_type", ["hermes", "hermes_local", "http"])
         .execute()
     )
     agents_rows = _get_data(agent_res)
