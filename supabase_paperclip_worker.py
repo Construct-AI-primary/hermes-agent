@@ -474,10 +474,12 @@ def _run_http_adapter(
     ctx: Dict[str, Any],
     runtime_config: Dict[str, Any],
     api_key: Optional[str],
+    github_token: str = "",
 ) -> Dict[str, Any]:
     """
     Execute via HTTP adapter endpoint.
     The endpoint URL should be in runtime_config or use default HERMES_ADAPTER_ENDPOINT.
+    Injects GITHUB_TOKEN into repo_url so Paperclip's managed checkout can clone private repos.
     """
     import urllib.request
     import urllib.error
@@ -492,10 +494,14 @@ def _run_http_adapter(
     max_turns = runtime_config.get("max_turns", 20)
     temperature = runtime_config.get("temperature")
 
+    # Auth the repo_url so Paperclip's managed checkout can clone private repos
+    repo_url = ctx.get("repo_url") or ""
+    repo_url = _auth_git_url(repo_url, github_token)
+
     # Build the payload
     payload = {
         "prompt": ctx.get("issue_description") or ctx.get("issue_title", ""),
-        "repo_url": ctx.get("repo_url"),
+        "repo_url": repo_url,
         "repo_ref": ctx.get("repo_ref", "main"),
         "cwd": ctx.get("cwd", ""),
         "model": model,
@@ -587,8 +593,8 @@ def _execute_issue(
 
     # Check adapter type and execute accordingly
     if adapter_type == "http":
-        # Use HTTP adapter
-        result = _run_http_adapter(ctx, runtime_config, api_key)
+        # Use HTTP adapter — pass github_token so repo_url is authed for private repos
+        result = _run_http_adapter(ctx, runtime_config, api_key, cfg.github_token)
     else:
         # Use local Hermes CLI (hermes/hermes_local)
         # Clone repo
