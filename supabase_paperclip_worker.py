@@ -1,104 +1,44 @@
 """
-Hermes Worker — Paperclip Unified Multi-Agent Integration
-
-One worker handles ALL Hermes-type agents across ALL companies.
-Polls Paperclip's heartbeat_runs table, resolves per-agent config + API keys,
-executes the issue (clone repo, run agent, create PR), writes results back.
-
-Entry point (Render):
-    python supabase_paperclip_worker.py
-
-Required env vars:
-    SUPABASE_URL
-    SUPABASE_SERVICE_ROLE_KEY
-    GITHUB_TOKEN                 # GitHub PAT for cloning/pushing/PRs
-
-Optional:
-    PAPERCLIP_POLL_INTERVAL_SECONDS   (default: 3)
-    PAPERCLIP_MAX_RUNS_PER_PROCESS    (default: unlimited)
-    LOG_LEVEL                          (default: INFO)
+Paperclip Unified Worker — polls heartbeat_runs for Hermes-type agents,
+executes issues by cloning repos and running Hermes, then posts results.
 """
-
-import http.server
 import json
 import logging
 import os
 import subprocess
 import sys
 import tempfile
-import threading
 import time
 import uuid
-from dataclasses import dataclass, field
+from http.server import HTTPServer, BaseHTTPRequestHandler
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-logger = logging.getLogger(__name__)
-
-
-# =============================================================================
-# Health check HTTP server (satisfies Render's healthCheckPath: /health)
-# =============================================================================
-
-def _run_health_server(port: int = 10000):
-    """Simple HTTP server that responds to /health for Render health checks."""
-    class HealthHandler(http.server.BaseHTTPRequestHandler):
-        def do_GET(self):
-            if self.path == "/health":
-                self.send_response(200)
-                self.send_header("Content-Type", "application/json")
-                self.end_headers()
-                self.wfile.write(b'{"status":"ok"}')
-            else:
-                self.send_response(404)
-                self.end_headers()
-
-        def log_message(self, format, *args):
-            pass  # Silence logs
-
-    server = http.server.HTTPServer(("0.0.0.0", port), HealthHandler)
-    server.serve_forever(poll_interval=1.0)
-
-
-def _start_health_server(port: int = 10000):
-    t = threading.Thread(target=_run_health_server, args=(port,), daemon=True)
-    t.start()
-    logger.info("Health check server listening on :%d/health", port)
+logger = logging.getLogger("paperclip_worker")
 
 
 # =============================================================================
 # Config
 # =============================================================================
 
-@dataclass
 class WorkerConfig:
-    supabase_url: str
-    supabase_service_role_key: str
-    github_token: str
-    poll_interval_seconds: float = 3.0
-    max_runs_per_process: Optional[int] = None
-    # Reusable clone cache: avoid re-cloning the same repo within one container
-    _clone_cache: Dict[str, Path] = field(default_factory=dict)
+    supabase_url: str = os.getenv("SUPABASE_URL", "")
+    supabase_service_role_key: str = os.getenv("SUPABASE_SERVICE_ROLE_KEY", "")
+    github_token: str = os.getenv("GITHUB_TOKEN", "")
+    poll_interval_seconds: float = float(os.getenv("POLL_INTERVAL_SECONDS", "5"))
+    max_runs_per_process: Optional[int] = (
+        int(os.getenv("PAPERCLIP_MAX_RUNS_PER_PROCESS", "0")) or None
+    )
+    _clone_cache: Dict[str, Path] = {}
+
+    def __post_init__(self):
+        missing = [k for k in ("supabase_url", "supabase_service_role_key") if not getattr(self, k)]
+        if missing:
+            raise ValueError(f"Missing env vars: {missing}")
 
 
 def _load_config_from_env() -> WorkerConfig:
-    def req(name: str) -> str:
-        v = os.getenv(name, "").strip()
-        if not v:
-            raise RuntimeError(f"Missing required env var: {name}")
-        return v
-
-    return WorkerConfig(
-        supabase_url=req("SUPABASE_URL"),
-        supabase_service_role_key=req("SUPABASE_SERVICE_ROLE_KEY"),
-        github_token=req("GITHUB_TOKEN"),
-        poll_interval_seconds=float(os.getenv("PAPERCLIP_POLL_INTERVAL_SECONDS", "3")),
-        max_runs_per_process=(
-            int(os.getenv("PAPERCLIP_MAX_RUNS_PER_PROCESS"))
-            if os.getenv("PAPERCLIP_MAX_RUNS_PER_PROCESS")
-            else None
-        ),
-    )
+    return WorkerConfig()
 
 
 # =============================================================================
@@ -289,8 +229,9 @@ def _fetch_issue_context(supabase, run: Dict[str, Any]) -> Dict[str, Any]:
         "agent_id": run.get("agent_id"),
         "agent_role": agent.get("role"),
         "agent_name": agent.get("name"),
-        "agent_runtime_config": runtime_config,
         "agent_capabilities": agent.get("capabilities"),
+        "adapter_type": agent.get("adapter_type", "http"),  # NEW: include adapter_type
+        "agent_runtime_config": runtime_config,
         "heartbeat_run_id": run_id,
         "run_context": run.get("context_snapshot") or {},
     }
@@ -398,11 +339,11 @@ def _create_pr(repo_url: str, branch: str, title: str, body: str, github_token: 
     )
     with urllib.request.urlopen(req, timeout=30) as resp:
         data = json.loads(resp.read())
-    return data.get("html_url", "")
+    return data.get("html_url") or data.get("url", "")
 
 
 # =============================================================================
-# Hermes execution — per-agent config
+# Hermes execution (local CLI)
 # =============================================================================
 
 def _run_hermes_agent(
@@ -411,42 +352,30 @@ def _run_hermes_agent(
     prompt: str,
     runtime_config: Dict[str, Any],
     github_token: str,
-    api_key: Optional[str] = None,
+    api_key: Optional[str],
 ) -> Dict[str, Any]:
-    """
-    Run Hermes with per-agent config from runtime_config.
+    """Run Hermes CLI in repo_path with the given prompt."""
+    work_dir = repo_path / cwd if cwd else repo_path
 
-    runtime_config fields supported:
-      - model: str (e.g. "anthropic/claude-opus-4.6")
-      - max_turns: int (default 30)
-      - skills: List[str] (optional skill names)
-      - provider: str (optional override)
-    """
-    work_dir = (repo_path / cwd) if cwd else repo_path
-    if not work_dir.exists():
-        work_dir = repo_path
-
-    model = runtime_config.get("model", "")
-    max_turns = int(runtime_config.get("max_turns", 30))
-    provider = runtime_config.get("provider", "")
+    model = runtime_config.get("model")
+    max_turns = runtime_config.get("max_turns", 20)
+    temperature = runtime_config.get("temperature")
 
     cmd = [
-        sys.executable,
-        str(Path(__file__).parent / "hermes"),
-        "chat",
-        "--max-turns", str(max_turns),
-        "-q",
-        "--",
-        prompt,
+        sys.executable, "-m", "hermes",
+        "--model", model or "openrouter/qwen/qwen-3-6-plus",
+        "--max-iterations", str(max_turns),
+        "--no-stream",
+        "--message", prompt,
     ]
-    if model:
-        cmd.extend(["-m", model])
-    if provider:
-        cmd.extend(["--provider", provider])
+    if temperature is not None:
+        cmd += ["--temperature", str(temperature)]
 
     env = {**os.environ}
     if api_key:
         env["OPENROUTER_API_KEY"] = api_key
+    if github_token:
+        env["GITHUB_TOKEN"] = github_token
 
     # max_tokens from agent_models → HERMES_MAX_TOKENS env var for LLM API
     max_tokens = runtime_config.get("max_tokens")
@@ -483,6 +412,94 @@ def _run_hermes_agent(
 
 
 # =============================================================================
+# HTTP Adapter execution (NEW)
+# =============================================================================
+
+def _run_http_adapter(
+    ctx: Dict[str, Any],
+    runtime_config: Dict[str, Any],
+    api_key: Optional[str],
+) -> Dict[str, Any]:
+    """
+    Execute via HTTP adapter endpoint.
+    The endpoint URL should be in runtime_config or agent config.
+    """
+    import urllib.request
+    import urllib.error
+
+    # Get the HTTP adapter endpoint from runtime_config or use default
+    endpoint = runtime_config.get("adapter_endpoint")
+    if not endpoint:
+        # Default to Hermes adapter on same host or configured URL
+        endpoint = os.getenv("HERMES_ADAPTER_ENDPOINT", "http://localhost:8000/invoke")
+
+    model = runtime_config.get("model", "openrouter/qwen/qwen-3-6-plus")
+    max_turns = runtime_config.get("max_turns", 20)
+    temperature = runtime_config.get("temperature")
+
+    # Build the payload
+    payload = {
+        "prompt": ctx.get("issue_description") or ctx.get("issue_title", ""),
+        "repo_url": ctx.get("repo_url"),
+        "repo_ref": ctx.get("repo_ref", "main"),
+        "cwd": ctx.get("cwd", ""),
+        "model": model,
+        "max_turns": max_turns,
+        "temperature": temperature,
+        "max_tokens": runtime_config.get("max_tokens"),
+        "agent_id": ctx.get("agent_id"),
+        "company_id": ctx.get("company_id"),
+        "issue_id": ctx.get("issue_id"),
+        "run_id": ctx.get("heartbeat_run_id"),
+    }
+
+    # Remove None values
+    payload = {k: v for k, v in payload.items() if v is not None}
+
+    logger.info("Calling HTTP adapter at %s with payload: %s", endpoint, json.dumps(payload, default=str)[:200])
+
+    try:
+        data = json.dumps(payload).encode("utf-8")
+        req = urllib.request.Request(
+            endpoint,
+            data=data,
+            headers={
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+            },
+            method="POST",
+        )
+
+        # Add API key header if available
+        if api_key:
+            req.add_header("Authorization", f"Bearer {api_key}")
+
+        with urllib.request.urlopen(req, timeout=900) as resp:
+            result_data = json.loads(resp.read())
+            return {
+                "exit_code": 0,
+                "stdout": json.dumps(result_data),
+                "stderr": "",
+            }
+
+    except urllib.error.HTTPError as e:
+        error_body = e.read().decode("utf-8", errors="replace") if e.fp else ""
+        logger.error("HTTP adapter error %d: %s", e.code, error_body[:500])
+        return {
+            "exit_code": e.code,
+            "stdout": "",
+            "stderr": f"HTTP {e.code}: {error_body[:500]}",
+        }
+    except Exception as exc:
+        logger.error("HTTP adapter failed: %s", exc)
+        return {
+            "exit_code": -1,
+            "stdout": "",
+            "stderr": str(exc),
+        }
+
+
+# =============================================================================
 # Execute a single run
 # =============================================================================
 
@@ -502,14 +519,9 @@ def _execute_run(
     agent_id = ctx.get("agent_id")
     runtime_config = ctx.get("agent_runtime_config", {})
     company_name = ctx.get("company_name") or "unknown"
+    adapter_type = ctx.get("adapter_type", "http")  # NEW: get adapter type
 
     prompt = issue_description.strip() if issue_description.strip() else issue_title
-
-    # Clone repo
-    try:
-        repo_path = _clone_repo(repo_url, repo_ref, cfg.github_token, cfg._clone_cache)
-    except Exception as exc:
-        return {"error": f"Clone failed: {exc}"}
 
     # Per-company, per-agent API key
     api_key = None
@@ -519,10 +531,21 @@ def _execute_run(
         except Exception as exc:
             logger.warning("Could not fetch agent API key: %s", exc)
 
-    # Run Hermes with agent's runtime config
-    result = _run_hermes_agent(
-        repo_path, cwd, prompt, runtime_config, cfg.github_token, api_key
-    )
+    # NEW: Check adapter type and execute accordingly
+    if adapter_type == "http":
+        # Use HTTP adapter
+        result = _run_http_adapter(ctx, runtime_config, api_key)
+    else:
+        # Use local Hermes CLI (hermes/hermes_local)
+        # Clone repo
+        try:
+            repo_path = _clone_repo(repo_url, repo_ref, cfg.github_token, cfg._clone_cache)
+        except Exception as exc:
+            return {"error": f"Clone failed: {exc}"}
+
+        result = _run_hermes_agent(
+            repo_path, cwd, prompt, runtime_config, cfg.github_token, api_key
+        )
 
     pr_url = None
     branch_name = f"hermes-{uuid.uuid4().hex[:8]}"
@@ -548,34 +571,35 @@ def _execute_run(
         "repo_url": repo_url,
         "repo_ref": repo_ref,
         "pr_url": pr_url,
-        "branch": branch_name,
-        "company": company_name,
-        "agent_role": ctx.get("agent_role"),
-        "hermes_result": result,
+        "exit_code": result.get("exit_code"),
+        "stdout": result.get("stdout", ""),
+        "stderr": result.get("stderr", ""),
     }
 
 
-def _update_run(
-    supabase, run_id: str, status: str, result: Dict[str, Any], *, error: str = ""
-):
-    patch: Dict[str, Any] = {
+# =============================================================================
+# Status updates
+# =============================================================================
+
+def _update_run_status(supabase, run_id: str, status: str, result: Dict[str, Any]):
+    """Update heartbeat_runs with final status + result snapshot."""
+    payload = {
         "status": status,
-        "finished_at": "now()",
+        "completed_at": "now()",
+        "result_snapshot": _safe_json({
+            "exit_code": result.get("exit_code"),
+            "pr_url": result.get("pr_url"),
+            "stdout_excerpt": (result.get("stdout") or "")[:1000],
+            "stderr_excerpt": (result.get("stderr") or "")[:500],
+        }),
     }
-    if status == "completed":
-        patch["result_json"] = _safe_json(result)
-        patch["exit_code"] = 0
-    else:
-        patch["result_json"] = _safe_json({"error": error})
-        patch["exit_code"] = 1
-        patch["error"] = str(error)
-
-    supabase.table("heartbeat_runs").update(patch).eq("id", run_id).execute()
+    try:
+        supabase.table("heartbeat_runs").update(payload).eq("id", run_id).execute()
+    except Exception as exc:
+        logger.warning("Could not update run status: %s", exc)
 
 
 def _post_issue_comment(supabase, issue_id: str, body: str):
-    if not issue_id:
-        return
     try:
         supabase.table("issue_comments").insert({
             "issue_id": issue_id,
@@ -583,6 +607,30 @@ def _post_issue_comment(supabase, issue_id: str, body: str):
         }).execute()
     except Exception as exc:
         logger.debug("Could not post issue comment: %s", exc)
+
+
+# =============================================================================
+# Health check server
+# =============================================================================
+
+def _start_health_server():
+    port = int(os.getenv("PORT", "8080"))
+
+    class HealthHandler(BaseHTTPRequestHandler):
+        def do_GET(self):
+            self.send_response(200)
+            self.send_header("Content-Type", "text/plain")
+            self.end_headers()
+            self.wfile.write(b"OK")
+
+        def log_message(self, format, *args):
+            pass  # suppress logging
+
+    server = HTTPServer(("0.0.0.0", port), HealthHandler)
+    logger.info("Health server listening on port %s", port)
+    import threading
+    t = threading.Thread(target=server.serve_forever, daemon=True)
+    t.start()
 
 
 # =============================================================================
@@ -628,24 +676,17 @@ def run_forever():
                 )
 
                 ctx = _fetch_issue_context(supabase, run)
-                error = ctx.get("_error")
 
-                if error:
-                    logger.warning("Skipping run %s: %s", run_id[:8], error)
-                    _update_run(supabase, run_id, "failed", {}, error=error)
-                    processed += 1
+                if ctx.get("_error"):
+                    logger.warning("Skipping run %s: %s", run_id[:8], ctx["_error"])
+                    _update_run_status(supabase, run_id, "failed", {"error": ctx["_error"]})
                     continue
 
-                try:
-                    result = _execute_run(ctx, cfg, supabase)
-                except Exception as exc:
-                    logger.exception("Execution failed for run %s", run_id[:8])
-                    result = {"error": str(exc)}
+                result = _execute_run(ctx, cfg, supabase)
 
-                status = "completed" if "error" not in result else "failed"
-                _update_run(supabase, run_id, status, result, error=result.get("error", ""))
+                status = "completed" if result.get("exit_code") == 0 else "failed"
+                _update_run_status(supabase, run_id, status, result)
 
-                # Post result comment on issue
                 issue_id = ctx.get("issue_id")
                 if issue_id:
                     pr = result.get("pr_url")
