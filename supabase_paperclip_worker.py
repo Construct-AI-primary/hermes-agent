@@ -594,20 +594,23 @@ def _execute_issue(
         except Exception as exc:
             logger.warning("Could not fetch agent API key: %s", exc)
 
+    # Get github_token from config
+    github_token = cfg.github_token
+
     # Check adapter type and execute accordingly
     if adapter_type == "http":
         # Use HTTP adapter — pass github_token so repo_url is authed for private repos
-        result = _run_http_adapter(ctx, runtime_config, api_key, cfg.github_token)
+        result = _run_http_adapter(ctx, runtime_config, api_key, github_token)
     else:
         # Use local Hermes CLI (hermes/hermes_local)
         # Clone repo
         try:
-            repo_path = _clone_repo(repo_url, repo_ref, cfg.github_token, cfg._clone_cache)
+            repo_path = _clone_repo(repo_url, repo_ref, github_token, cfg._clone_cache)
         except Exception as exc:
             return {"error": f"Clone failed: {exc}"}
 
         result = _run_hermes_agent(
-            repo_path, cwd, prompt, runtime_config, cfg.github_token, api_key
+            repo_path, cwd, prompt, runtime_config, github_token, api_key
         )
 
     pr_url = None
@@ -625,7 +628,7 @@ def _execute_issue(
                 repo_url, branch_name,
                 f"Hermes [{company_name}]: {issue_title[:50]}",
                 body[:65536],
-                cfg.github_token,
+                github_token,
             )
         except Exception as exc:
             logger.warning("PR creation failed: %s", exc)
