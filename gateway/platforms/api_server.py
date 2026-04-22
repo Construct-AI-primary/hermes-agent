@@ -2691,10 +2691,13 @@ class APIServerAdapter(BasePlatformAdapter):
         Converts the payload to OpenAI chat completions format and runs the agent.
         """
         logger.info("[api_server] _handle_invoke called - processing request")
+        logger.info("[api_server] Request method: %s, path: %s", request.method, request.path)
         
         auth_err = self._check_auth(request)
         if auth_err:
+            logger.info("[api_server] Auth check returned error: %s", auth_err)
             return auth_err
+        logger.info("[api_server] Auth passed")
 
         # Parse Paperclip payload
         try:
