@@ -778,6 +778,9 @@ class APIServerAdapter(BasePlatformAdapter):
 
     async def _handle_health(self, request: "web.Request") -> "web.Response":
         """GET /health — simple health check."""
+        import sys as _sys
+        _sys.stderr.write(f"[{self.name}] Health check received from {request.remote}\n")
+        _sys.stderr.flush()
         return web.json_response({"status": "ok", "platform": "hermes-agent"})
 
     async def _handle_health_detailed(self, request: "web.Request") -> "web.Response":
@@ -2910,6 +2913,8 @@ class APIServerAdapter(BasePlatformAdapter):
                 sweep_task.add_done_callback(self._background_tasks.discard)
 
             # Port conflict detection — fail fast if port is already in use
+            _sys.stderr.write(f"[{self.name}] Checking if port {self._port} is available...\n")
+            _sys.stderr.flush()
             try:
                 with _socket.socket(_socket.AF_INET, _socket.SOCK_STREAM) as _s:
                     _s.settimeout(1)
@@ -2920,12 +2925,22 @@ class APIServerAdapter(BasePlatformAdapter):
                 logger.error('[%s] Port %d already in use. Set a different port in config.yaml: platforms.api_server.port', self.name, self._port)
                 return False
             except (ConnectionRefusedError, OSError):
+                _sys.stderr.write(f"[{self.name}] Port {self._port} is free\n")
+                _sys.stderr.flush()
                 pass  # port is free
 
+            _sys.stderr.write(f"[{self.name}] Creating aiohttp AppRunner...\n")
+            _sys.stderr.flush()
             self._runner = web.AppRunner(self._app)
             await self._runner.setup()
+            _sys.stderr.write(f"[{self.name}] Creating TCPSite on {self._host}:{self._port}...\n")
+            _sys.stderr.flush()
             self._site = web.TCPSite(self._runner, self._host, self._port)
+            _sys.stderr.write(f"[{self.name}] Starting TCPSite...\n")
+            _sys.stderr.flush()
             await self._site.start()
+            _sys.stderr.write(f"[{self.name}] TCPSite started successfully\n")
+            _sys.stderr.flush()
 
             self._mark_connected()
             if not self._api_key:
