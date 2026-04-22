@@ -2340,6 +2340,9 @@ class APIServerAdapter(BasePlatformAdapter):
             def _default_clarify(question, choices=None):
                 raise RuntimeError(f"Agent requires clarification: {question}")
 
+            # Capture clarify_callback in closure (it's a parameter to _run_agent, not _run)
+            cb = clarify_callback if clarify_callback is not None else _default_clarify
+
             agent = self._create_agent(
                 ephemeral_system_prompt=ephemeral_system_prompt,
                 session_id=session_id,
@@ -2348,7 +2351,7 @@ class APIServerAdapter(BasePlatformAdapter):
                 tool_start_callback=tool_start_callback,
                 tool_complete_callback=tool_complete_callback,
                 model=effective_model,
-                clarify_callback=clarify_callback or _default_clarify,
+                clarify_callback=cb,
             )
             if agent_ref is not None:
                 agent_ref[0] = agent
