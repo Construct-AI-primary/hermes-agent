@@ -83,21 +83,33 @@ case "${HERMES_MODE:-chat}" in
         exec python3 "$INSTALL_DIR/supabase_paperclip_worker.py"
         ;;
     both)
-        # Run both API server and worker concurrently
+        # Run both API server and worker concurrently with visible logging
         echo "[entrypoint] Starting both API server and Paperclip worker"
 
-        # Start API server in background
+        # Start API server in background with explicit logging prefix
         _port="${PORT:-${API_SERVER_PORT:-8642}}"
         echo "[entrypoint] Starting API server on port $_port"
-        hermes serve --host "${HOST:-0.0.0.0}" --port "${_port}" &
+        hermes serve --host "${HOST:-0.0.0.0}" --port "${_port}" > >(sed 's/^/[API] /') 2> >(sed 's/^/[API] /' >&2) &
         API_SERVER_PID=$!
 
-        # Give API server time to start
-        sleep 3
+        # Wait for API server to start (check if it's listening)
+        echo "[entrypoint] Waiting for API server to be ready..."
+        for i in {1..30}; do
+            if curl -s "http://localhost:$_port/health" > /dev/null 2>&1; then
+                echo "[entrypoint] API server is ready"
+                break
+            fi
+            sleep 1
+            if [ $i -eq 30 ]; then
+                echo "[entrypoint] ERROR: API server failed to start after 30 seconds"
+                kill $API_SERVER_PID 2>/dev/null || true
+                exit 1
+            fi
+        done
 
-        # Start worker
+        # Start worker in background with explicit logging prefix
         echo "[entrypoint] Starting Paperclip worker"
-        python3 "$INSTALL_DIR/supabase_paperclip_worker.py" &
+        python3 "$INSTALL_DIR/supabase_paperclip_worker.py" > >(sed 's/^/[WORKER] /') 2> >(sed 's/^/[WORKER] /' >&2) &
         WORKER_PID=$!
 
         # Wait for either process to exit
