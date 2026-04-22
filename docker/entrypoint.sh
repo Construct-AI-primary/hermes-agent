@@ -97,7 +97,13 @@ case "${HERMES_MODE:-chat}" in
 
         # Wait for API server to start (check if it's listening)
         echo "[entrypoint] Waiting for API server to be ready..."
-        for i in {1..30}; do
+        MAX_ATTEMPTS=60
+        for i in $(seq 1 $MAX_ATTEMPTS); do
+            # Check if process died
+            if ! kill -0 $API_SERVER_PID 2>/dev/null; then
+                echo "[entrypoint] ERROR: API server process died"
+                exit 1
+            fi
             # Use -w to show HTTP status code, -o /dev/null to discard body
             HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" --connect-timeout 1 "http://localhost:$_port/health" 2>&1)
             CURL_EXIT=$?
@@ -105,15 +111,16 @@ case "${HERMES_MODE:-chat}" in
                 echo "[entrypoint] API server is ready (HTTP $HTTP_CODE)"
                 break
             fi
-            echo "[entrypoint] Attempt $i: curl exit=$CURL_EXIT, HTTP=$HTTP_CODE"
-            # Check if process died
-            if ! kill -0 $API_SERVER_PID 2>/dev/null; then
-                echo "[entrypoint] ERROR: API server process died immediately"
-                exit 1
+            # HTTP 000 means connection refused - server not ready yet
+            # This is expected during startup, just keep waiting
+            if [ "$HTTP_CODE" = "000" ]; then
+                echo "[entrypoint] Waiting for server... (attempt $i/$MAX_ATTEMPTS)"
+            else
+                echo "[entrypoint] Attempt $i: curl exit=$CURL_EXIT, HTTP=$HTTP_CODE"
             fi
             sleep 1
-            if [ $i -eq 30 ]; then
-                echo "[entrypoint] ERROR: API server failed to start after 30 seconds"
+            if [ $i -eq $MAX_ATTEMPTS ]; then
+                echo "[entrypoint] ERROR: API server failed to start after $MAX_ATTEMPTS seconds"
                 # Kill any remaining process and show logs
                 kill $API_SERVER_PID 2>/dev/null || true
                 exit 1
