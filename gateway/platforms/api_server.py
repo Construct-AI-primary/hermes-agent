@@ -781,7 +781,15 @@ class APIServerAdapter(BasePlatformAdapter):
         import sys as _sys
         _sys.stderr.write(f"[{self.name}] Health check received from {request.remote}\n")
         _sys.stderr.flush()
-        return web.json_response({"status": "ok", "platform": "hermes-agent"})
+        try:
+            response = web.json_response({"status": "ok", "platform": "hermes-agent"})
+            _sys.stderr.write(f"[{self.name}] Health check returning 200 OK\n")
+            _sys.stderr.flush()
+            return response
+        except Exception as e:
+            _sys.stderr.write(f"[{self.name}] Health check error: {e}\n")
+            _sys.stderr.flush()
+            return web.json_response({"error": str(e)}, status=500)
 
     async def _handle_health_detailed(self, request: "web.Request") -> "web.Response":
         """GET /health/detailed — rich status for cross-container dashboard probing.
