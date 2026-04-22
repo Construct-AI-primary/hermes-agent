@@ -510,6 +510,7 @@ def _run_http_adapter(
         "max_turns": max_turns,
         "temperature": temperature,
         "max_tokens": runtime_config.get("max_tokens"),
+        "github_token": cfg.github_token,  # Include GitHub token for agent environment
         "agent_id": ctx.get("agent_id"),
         "company_id": ctx.get("company_id"),
         "issue_id": ctx.get("issue_id"),

@@ -2665,10 +2665,119 @@ class APIServerAdapter(BasePlatformAdapter):
         
         return web.json_response(schema)
 
+    async def _handle_invoke(self, request: "web.Request") -> "web.Response":
+        """
+        POST /invoke
+
+        Accepts Paperclip payload format from the worker and executes the agent.
+        Converts the payload to OpenAI chat completions format and runs the agent.
+        """
+        auth_err = self._check_auth(request)
+        if auth_err:
+            return auth_err
+
+        # Parse Paperclip payload
+        try:
+            payload = await request.json()
+        except (json.JSONDecodeError, Exception):
+            return web.json_response({"error": "Invalid JSON payload"}, status=400)
+
+        # Extract parameters from Paperclip payload
+        prompt = payload.get("prompt", "")
+        repo_url = payload.get("repo_url", "")
+        repo_ref = payload.get("repo_ref", "main")
+        cwd = payload.get("cwd", "")
+        model = payload.get("model", self._model_name)
+        max_turns = payload.get("max_turns", 20)
+        temperature = payload.get("temperature")
+        max_tokens = payload.get("max_tokens")
+        github_token = payload.get("github_token", "")  # GitHub token for repo access
+        agent_id = payload.get("agent_id")
+        company_id = payload.get("company_id")
+        issue_id = payload.get("issue_id")
+
+        if not prompt:
+            return web.json_response({"error": "Missing 'prompt' in payload"}, status=400)
+
+        # Build system prompt with repo context
+        system_parts = []
+        if repo_url:
+            system_parts.append(f"You are working in a Git repository. The repository URL is: {repo_url}")
+            if repo_ref and repo_ref != "main":
+                system_parts.append(f"Use branch/ref: {repo_ref}")
+            if cwd:
+                system_parts.append(f"Work in directory: {cwd}")
+            system_parts.append("You have access to Git tools. Clone the repository if needed and work with the code.")
+        system_parts.append(
+            "You are an autonomous coding agent. Analyze the task, write code, "
+            "run tests, and create a pull request when complete."
+        )
+        system_prompt = "\n".join(system_parts)
+
+        # Create session ID based on issue
+        session_id = f"paperclip-{issue_id}" if issue_id else f"paperclip-{uuid.uuid4().hex[:16]}"
+
+        # Set up runtime config for the agent
+        runtime_config = {"model": model}
+        if max_turns:
+            runtime_config["max_turns"] = max_turns
+        if temperature is not None:
+            runtime_config["temperature"] = temperature
+        if max_tokens:
+            runtime_config["max_tokens"] = max_tokens
+
+        # Override the model for this agent run
+        original_model = self._model_name
+        self._model_name = model
+
+        # Set GitHub token in environment for Git operations
+        original_github_token = os.environ.get("GITHUB_TOKEN", "")
+        if github_token:
+            os.environ["GITHUB_TOKEN"] = github_token
+
+        try:
+            # Run the agent
+            result = await self._run_agent(
+                user_message=prompt,
+                conversation_history=[],
+                ephemeral_system_prompt=system_prompt,
+                session_id=session_id,
+                runtime_config=runtime_config,
+            )
+
+            # Extract the final response
+            final_response = result.get("final_response", "")
+            if not final_response:
+                final_response = result.get("error", "No response generated")
+
+            # Return Paperclip-compatible response
+            return web.json_response({
+                "success": True,
+                "response": final_response,
+                "exit_code": 0,
+                "stdout": final_response,
+                "stderr": result.get("error", ""),
+                "model_used": model,
+                "session_id": session_id,
+            })
+
+        except Exception as e:
+            logger.error("Error in _handle_invoke: %s", e)
+            return web.json_response({
+                "success": False,
+                "error": str(e),
+                "exit_code": 1,
+                "stdout": "",
+                "stderr": str(e),
+            }, status=500)
+        finally:
+            # Restore original model
+            self._model_name = original_model
+
     async def _handle_status(self, request: "web.Request") -> "web.Response":
         """
         GET /api/adapters/hermes_local/status
-        
+
         Returns the current agent runtime status for Paperclip.
         """
         status = {
