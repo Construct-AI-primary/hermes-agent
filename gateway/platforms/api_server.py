@@ -710,6 +710,7 @@ class APIServerAdapter(BasePlatformAdapter):
         tool_start_callback=None,
         tool_complete_callback=None,
         model: Optional[str] = None,
+        clarify_callback=None,
     ) -> Any:
         """
         Create an AIAgent instance using the gateway's runtime config.
@@ -750,6 +751,7 @@ class APIServerAdapter(BasePlatformAdapter):
             tool_progress_callback=tool_progress_callback,
             tool_start_callback=tool_start_callback,
             tool_complete_callback=tool_complete_callback,
+            clarify_callback=clarify_callback,
             session_db=self._ensure_session_db(),
             fallback_model=fallback_model,
         )
@@ -2333,6 +2335,10 @@ class APIServerAdapter(BasePlatformAdapter):
             effective_model = runtime_config["model"]
 
         def _run():
+            # Default clarify callback: fail fast instead of hanging
+            def _default_clarify(question, choices=None):
+                raise RuntimeError(f"Agent requires clarification: {question}")
+
             agent = self._create_agent(
                 ephemeral_system_prompt=ephemeral_system_prompt,
                 session_id=session_id,
@@ -2341,6 +2347,7 @@ class APIServerAdapter(BasePlatformAdapter):
                 tool_start_callback=tool_start_callback,
                 tool_complete_callback=tool_complete_callback,
                 model=effective_model,
+                clarify_callback=clarify_callback or _default_clarify,
             )
             if agent_ref is not None:
                 agent_ref[0] = agent
