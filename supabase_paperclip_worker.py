@@ -103,7 +103,7 @@ def _fetch_agent_api_key(supabase, agent_id: str, company_id: str) -> Optional[s
     """Look up per-agent per-company API key for LLM billing."""
     res = (
         supabase.table("agent_api_keys")
-        .select("token")
+        .select("api_key")
         .eq("agent_id", agent_id)
         .eq("company_id", company_id)
         .limit(1)
@@ -111,17 +111,17 @@ def _fetch_agent_api_key(supabase, agent_id: str, company_id: str) -> Optional[s
     )
     rows = _get_data(res)
     if rows:
-        return rows[0].get("token")
+        return rows[0].get("api_key")
     # Fallback: any key for this agent
     res = (
         supabase.table("agent_api_keys")
-        .select("token")
+        .select("api_key")
         .eq("agent_id", agent_id)
         .limit(1)
         .execute()
     )
     rows = _get_data(res)
-    return rows[0].get("token") if rows else None
+    return rows[0].get("api_key") if rows else None
 
 
 # =============================================================================
@@ -510,7 +510,7 @@ def _run_http_adapter(
         "max_turns": max_turns,
         "temperature": temperature,
         "max_tokens": runtime_config.get("max_tokens"),
-        "github_token": cfg.github_token,  # Include GitHub token for agent environment
+        "github_token": github_token,  # Include GitHub token for agent environment
         "agent_id": ctx.get("agent_id"),
         "company_id": ctx.get("company_id"),
         "issue_id": ctx.get("issue_id"),
