@@ -98,10 +98,14 @@ case "${HERMES_MODE:-chat}" in
         # Wait for API server to start (check if it's listening)
         echo "[entrypoint] Waiting for API server to be ready..."
         for i in {1..30}; do
-            if curl -s --connect-timeout 1 "http://localhost:$_port/health" > /dev/null 2>&1; then
-                echo "[entrypoint] API server is ready"
+            # Use -w to show HTTP status code, -o /dev/null to discard body
+            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" --connect-timeout 1 "http://localhost:$_port/health" 2>&1)
+            CURL_EXIT=$?
+            if [ $CURL_EXIT -eq 0 ] && [ "$HTTP_CODE" = "200" ]; then
+                echo "[entrypoint] API server is ready (HTTP $HTTP_CODE)"
                 break
             fi
+            echo "[entrypoint] Attempt $i: curl exit=$CURL_EXIT, HTTP=$HTTP_CODE"
             # Check if process died
             if ! kill -0 $API_SERVER_PID 2>/dev/null; then
                 echo "[entrypoint] ERROR: API server process died immediately"
