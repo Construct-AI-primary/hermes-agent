@@ -89,7 +89,9 @@ case "${HERMES_MODE:-chat}" in
         # Start API server in background with explicit logging prefix
         _port="${PORT:-${API_SERVER_PORT:-8642}}"
         echo "[entrypoint] Starting API server on port $_port"
-        hermes serve --host "${HOST:-0.0.0.0}" --port "${_port}" > >(sed 's/^/[API] /') 2> >(sed 's/^/[API] /' >&2) &
+        
+        # Start API server and capture both stdout and stderr
+        hermes serve --host "${HOST:-0.0.0.0}" --port "${_port}" 2>&1 | sed 's/^/[API] /' &
         API_SERVER_PID=$!
 
         # Wait for API server to start (check if it's listening)
@@ -98,6 +100,11 @@ case "${HERMES_MODE:-chat}" in
             if curl -s "http://localhost:$_port/health" > /dev/null 2>&1; then
                 echo "[entrypoint] API server is ready"
                 break
+            fi
+            # Check if process died
+            if ! kill -0 $API_SERVER_PID 2>/dev/null; then
+                echo "[entrypoint] ERROR: API server process died immediately"
+                exit 1
             fi
             sleep 1
             if [ $i -eq 30 ]; then
