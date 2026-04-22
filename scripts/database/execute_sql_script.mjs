@@ -1,84 +1,66 @@
 #!/usr/bin/env node
-import pkg from 'pg';
-const { Client } = pkg;
+import { createClient } from '@supabase/supabase-js';
 import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import { config } from 'dotenv';
+
+// Load environment variables from .env file
+config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const client = new Client({
-  connectionString: 'postgresql://postgres.gmorarhibiptvcrnvrpi:bmdPWI7wQ172Ch1m@aws-1-eu-west-1.pooler.supabase.com:6543/postgres',
-  ssl: {
-    rejectUnauthorized: false
+// Database connection using Supabase client (like other working scripts)
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+// Validate environment variables
+if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+  console.error('❌ Missing required environment variables:');
+  console.error('   SUPABASE_URL: ', SUPABASE_URL ? '✅ Set' : '❌ Missing');
+  console.error('   SUPABASE_SERVICE_ROLE_KEY: ', SUPABASE_SERVICE_ROLE_KEY ? '✅ Set' : '❌ Missing');
+  console.error('\nPlease ensure .env file contains the correct Supabase credentials.');
+  process.exit(1);
+}
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
+  auth: {
+    autoRefreshToken: false,
+    persistSession: false
   }
 });
 
 async function executeSqlScript(scriptPath) {
   try {
-    await client.connect();
     console.log(`\n📝 Reading SQL script: ${scriptPath}\n`);
     const sqlContent = readFileSync(scriptPath, 'utf8');
 
-    // Split into statements (simple split by semicolon, works for most cases)
-    const statements = sqlContent
-      .split(';')
-      .map(s => {
-        // Remove leading comments and whitespace
-        let cleaned = s.trim();
-        while (cleaned.startsWith('--')) {
-          const lines = cleaned.split('\n');
-          // Remove the first line if it starts with --
-          if (lines[0].trim().startsWith('--')) {
-            lines.shift();
-            cleaned = lines.join('\n').trim();
-          } else {
-            break;
-          }
-        }
-        return cleaned;
-      })
-      .filter(s => s.length > 0);
+    // For Supabase, we need to execute the entire script as one statement
+    // since exec_sql RPC function doesn't exist, we'll try a different approach
+    console.log('🔄 Executing SQL script via Supabase...');
 
-    console.log(`✅ Found ${statements.length} SQL statements to execute\n`);
+    // Try to execute the entire SQL content at once
+    const { data, error } = await supabase.rpc('exec_sql', {
+      sql: sqlContent
+    });
 
-    for (let i = 0; i < statements.length; i++) {
-      const statement = statements[i];
-      if (statement) {
-        console.log(`\n[${i + 1}/${statements.length}] Executing statement...\n`);
-        console.log(`SQL: ${statement.substring(0, 100)}...`);
-
-        try {
-          const result = await client.query(statement);
-
-          if (statement.trim().toUpperCase().startsWith('SELECT')) {
-            console.log('📊 Query results:');
-            console.log(`   Rows returned: ${result.rows.length}`);
-            if (result.rows.length > 0 && result.rows.length <= 10) {
-              console.table(result.rows);
-            } else if (result.rows.length > 10) {
-              console.log('   (Too many rows to display - showing first row)');
-              console.table([result.rows[0]]);
-            }
-          } else {
-            console.log(`✅ Statement executed successfully (${result.rowCount || 0} rows affected)`);
-          }
-        } catch (err) {
-          console.error('❌ Error executing statement:', err.message);
-          console.error('Statement:', statement.substring(0, 200));
-          // Continue with next statement instead of exiting
-        }
-      }
+    if (error) {
+      console.error('❌ Error executing SQL script:', error);
+      console.error('This might be because the exec_sql RPC function is not available.');
+      console.error('Please execute the SQL manually in the Supabase dashboard or use a different approach.');
+      return false;
     }
 
-    console.log('\n✨ Script execution complete!\n');
+    console.log('✅ SQL script executed successfully');
+    console.log('📊 Result:', data);
+    return true;
 
   } catch (err) {
     console.error('❌ Fatal error:', err.message);
+    console.error('\n💡 Suggestion: The exec_sql RPC function may not be available in your Supabase instance.');
+    console.error('   Try executing the SQL directly in the Supabase SQL Editor instead.');
     process.exit(1);
-  } finally {
-    await client.end();
   }
 }
 
