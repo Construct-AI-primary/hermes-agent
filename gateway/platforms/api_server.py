@@ -2315,6 +2315,7 @@ class APIServerAdapter(BasePlatformAdapter):
         agent_ref: Optional[list] = None,
         model: Optional[str] = None,
         runtime_config: Optional[Dict[str, Any]] = None,
+        clarify_callback=None,
     ) -> tuple:
         """
         Create an agent and run a conversation in a thread executor.
@@ -2756,6 +2757,7 @@ class APIServerAdapter(BasePlatformAdapter):
                 conversation_history=[],
                 ephemeral_system_prompt=system_prompt,
                 session_id=session_id,
+                model=model,
                 runtime_config=runtime_config,
             )
 
