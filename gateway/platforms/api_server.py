@@ -1133,13 +1133,14 @@ class APIServerAdapter(BasePlatformAdapter):
         completion_id = f"paperclip-{uuid.uuid4().hex[:29]}"
         created = int(time.time())
 
-        # Run the agent
+        # Run the agent with the model from the request (agent's assigned model from database)
         async def _compute():
             return await self._run_agent(
                 user_message=prompt,
                 conversation_history=history,
                 ephemeral_system_prompt=system_prompt,
                 session_id=session_id,
+                model=model,  # Use the agent's assigned model, not gateway default
             )
 
         try:
