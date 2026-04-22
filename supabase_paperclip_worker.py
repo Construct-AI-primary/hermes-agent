@@ -487,10 +487,10 @@ def _run_http_adapter(
     # Get the HTTP adapter endpoint from runtime_config or use default
     endpoint = runtime_config.get("adapter_endpoint")
     if not endpoint:
-        # Default to Hermes API server on same host (or HERMES_ADAPTER_ENDPOINT env var)
-        # Use PORT env var (Render sets this) or fallback to 8642
+        # Always use PORT env var (Render sets this to the actual listening port)
+        # Ignore HERMES_ADAPTER_ENDPOINT which may be set to wrong port
         port = os.getenv("PORT", "8642")
-        endpoint = os.getenv("HERMES_ADAPTER_ENDPOINT", f"http://localhost:{port}/invoke")
+        endpoint = f"http://localhost:{port}/invoke"
 
     model = runtime_config.get("model", "openrouter/qwen/qwen-3-6-plus")
     max_turns = runtime_config.get("max_turns", 20)
