@@ -2312,6 +2312,7 @@ class APIServerAdapter(BasePlatformAdapter):
         tool_complete_callback=None,
         agent_ref: Optional[list] = None,
         model: Optional[str] = None,
+        runtime_config: Optional[Dict[str, Any]] = None,
     ) -> tuple:
         """
         Create an agent and run a conversation in a thread executor.
@@ -2326,6 +2327,11 @@ class APIServerAdapter(BasePlatformAdapter):
         """
         loop = asyncio.get_running_loop()
 
+        # Extract model from runtime_config if provided, override the model parameter
+        effective_model = model
+        if runtime_config and "model" in runtime_config:
+            effective_model = runtime_config["model"]
+
         def _run():
             agent = self._create_agent(
                 ephemeral_system_prompt=ephemeral_system_prompt,
@@ -2334,6 +2340,7 @@ class APIServerAdapter(BasePlatformAdapter):
                 tool_progress_callback=tool_progress_callback,
                 tool_start_callback=tool_start_callback,
                 tool_complete_callback=tool_complete_callback,
+                model=effective_model,
             )
             if agent_ref is not None:
                 agent_ref[0] = agent
