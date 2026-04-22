@@ -85,19 +85,20 @@ case "${HERMES_MODE:-chat}" in
     both)
         # Run both API server and worker concurrently with visible logging
         echo "[entrypoint] Starting both API server and Paperclip worker"
+        set -x  # Enable debug tracing
 
         # Start API server in background with explicit logging prefix
         _port="${PORT:-${API_SERVER_PORT:-8642}}"
         echo "[entrypoint] Starting API server on port $_port"
         
         # Start API server and capture both stdout and stderr
-        hermes serve --host "${HOST:-0.0.0.0}" --port "${_port}" 2>&1 | sed 's/^/[API] /' &
+        hermes serve --host "${HOST:-0.0.0.0}" --port "${_port}" 2>&1 | sed -u 's/^/[API] /' &
         API_SERVER_PID=$!
 
         # Wait for API server to start (check if it's listening)
         echo "[entrypoint] Waiting for API server to be ready..."
         for i in {1..30}; do
-            if curl -s "http://localhost:$_port/health" > /dev/null 2>&1; then
+            if curl -s --connect-timeout 1 "http://localhost:$_port/health" > /dev/null 2>&1; then
                 echo "[entrypoint] API server is ready"
                 break
             fi
@@ -109,6 +110,7 @@ case "${HERMES_MODE:-chat}" in
             sleep 1
             if [ $i -eq 30 ]; then
                 echo "[entrypoint] ERROR: API server failed to start after 30 seconds"
+                # Kill any remaining process and show logs
                 kill $API_SERVER_PID 2>/dev/null || true
                 exit 1
             fi
