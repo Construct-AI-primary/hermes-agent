@@ -572,7 +572,9 @@ def _execute_issue(
     """Execute one Paperclip issue with the resolved agent + company config."""
     repo_url = ctx.get("repo_url")
     if not repo_url:
-        return {"error": "No repo_url found in issue context"}
+        # Default to construct_ai repo if no repo_url provided
+        repo_url = "https://github.com/Construct-AI-primary/construct_ai.git"
+        logger.info("No repo_url provided, using default: %s", repo_url)
 
     repo_ref = ctx.get("repo_ref", "main")
     cwd = ctx.get("cwd", "")
@@ -734,11 +736,8 @@ def run_forever():
                 # Build execution context
                 ctx = _fetch_issue_context(supabase, issue)
 
-                if not ctx.get("repo_url"):
-                    logger.warning("Skipping issue %s: no repo_url found", issue_id[:8])
-                    _update_issue_status(supabase, issue_id, "failed", {"error": "No repo_url found"})
-                    _post_issue_comment(supabase, issue_id, "⚠️ Task failed: No repository configured")
-                    continue
+                # _execute_issue now defaults to construct_ai repo if no repo_url provided
+                # so we always proceed (no early skip)
 
                 # Execute the task
                 result = _execute_issue(ctx, cfg, supabase)
