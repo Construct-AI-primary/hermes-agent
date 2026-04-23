@@ -46,13 +46,16 @@ if [ "$(id -u)" = "0" ] && [ "$HERMES_HOME" != "/opt/data" ]; then
 
     echo "Dropping root privileges"
     exec gosu hermes "$0" "$@"
-elif [ "$(id -u)" = "0" ] && [ "$HERMES_HOME" = "/opt/data" ]; then
+elif [ "$(id -u)" = "0" ] && [ "${HERMES_HOME:-unset}" = "/opt/data" ]; then
     # On Render: run as root, volume permissions managed by infrastructure
     echo "Running as root on Render (volume permissions managed by infrastructure)"
     mkdir -p "$HERMES_HOME"/{cron,sessions,logs,hooks,memories,skills,skins,plans,workspace,home}
+    chmod -R 777 "$HERMES_HOME" 2>/dev/null || true
     cp "$INSTALL_DIR/.env.example" "$HERMES_HOME/.env" 2>/dev/null || true
     cp "$INSTALL_DIR/cli-config.yaml.example" "$HERMES_HOME/config.yaml" 2>/dev/null || true
     cp "$INSTALL_DIR/docker/SOUL.md" "$HERMES_HOME/SOUL.md" 2>/dev/null || true
+    echo "Directories created, staying as root"
+    # Don't exec gosu - stay as root
 fi
 
 # --- Running from here ---
