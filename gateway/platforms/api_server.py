@@ -2747,7 +2747,9 @@ class APIServerAdapter(BasePlatformAdapter):
                 'First, clone the repository using git if not already present. '
                 'Then analyze the task and execute the required work using appropriate tools. '
                 'Run actual commands, show real output, and perform the full task to completion. '
-                'Do NOT simply describe actions — actually execute them and show results.'
+                'Do NOT simply describe actions — actually execute them and show results. '
+                'For file operations: use the terminal tool to run commands like ls, cat, find, grep. '
+                'For searching: use "grep -r" or "find" commands in the terminal if specialized tools fail.'
             )
         else:
             system_parts.append(

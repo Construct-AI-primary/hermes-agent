@@ -39,6 +39,8 @@ services:
         sync: false
       - key: ANTHROPIC_API_KEY
         sync: false
+      - key: TERMINAL_ENV
+        value: local
 
     healthCheckPath: /health
     autoDeploy: true
