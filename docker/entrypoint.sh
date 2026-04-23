@@ -41,6 +41,13 @@ if [ "$(id -u)" = "0" ]; then
     # This is critical for Render where volume permissions may differ
     echo "Creating directory structure in $HERMES_HOME"
     mkdir -p "$HERMES_HOME"/{cron,sessions,logs,hooks,memories,skills,skins,plans,workspace,home}
+
+    # Copy config files BEFORE switching to hermes (as root)
+    echo "Copying config files as root"
+    cp "$INSTALL_DIR/.env.example" "$HERMES_HOME/.env" 2>/dev/null || true
+    cp "$INSTALL_DIR/cli-config.yaml.example" "$HERMES_HOME/config.yaml" 2>/dev/null || true
+    cp "$INSTALL_DIR/docker/SOUL.md" "$HERMES_HOME/SOUL.md" 2>/dev/null || true
+
     chown -R hermes:hermes "$HERMES_HOME" 2>/dev/null || true
 
     echo "Dropping root privileges"
@@ -50,22 +57,7 @@ fi
 # --- Running as hermes from here ---
 source "${INSTALL_DIR}/.venv/bin/activate"
 
-# Directories already created by root above
-
-# .env
-if [ ! -f "$HERMES_HOME/.env" ]; then
-    cp "$INSTALL_DIR/.env.example" "$HERMES_HOME/.env"
-fi
-
-# config.yaml
-if [ ! -f "$HERMES_HOME/config.yaml" ]; then
-    cp "$INSTALL_DIR/cli-config.yaml.example" "$HERMES_HOME/config.yaml"
-fi
-
-# SOUL.md
-if [ ! -f "$HERMES_HOME/SOUL.md" ]; then
-    cp "$INSTALL_DIR/docker/SOUL.md" "$HERMES_HOME/SOUL.md"
-fi
+# Config files already copied by root above
 
 # Sync bundled skills (manifest-based so user edits are preserved)
 if [ -d "$INSTALL_DIR/skills" ]; then
