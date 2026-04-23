@@ -48,7 +48,8 @@ RUN cd web && npm run build
 # Set UV_CACHE_DIR to /opt/hermes/.cache before user switch
 ENV UV_CACHE_DIR=/opt/hermes/.cache
 RUN chown hermes:hermes /opt/hermes
-USER hermes
+# Note: Don't use USER hermes here - let entrypoint handle privilege dropping
+# This allows entrypoint to run as root first and handle mkdir before gosu
 RUN uv venv && \
     uv pip install --no-cache-dir -e ".[all]"
 
