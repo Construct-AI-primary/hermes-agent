@@ -45,6 +45,8 @@ COPY --chown=hermes:hermes . .
 RUN cd web && npm run build
 
 # ---------- Python virtualenv ----------
+# Set UV_CACHE_DIR to /opt/hermes/.cache before user switch
+ENV UV_CACHE_DIR=/opt/hermes/.cache
 RUN chown hermes:hermes /opt/hermes
 USER hermes
 RUN uv venv && \
