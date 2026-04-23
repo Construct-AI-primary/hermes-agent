@@ -41,6 +41,12 @@ services:
         sync: false
       - key: TERMINAL_ENV
         value: local
+      - key: WORKSPACE_DIR
+        value: /opt/data/workspace
+      - key: GIT_TERMINAL_PROMPT
+        value: "0"
+      - key: HERMES_TIMEOUT
+        value: "600"
 
     healthCheckPath: /health
     autoDeploy: true
