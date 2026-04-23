@@ -86,6 +86,11 @@ case "${HERMES_MODE:-chat}" in
         # Run both API server and worker concurrently with visible logging
         echo "[entrypoint] Starting both API server and Paperclip worker"
 
+        # Disable errexit for this block — background-process loops and curl
+        # connection-refused retries are intentional non-zero exits that must
+        # NOT kill the entire entrypoint. (Fixes exit-code-7 crash from curl.)
+        set +e
+
         # Start API server in background with proper PID tracking.
         # CRITICAL FIX: Do NOT pipe stdout through sed in the same background
         # command — bash $! returns the PID of the LAST command in a pipeline,
@@ -118,16 +123,18 @@ case "${HERMES_MODE:-chat}" in
                 kill $TAIL_PID 2>/dev/null || true
                 exit 1
             fi
-            # Use -w to show HTTP status code, -o /dev/null to discard body
-            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" --connect-timeout 1 "http://localhost:$_port/health" 2>&1)
+            # Use -w to show HTTP status code, -o /dev/null to discard body.
+            # 2>/dev/null keeps stderr out of HTTP_CODE; || true prevents set -e
+            # (if re-enabled upstream) from killing us on connection refused.
+            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" --connect-timeout 1 "http://localhost:$_port/health" 2>/dev/null || true)
             CURL_EXIT=$?
             if [ $CURL_EXIT -eq 0 ] && [ "$HTTP_CODE" = "200" ]; then
                 echo "[entrypoint] API server is ready (HTTP $HTTP_CODE)"
                 break
             fi
-            # HTTP 000 means connection refused - server not ready yet
-            # This is expected during startup, just keep waiting
-            if [ "$HTTP_CODE" = "000" ]; then
+            # HTTP 000 / 0 / empty means connection refused — server not ready yet.
+            # This is expected during startup, just keep waiting.
+            if [ "$HTTP_CODE" = "000" ] || [ "$HTTP_CODE" = "0" ] || [ -z "$HTTP_CODE" ]; then
                 echo "[entrypoint] Waiting for server... (attempt $i/$MAX_ATTEMPTS)"
             else
                 echo "[entrypoint] Attempt $i: curl exit=$CURL_EXIT, HTTP=$HTTP_CODE"
