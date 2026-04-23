@@ -12,8 +12,7 @@ const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || 'eyJh
 const dbUrl = `postgresql://postgres:${SUPABASE_SERVICE_ROLE_KEY}@db.${SUPABASE_URL.replace('https://', '').replace('http://', '')}:5432/postgres?sslmode=require`;
 
 const AGENT_IDS = [
-  'a7e42dcb-2b0d-4074-adc6-adbf6da67bbd',
-  '88ab7dce-16cc-421b-ae4c-f5c1aa7ee29b'
+  '9e780111-85f6-4cc3-a110-377f23e8fdfc'
 ];
 
 async function main() {

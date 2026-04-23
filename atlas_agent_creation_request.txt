@@ -1,0 +1,281 @@
+# Atlas Agent Creation Request: 23 Measurement Platform Agents
+
+## Company: MeasureForge AI
+## Target Company ID: measureforge-ai
+## Agent Creation Date: 2026-04-22
+
+## Agent Specifications
+
+### Core Measurement Agents (6)
+
+#### 1. measurement-validation-specialist
+- **Role**: measurement-validation-specialist
+- **Title**: Measurement Validation Specialist
+- **Primary Model**: qwen-max
+- **Fallback Model**: ernie-4.0-turbo
+- **Capabilities**: standards_validation, error_detection, tolerance_analysis, compliance_reporting
+- **Skills**: measurement-validation, standards-compliance, quality-assurance
+
+#### 2. measurement-standards-specialist
+- **Role**: measurement-standards-specialist
+- **Title**: Measurement Standards Specialist
+- **Primary Model**: qwen-max
+- **Fallback Model**: hunyuan-turbo
+- **Capabilities**: regulatory_compliance, standards_interpretation, audit_preparation, multi_jurisdictional_support
+- **Skills**: standards-management, compliance-validation, regulatory-knowledge
+
+#### 3. measurement-coordination-specialist
+- **Role**: measurement-coordination-specialist
+- **Title**: Measurement Coordination Specialist
+- **Primary Model**: ernie-4.0-turbo
+- **Fallback Model**: spark-max
+- **Capabilities**: workflow_orchestration, stakeholder_coordination, conflict_resolution, progress_tracking
+- **Skills**: project-coordination, workflow-management, stakeholder-engagement
+
+#### 4. advanced-engineering-analysis
+- **Role**: advanced-engineering-analysis
+- **Title**: Advanced Engineering Analysis Specialist
+- **Primary Model**: qwen-max
+- **Fallback Model**: hunyuan-turbo
+- **Capabilities**: structural_analysis, fea_simulation, thermal_analysis, fluid_dynamics
+- **Skills**: engineering-analysis, simulation-modeling, technical-computation
+
+#### 5. cross-discipline-coordination
+- **Role**: cross-discipline-coordination
+- **Title**: Cross-Discipline Coordination Specialist
+- **Primary Model**: ernie-4.0-turbo
+- **Fallback Model**: qwen-max
+- **Capabilities**: interdisciplinary_communication, technical_translation, conflict_mediation, integration_planning
+- **Skills**: interdisciplinary-coordination, technical-translation, conflict-resolution
+
+#### 6. engineering-ui-specialist
+- **Role**: engineering-ui-specialist
+- **Title**: Engineering UI Specialist
+- **Primary Model**: spark-max
+- **Fallback Model**: hunyuan-turbo
+- **Capabilities**: interface_design, user_experience, accessibility_compliance, responsive_layout
+- **Skills**: ui-ux-design, accessibility, user-experience
+
+### Document & Data Processing Agents (4)
+
+#### 7. document-intelligence-specialist
+- **Role**: document-intelligence-specialist
+- **Title**: Document Intelligence Specialist
+- **Primary Model**: qwen-max
+- **Fallback Model**: hunyuan-turbo
+- **Capabilities**: document_analysis, specification_extraction, cross_document_correlation, knowledge_synthesis, compliance_matrix_generation
+- **Skills**: document-processing, information-extraction, knowledge-synthesis
+
+#### 8. data-processing-specialist
+- **Role**: data-processing-specialist
+- **Title**: Data Processing Specialist
+- **Primary Model**: qwen-max
+- **Fallback Model**: hunyuan-turbo
+- **Capabilities**: document_ecosystem_processing, multi_format_file_handling, data_normalization, information_extraction, knowledge_graph_construction
+- **Skills**: data-processing, file-format-handling, data-normalization
+
+#### 9. integration-orchestration-specialist
+- **Role**: integration-orchestration-specialist
+- **Title**: Integration Orchestration Specialist
+- **Primary Model**: ernie-4.0-turbo
+- **Fallback Model**: spark-max
+- **Capabilities**: cross_system_integration, api_orchestration, workflow_coordination, dependency_management, error_handling
+- **Skills**: system-integration, api-orchestration, workflow-coordination
+
+#### 10. communication-coordination-specialist
+- **Role**: communication-coordination-specialist
+- **Title**: Communication Coordination Specialist
+- **Primary Model**: ernie-4.0-turbo
+- **Fallback Model**: spark-max
+- **Capabilities**: stakeholder_communication, progress_reporting, issue_escalation, collaboration_facilitation, feedback_collection
+- **Skills**: stakeholder-communication, progress-reporting, collaboration-management
+
+### Visual & Spatial Intelligence Agents (3)
+
+#### 11. visual-overlay-specialist
+- **Role**: visual-overlay-specialist
+- **Title**: Visual Overlay Specialist
+- **Primary Model**: ernie-4.0-turbo
+- **Fallback Model**: spark-max
+- **Capabilities**: element_tagging, overlay_management, visual_filtering, measurement_visualization, user_interface_overlay
+- **Skills**: visual-processing, overlay-management, measurement-visualization
+
+#### 12. spatial-analysis-specialist
+- **Role**: spatial-analysis-specialist
+- **Title**: Spatial Analysis Specialist
+- **Primary Model**: qwen-max
+- **Fallback Model**: hunyuan-turbo
+- **Capabilities**: 3d_duplicate_detection, spatial_conflict_resolution, geometric_validation, coordinate_system_management, tolerance_analysis
+- **Skills**: spatial-analysis, geometric-validation, coordinate-management
+
+#### 13. performance-monitoring-specialist
+- **Role**: performance-monitoring-specialist
+- **Title**: Performance Monitoring Specialist
+- **Primary Model**: spark-max
+- **Fallback Model**: ernie-4.0-turbo
+- **Capabilities**: system_performance_tracking, resource_utilization_monitoring, bottleneck_identification, optimization_recommendations, capacity_planning
+- **Skills**: performance-monitoring, system-optimization, capacity-planning
+
+### Procurement & Compliance Agents (4)
+
+#### 14. procurement-integration-specialist
+- **Role**: procurement-integration-specialist
+- **Title**: Procurement Integration Specialist
+- **Primary Model**: ernie-4.0-turbo
+- **Fallback Model**: spark-max
+- **Capabilities**: candy_system_integration, procurement_workflow_automation, material_cost_analysis, supplier_management, contract_tender_preparation
+- **Skills**: procurement-integration, supplier-management, contract-preparation
+
+#### 15. standards-compliance-specialist
+- **Role**: standards-compliance-specialist
+- **Title**: Standards Compliance Specialist
+- **Primary Model**: qwen-max
+- **Fallback Model**: hunyuan-turbo
+- **Capabilities**: multi_jurisdictional_compliance, standards_interpretation, regulatory_updates, compliance_reporting, audit_preparation
+- **Skills**: standards-compliance, regulatory-compliance, audit-preparation
+
+#### 16. security-compliance-specialist
+- **Role**: security-compliance-specialist
+- **Title**: Security Compliance Specialist
+- **Primary Model**: qwen-max
+- **Fallback Model**: hunyuan-turbo
+- **Capabilities**: data_security_enforcement, compliance_monitoring, access_control_management, audit_trail_maintenance, regulatory_reporting
+- **Skills**: security-compliance, access-control, audit-trail-management
+
+#### 17. quality-assurance-specialist
+- **Role**: quality-assurance-specialist
+- **Title**: Quality Assurance Specialist
+- **Primary Model**: ernie-4.0-turbo
+- **Fallback Model**: spark-max
+- **Capabilities**: measurement_accuracy_validation, error_pattern_analysis, quality_control_automation, statistical_process_control, continuous_improvement
+- **Skills**: quality-assurance, error-analysis, statistical-process-control
+
+### Specialized Measurement Domain Agents (6)
+
+#### 18. solar-measurement-specialist
+- **Role**: solar-measurement-specialist
+- **Title**: Solar Measurement Specialist
+- **Primary Model**: qwen-max
+- **Fallback Model**: hunyuan-turbo
+- **Capabilities**: solar_pv_layout_optimization, roof_geometry_analysis, shading_obstruction_mapping, electrical_stringing_design, tilt_angle_optimization, inter_row_spacing_calculation, structural_clearance_verification
+- **Skills**: solar-measurement, pv-layout-optimization, shading-analysis
+
+#### 19. traffic-signal-specialist
+- **Role**: traffic-signal-specialist
+- **Title**: Traffic Signal Specialist
+- **Primary Model**: ernie-4.0-turbo
+- **Fallback Model**: spark-max
+- **Capabilities**: nema_ts_standards_compliance, fhwa_signal_design, electrical_distribution_layout, safety_critical_analysis, arc_flash_hazard_mapping, grounding_system_design, power_quality_monitoring
+- **Skills**: traffic-signal-measurement, electrical-distribution, safety-analysis
+
+#### 20. sustainability-analysis-specialist
+- **Role**: sustainability-analysis-specialist
+- **Title**: Sustainability Analysis Specialist
+- **Primary Model**: qwen-max
+- **Fallback Model**: hunyuan-turbo
+- **Capabilities**: environmental_impact_assessment, carbon_footprint_calculation, energy_efficiency_analysis, waste_management_optimization, sustainable_material_selection, regulatory_compliance_monitoring, lifecycle_cost_analysis
+- **Skills**: sustainability-analysis, environmental-impact, lifecycle-costing
+
+#### 21. risk-assessment-specialist
+- **Role**: risk-assessment-specialist
+- **Title**: Risk Assessment Specialist
+- **Primary Model**: ernie-4.0-turbo
+- **Fallback Model**: spark-max
+- **Capabilities**: project_risk_evaluation, measurement_uncertainty_analysis, cost_overrun_prediction, schedule_delay_identification, quality_defect_prevention, compliance_risk_assessment, mitigation_strategy_development
+- **Skills**: risk-assessment, uncertainty-analysis, mitigation-planning
+
+#### 22. training-documentation-specialist
+- **Role**: training-documentation-specialist
+- **Title**: Training Documentation Specialist
+- **Primary Model**: spark-max
+- **Fallback Model**: ernie-4.0-turbo
+- **Capabilities**: user_onboarding_content_creation, interactive_tutorial_design, knowledge_base_maintenance, documentation_automation, training_material_generation, user_feedback_analysis, continuous_improvement
+- **Skills**: training-development, documentation-automation, user-feedback-analysis
+
+### Builder-Specific Agents (4)
+
+#### 23. builder-procurement-specialist
+- **Role**: builder-procurement-specialist
+- **Title**: Builder Procurement Specialist
+- **Primary Model**: ernie-4.0-turbo
+- **Fallback Model**: spark-max
+- **Capabilities**: direct_procurement_workflow, builder_material_requirements, supplier_network_management, cost_comparison_automation, order_tracking_integration, delivery_schedule_coordination, quality_specification_matching
+- **Skills**: builder-procurement, supplier-network-management, order-tracking
+
+#### 24. builder-cost-estimation-specialist
+- **Role**: builder-cost-estimation-specialist
+- **Title**: Builder Cost Estimation Specialist
+- **Primary Model**: qwen-max
+- **Fallback Model**: hunyuan-turbo
+- **Capabilities**: material_cost_calculation, labor_cost_estimation, equipment_cost_analysis, overhead_cost_allocation, profit_margin_application, budget_variance_tracking, cash_flow_projection
+- **Skills**: cost-estimation, budget-management, cash-flow-projection
+
+#### 25. builder-material-tracking-specialist
+- **Role**: builder-material-tracking-specialist
+- **Title**: Builder Material Tracking Specialist
+- **Primary Model**: spark-max
+- **Fallback Model**: ernie-4.0-turbo
+- **Capabilities**: material_inventory_management, delivery_tracking_automation, quality_inspection_coordination, waste_reduction_optimization, supplier_performance_monitoring, material_substitution_analysis, sustainability_compliance_tracking
+- **Skills**: material-tracking, inventory-management, supplier-performance
+
+#### 26. builder-site-integration-specialist
+- **Role**: builder-site-integration-specialist
+- **Title**: Builder Site Integration Specialist
+- **Primary Model**: ernie-4.0-turbo
+- **Fallback Model**: spark-max
+- **Capabilities**: construction_site_integration, progress_monitoring_automation, workforce_productivity_tracking, equipment_utilization_optimization, safety_compliance_monitoring, quality_control_field_verification, change_order_processing
+- **Skills**: site-integration, progress-monitoring, change-order-processing
+
+## Creation Requirements
+
+### Database Schema Compliance
+- Use actual column names from schema inspection
+- Generate proper foreign key relationships
+- Include all required fields and constraints
+- Validate against live database structure
+
+### API Key Generation
+- Generate secure API keys for each agent
+- Hash keys properly using database functions
+- Create proper key metadata and permissions
+
+### Activity Logging
+- Log all agent creation activities
+- Include comprehensive metadata
+- Track creation context and parameters
+
+### Documentation Generation
+- Create complete AGENTS.md files for each agent
+- Generate SKILL.md files for all skills
+- Update company agent registries
+- Create proper folder structures
+
+### Quality Assurance
+- Validate all SQL syntax and schema compliance
+- Test agent creation in staging environment
+- Verify API key functionality
+- Confirm activity log entries
+- Test agent accessibility in Paperclip system
+
+## Expected Deliverables
+
+1. **23 Agent Records** in database with proper configuration
+2. **23 API Keys** generated and stored securely
+3. **Activity Log Entries** for all creation events
+4. **Complete Documentation** (AGENTS.md, SKILL.md files)
+5. **SQL Scripts** archived for audit purposes
+6. **Verification Reports** confirming successful creation
+
+## Timeline
+- **Schema Inspection**: Complete within 30 minutes
+- **SQL Generation**: Complete within 2 hours
+- **Agent Creation**: Complete within 4 hours
+- **Verification**: Complete within 1 hour
+- **Documentation**: Complete within 2 hours
+
+## Success Criteria
+- All 23 agents created successfully
+- No schema validation errors
+- All agents accessible in Paperclip system
+- Complete documentation generated
+- API keys functional and secure

@@ -1,0 +1,81 @@
+Atlas Agent Task: MeasureForge AI Agent Table Reconciliation
+
+## Task Overview
+The MeasureForge AI company has an agent table reconciliation issue that needs to be resolved. The filesystem contains 22 agents, but the database shows 90 agents for MeasureForge AI. This indicates a significant discrepancy that needs to be addressed.
+
+## Current Situation
+- **Filesystem agents**: 22 agents in `/docs-paperclip/companies/measureforge-ai/agents/`
+- **Database agents**: 90 agents (according to CSV export)
+- **Company status**: MeasureForge AI company registration failed due to incorrect UUID (was using PaperclipForge AI's ID)
+- **Previous error**: Cleanup script accidentally deleted all PaperclipForge AI agents instead of MeasureForge AI agents
+
+## Required Actions
+
+### Phase 1: Company Setup
+1. **Fix MeasureForge AI Company Registration**
+   - Use correct UUID: `2B5D3695-102D-4C02-8785-D53B306E29BF`
+   - Register company in database with proper PostgreSQL timestamp format
+   - Verify company exists and has correct configuration
+
+### Phase 2: Agent Analysis
+2. **Analyze Filesystem Agents**
+   - Inspect all 22 agent folders in `/docs-paperclip/companies/measureforge-ai/agents/`
+   - Extract agent specifications from AGENTS.md files
+   - Validate agent configurations and requirements
+
+3. **Database Inspection**
+   - Query current database state for MeasureForge AI agents
+   - Identify any existing agents (should be 0 after cleanup)
+   - Check for foreign key dependencies and constraints
+
+### Phase 3: Agent Registration
+4. **Generate Agent Registration Scripts**
+   - Create SQL scripts for all 22 filesystem agents
+   - Include proper model assignments and API key generation
+   - Ensure foreign key relationships are maintained
+
+5. **Execute Agent Registration**
+   - Run generated SQL scripts to register agents
+   - Generate and assign API keys to agent_api_keys table
+   - Create appropriate entries in agent_models table
+
+### Phase 4: Verification & Cleanup
+6. **Verify Agent Count**
+   - Confirm exactly 22 agents are registered for MeasureForge AI
+   - Validate all agent configurations and relationships
+   - Test agent functionality if possible
+
+7. **Final Cleanup**
+   - Remove any temporary files or incorrect database entries
+   - Ensure data integrity across all related tables
+   - Generate audit report of changes made
+
+## Required Skills
+- agent-creation-management
+- agent-lifecycle-orchestration
+- database-schema-inspection
+- sql-generation
+- database-agent-inspection
+- agent-existence-verification
+- duplicate-prevention
+- agent-table-querying
+- company-agent-relationships
+- agent-models-table-management
+- model-assignment-sql-generation
+- foreign-key-dependency-management
+- api-key-management
+
+## Success Criteria
+- MeasureForge AI company properly registered with correct UUID
+- Exactly 22 agents registered in database matching filesystem
+- All agent relationships and configurations correct
+- No duplicate or orphaned records
+- API keys and model assignments properly configured
+
+## Files to Reference
+- `/docs-paperclip/schema/agent-table-recon/measureforge-ai-agents.md` (reconciliation guide)
+- `/docs-paperclip/companies/measureforge-ai/register-company.sql` (company registration)
+- `/docs-paperclip/companies/measureforge-ai/agents/` (filesystem agents)
+- `/docs-paperclip/schema/tables/` (database schema reference)
+
+Please execute this reconciliation task systematically, documenting each step and any issues encountered.
