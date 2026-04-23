@@ -9,7 +9,9 @@ INSTALL_DIR="/opt/hermes"
 # Skip user switch on Render where volume ownership differs from container UID.
 # On Render, the container runs as root and the volume permissions are managed
 # at the infrastructure level - no gosu needed.
+echo "DEBUG: Starting entrypoint - uid=$(id -u), HERMES_HOME=$HERMES_HOME"
 if [ "$(id -u)" = "0" ] && [ "$HERMES_HOME" != "/opt/data" ]; then
+    echo "DEBUG: Entered first branch - will use gosu (HERMES_HOME=$HERMES_HOME)"
     if [ -n "$HERMES_UID" ] && [ "$HERMES_UID" != "$(id -u hermes)" ]; then
         echo "Changing hermes UID to $HERMES_UID"
         usermod -u "$HERMES_UID" hermes
