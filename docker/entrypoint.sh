@@ -37,6 +37,12 @@ if [ "$(id -u)" = "0" ]; then
     chmod 755 "$HERMES_HOME" 2>/dev/null || true
     echo "Volume permissions verified for $HERMES_HOME"
 
+    # Create essential directory structure BEFORE switching to hermes user
+    # This is critical for Render where volume permissions may differ
+    echo "Creating directory structure in $HERMES_HOME"
+    mkdir -p "$HERMES_HOME"/{cron,sessions,logs,hooks,memories,skills,skins,plans,workspace,home}
+    chown -R hermes:hermes "$HERMES_HOME" 2>/dev/null || true
+
     echo "Dropping root privileges"
     exec gosu hermes "$0" "$@"
 fi
@@ -44,14 +50,7 @@ fi
 # --- Running as hermes from here ---
 source "${INSTALL_DIR}/.venv/bin/activate"
 
-# Create essential directory structure.  Cache and platform directories
-# (cache/images, cache/audio, platforms/whatsapp, etc.) are created on
-# demand by the application — don't pre-create them here so new installs
-# get the consolidated layout from get_hermes_dir().
-# The "home/" subdirectory is a per-profile HOME for subprocesses (git,
-# ssh, gh, npm …).  Without it those tools write to /root which is
-# ephemeral and shared across profiles.  See issue #4426.
-mkdir -p "$HERMES_HOME"/{cron,sessions,logs,hooks,memories,skills,skins,plans,workspace,home}
+# Directories already created by root above
 
 # .env
 if [ ! -f "$HERMES_HOME/.env" ]; then
