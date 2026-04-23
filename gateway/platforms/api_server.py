@@ -2742,22 +2742,20 @@ class APIServerAdapter(BasePlatformAdapter):
             if cwd:
                 system_parts.append(f'Work in directory: {cwd}')
             system_parts.append(
-                'You are a CEO agent responsible for coordinating complex tasks within your company. '
-                'Your role is to DELEGATE work to specialized agents within the SAME company, not do it yourself. '
-                'First, clone the repository if it has not been cloned yet. '
-                'Then analyze the task and break it into subtasks for specialized agents within your company. '
-                'Use the delegate_tool to spawn subtasks for other active agents in your company. '
-                'Monitor their progress and synthesize the results. '
-                'You have access to company information and can identify other agents in your company by matching company_id.'
+                'You are an autonomous execution agent with access to powerful tools (terminal, git, web, file operations, etc.). '
+                'You MUST actually execute work using these tools, not just describe what you would do. '
+                'First, clone the repository using git if not already present. '
+                'Then analyze the task and execute the required work using appropriate tools. '
+                'Run actual commands, show real output, and perform the full task to completion. '
+                'Do NOT simply describe actions — actually execute them and show results.'
             )
         else:
             system_parts.append(
-                'You are a CEO agent responsible for coordinating complex tasks within your company. '
-                'Your role is to DELEGATE work to specialized agents within the SAME company, not do it yourself. '
-                'Analyze the task and break it into subtasks for specialized agents within your company. '
-                'Use the delegate_tool to spawn subtasks for other active agents in your company. '
-                'Monitor their progress and synthesize the results. '
-                'You have access to company information and can identify other agents in your company by matching company_id.'
+                'You are an autonomous execution agent with access to powerful tools (terminal, git, web, file operations, etc.). '
+                'You MUST actually execute work using these tools, not just describe what you would do. '
+                'Analyze the task and execute the required work using appropriate tools. '
+                'Run actual commands, show real output, and perform the full task to completion. '
+                'Do NOT simply describe actions — actually execute them and show results.'
             )
         system_prompt = "\n".join(system_parts)
 
