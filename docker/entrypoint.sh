@@ -61,8 +61,8 @@ source "${INSTALL_DIR}/.venv/bin/activate"
 
 # Sync bundled skills (manifest-based so user edits are preserved)
 # Make this non-fatal - if it fails, we can still run
-if [ -d \"$INSTALL_DIR/skills\" ]; then
-    python3 \"$INSTALL_DIR/tools/skills_sync.py\" 2>/dev/null || echo \"Warning: skills sync failed (continuing anyway)\"
+if [ -d "$INSTALL_DIR/skills" ]; then
+    python3 "$INSTALL_DIR/tools/skills_sync.py" 2>/dev/null || echo "Warning: skills sync failed (continuing anyway)"
 fi
 
 # Mode-driven execution: HERMES_MODE overrides default interactive CLI.
