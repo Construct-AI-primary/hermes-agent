@@ -6,12 +6,12 @@ HERMES_HOME="${HERMES_HOME:-/opt/data}"
 INSTALL_DIR="/opt/hermes"
 
 # --- Privilege dropping via gosu ---
-# Skip user switch on Render where volume ownership differs from container UID.
-# On Render, the container runs as root and the volume permissions are managed
-# at the infrastructure level - no gosu needed.
+# On Render, the persistent disk /opt/data is owned by a specific UID (10001)
+# that doesn't match container UIDs. We must stay as root and use chmod.
+# Use pattern matching to detect Render environment reliably.
 echo "DEBUG: Starting entrypoint - uid=$(id -u), HERMES_HOME=$HERMES_HOME"
-if [ "$(id -u)" = "0" ] && [ "$HERMES_HOME" != "/opt/data" ]; then
-    echo "DEBUG: Entered first branch - will use gosu (HERMES_HOME=$HERMES_HOME)"
+if [ "$(id -u)" = "0" ] && [[ "$HERMES_HOME" != *"/opt/data"* ]]; then
+    echo "Not on Render (HERMES_HOME=$HERMES_HOME) - will use gosu"
     if [ -n "$HERMES_UID" ] && [ "$HERMES_UID" != "$(id -u hermes)" ]; then
         echo "Changing hermes UID to $HERMES_UID"
         usermod -u "$HERMES_UID" hermes
