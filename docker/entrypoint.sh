@@ -63,6 +63,10 @@ fi
 # --- Running from here ---
 source "${INSTALL_DIR}/.venv/bin/activate"
 
+# Ensure directories exist - critical for Render where we may already be hermes
+mkdir -p "$HERMES_HOME"/{cron,sessions,logs,hooks,memories,skills,skins,plans,workspace,home}
+chmod -R 777 "$HERMES_HOME" 2>/dev/null || true
+
 # Config files already in place
 
 # Sync bundled skills (manifest-based so user edits are preserved)
