@@ -85,23 +85,37 @@ case "${HERMES_MODE:-chat}" in
     both)
         # Run both API server and worker concurrently with visible logging
         echo "[entrypoint] Starting both API server and Paperclip worker"
-        set -x  # Enable debug tracing
 
-        # Start API server in background with explicit logging prefix
+        # Start API server in background with proper PID tracking.
+        # CRITICAL FIX: Do NOT pipe stdout through sed in the same background
+        # command — bash $! returns the PID of the LAST command in a pipeline,
+        # which would be `sed`, not `hermes serve`. If hermes crashes, sed stays
+        # alive and the health-check loop spins forever.
         _port="${PORT:-${API_SERVER_PORT:-8642}}"
         echo "[entrypoint] Starting API server on port $_port"
-        
-        # Start API server and capture both stdout and stderr
-        hermes serve --host "${HOST:-0.0.0.0}" --port "${_port}" 2>&1 | sed -u 's/^/[API] /' &
+
+        API_LOG="$HERMES_HOME/logs/api_server.log"
+        mkdir -p "$(dirname "$API_LOG")"
+        : > "$API_LOG"  # truncate log
+
+        hermes serve --host "${HOST:-0.0.0.0}" --port "${_port}" >> "$API_LOG" 2>&1 &
         API_SERVER_PID=$!
+
+        # Stream API logs with prefix in a separate background process
+        tail -n +1 -f "$API_LOG" | sed -u 's/^/[API] /' &
+        TAIL_PID=$!
 
         # Wait for API server to start (check if it's listening)
         echo "[entrypoint] Waiting for API server to be ready..."
         MAX_ATTEMPTS=60
         for i in $(seq 1 $MAX_ATTEMPTS); do
-            # Check if process died
+            # Check if the REAL hermes serve process died
             if ! kill -0 $API_SERVER_PID 2>/dev/null; then
-                echo "[entrypoint] ERROR: API server process died"
+                echo "[entrypoint] ERROR: API server process (PID $API_SERVER_PID) died"
+                echo "[entrypoint] --- Last 30 lines of api_server.log ---"
+                tail -n 30 "$API_LOG" | sed 's/^/  /' || true
+                echo "[entrypoint] -------------------------------------"
+                kill $TAIL_PID 2>/dev/null || true
                 exit 1
             fi
             # Use -w to show HTTP status code, -o /dev/null to discard body
@@ -121,8 +135,11 @@ case "${HERMES_MODE:-chat}" in
             sleep 1
             if [ $i -eq $MAX_ATTEMPTS ]; then
                 echo "[entrypoint] ERROR: API server failed to start after $MAX_ATTEMPTS seconds"
-                # Kill any remaining process and show logs
+                echo "[entrypoint] --- Last 30 lines of api_server.log ---"
+                tail -n 30 "$API_LOG" | sed 's/^/  /' || true
+                echo "[entrypoint] -------------------------------------"
                 kill $API_SERVER_PID 2>/dev/null || true
+                kill $TAIL_PID 2>/dev/null || true
                 exit 1
             fi
         done
@@ -136,10 +153,13 @@ case "${HERMES_MODE:-chat}" in
         wait -n
         EXIT_CODE=$?
 
-        # Kill the other process
+        # Kill the other processes
         if kill -0 $API_SERVER_PID 2>/dev/null; then
             echo "[entrypoint] Stopping API server"
             kill $API_SERVER_PID
+        fi
+        if kill -0 $TAIL_PID 2>/dev/null; then
+            kill $TAIL_PID 2>/dev/null || true
         fi
         if kill -0 $WORKER_PID 2>/dev/null; then
             echo "[entrypoint] Stopping worker"
