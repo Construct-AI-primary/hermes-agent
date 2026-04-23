@@ -32,6 +32,11 @@ if [ "$(id -u)" = "0" ]; then
             echo "Warning: chown failed (rootless container?) — continuing anyway"
     fi
 
+    # Ensure volume is writable by hermes user (critical for Render deployments)
+    # Render volumes may be created with root ownership initially
+    chmod 755 "$HERMES_HOME" 2>/dev/null || true
+    echo "Volume permissions verified for $HERMES_HOME"
+
     echo "Dropping root privileges"
     exec gosu hermes "$0" "$@"
 fi
