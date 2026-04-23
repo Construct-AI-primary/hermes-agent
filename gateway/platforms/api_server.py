@@ -2736,20 +2736,29 @@ class APIServerAdapter(BasePlatformAdapter):
         # Build system prompt with repo context
         system_parts = []
         if repo_url:
-            system_parts.append(f"You are working in a Git repository. The repository URL is: {repo_url}")
-            if repo_ref and repo_ref != "main":
-                system_parts.append(f"Use branch/ref: {repo_ref}")
+            system_parts.append(f'You are working in a Git repository. The repository URL is: {repo_url}')
+            if repo_ref and repo_ref != 'main':
+                system_parts.append(f'Use branch/ref: {repo_ref}')
             if cwd:
-                system_parts.append(f"Work in directory: {cwd}")
+                system_parts.append(f'Work in directory: {cwd}')
             system_parts.append(
-                "CRITICAL: You MUST clone the repository FIRST before doing anything else. "
-                "Run 'git clone <repo_url>' immediately. The GITHUB_TOKEN environment variable is set. "
-                "Do NOT skip this step. Do NOT say 'I'll help with that' — actually clone the repo."
+                'You are a CEO agent responsible for coordinating complex tasks within your company. '
+                'Your role is to DELEGATE work to specialized agents within the SAME company, not do it yourself. '
+                'First, clone the repository if it has not been cloned yet. '
+                'Then analyze the task and break it into subtasks for specialized agents within your company. '
+                'Use the delegate_tool to spawn subtasks for other active agents in your company. '
+                'Monitor their progress and synthesize the results. '
+                'You have access to company information and can identify other agents in your company by matching company_id.'
             )
-        system_parts.append(
-            "You are an autonomous coding agent. Analyze the task, write code, "
-            "run tests, and create a pull request when complete."
-        )
+        else:
+            system_parts.append(
+                'You are a CEO agent responsible for coordinating complex tasks within your company. '
+                'Your role is to DELEGATE work to specialized agents within the SAME company, not do it yourself. '
+                'Analyze the task and break it into subtasks for specialized agents within your company. '
+                'Use the delegate_tool to spawn subtasks for other active agents in your company. '
+                'Monitor their progress and synthesize the results. '
+                'You have access to company information and can identify other agents in your company by matching company_id.'
+            )
         system_prompt = "\n".join(system_parts)
 
         # Create session ID based on issue
