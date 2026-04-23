@@ -2770,8 +2770,8 @@ class APIServerAdapter(BasePlatformAdapter):
             os.environ["GITHUB_TOKEN"] = github_token
 
         try:
-            # Run the agent
-            result = await self._run_agent(
+            # Run the agent — _run_agent returns (result_dict, usage_dict)
+            result, usage = await self._run_agent(
                 user_message=prompt,
                 conversation_history=[],
                 ephemeral_system_prompt=system_prompt,
