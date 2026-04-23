@@ -6,10 +6,10 @@ HERMES_HOME="${HERMES_HOME:-/opt/data}"
 INSTALL_DIR="/opt/hermes"
 
 # --- Privilege dropping via gosu ---
-# When started as root (the default for Docker, or fakeroot in rootless Podman),
-# optionally remap the hermes user/group to match host-side ownership, fix volume
-# permissions, then re-exec as hermes.
-if [ "$(id -u)" = "0" ]; then
+# Skip user switch on Render where volume ownership differs from container UID.
+# On Render, the container runs as root and the volume permissions are managed
+# at the infrastructure level - no gosu needed.
+if [ "$(id -u)" = "0" ] && [ "$HERMES_HOME" != "/opt/data" ]; then
     if [ -n "$HERMES_UID" ] && [ "$HERMES_UID" != "$(id -u hermes)" ]; then
         echo "Changing hermes UID to $HERMES_UID"
         usermod -u "$HERMES_UID" hermes
@@ -32,18 +32,12 @@ if [ "$(id -u)" = "0" ]; then
             echo "Warning: chown failed (rootless container?) — continuing anyway"
     fi
 
-    # Ensure volume is writable by hermes user (critical for Render deployments)
-    # Render volumes may be created with root ownership initially
-    chmod 755 "$HERMES_HOME" 2>/dev/null || true
-    echo "Volume permissions verified for $HERMES_HOME"
-
-    # Create essential directory structure BEFORE switching to hermes user
-    # This is critical for Render where volume permissions may differ
+    # Create essential directory structure
     echo "Creating directory structure in $HERMES_HOME"
     mkdir -p "$HERMES_HOME"/{cron,sessions,logs,hooks,memories,skills,skins,plans,workspace,home}
 
-    # Copy config files BEFORE switching to hermes (as root)
-    echo "Copying config files as root"
+    # Copy config files
+    echo "Copying config files"
     cp "$INSTALL_DIR/.env.example" "$HERMES_HOME/.env" 2>/dev/null || true
     cp "$INSTALL_DIR/cli-config.yaml.example" "$HERMES_HOME/config.yaml" 2>/dev/null || true
     cp "$INSTALL_DIR/docker/SOUL.md" "$HERMES_HOME/SOUL.md" 2>/dev/null || true
@@ -52,12 +46,19 @@ if [ "$(id -u)" = "0" ]; then
 
     echo "Dropping root privileges"
     exec gosu hermes "$0" "$@"
+elif [ "$(id -u)" = "0" ] && [ "$HERMES_HOME" = "/opt/data" ]; then
+    # On Render: run as root, volume permissions managed by infrastructure
+    echo "Running as root on Render (volume permissions managed by infrastructure)"
+    mkdir -p "$HERMES_HOME"/{cron,sessions,logs,hooks,memories,skills,skins,plans,workspace,home}
+    cp "$INSTALL_DIR/.env.example" "$HERMES_HOME/.env" 2>/dev/null || true
+    cp "$INSTALL_DIR/cli-config.yaml.example" "$HERMES_HOME/config.yaml" 2>/dev/null || true
+    cp "$INSTALL_DIR/docker/SOUL.md" "$HERMES_HOME/SOUL.md" 2>/dev/null || true
 fi
 
-# --- Running as hermes from here ---
+# --- Running from here ---
 source "${INSTALL_DIR}/.venv/bin/activate"
 
-# Config files already copied by root above
+# Config files already in place
 
 # Sync bundled skills (manifest-based so user edits are preserved)
 # Make this non-fatal - if it fails, we can still run
