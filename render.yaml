@@ -47,6 +47,10 @@ services:
         value: "0"
       - key: HERMES_TIMEOUT
         value: "600"
+      # Set HERMES_UID to match Render's persistent disk owner (typically 10001)
+      # This allows hermes user to write to /opt/data volume
+      - key: HERMES_UID
+        value: "10001"
 
     healthCheckPath: /health
     autoDeploy: true
