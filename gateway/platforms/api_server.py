@@ -2704,11 +2704,16 @@ class APIServerAdapter(BasePlatformAdapter):
         logger.info("[api_server] _handle_invoke called - processing request")
         logger.info("[api_server] Request method: %s, path: %s", request.method, request.path)
         
-        auth_err = self._check_auth(request)
-        if auth_err:
-            logger.info("[api_server] Auth check returned error: %s", auth_err)
-            return auth_err
-        logger.info("[api_server] Auth passed")
+        # Skip auth for localhost (worker calling from same container)
+        host = request.headers.get("Host", "")
+        if host.startswith("127.") or host.startswith("localhost") or host.startswith("::1"):
+            logger.info("[api_server] Skipping auth for localhost request")
+        else:
+            auth_err = self._check_auth(request)
+            if auth_err:
+                logger.info("[api_server] Auth check returned error: %s", auth_err)
+                return auth_err
+            logger.info("[api_server] Auth passed")
 
         # Parse Paperclip payload
         try:
