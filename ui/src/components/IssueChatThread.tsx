@@ -15,6 +15,7 @@ import {
   useContext,
   useEffect,
   useImperativeHandle,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -1001,24 +1002,29 @@ function IssueChatAssistantMessage() {
   const hasCoT = message.content.some((p) => p.type === "reasoning" || p.type === "tool-call");
   const isFoldable = !isRunning && !!chainOfThoughtLabel;
   const [folded, setFolded] = useState(isFoldable);
-  const [prevFoldKey, setPrevFoldKey] = useState({ messageId: message.id, isFoldable });
+  const foldKeyRef = useRef({ messageId: message.id, isFoldable });
 
-  // Derive fold state synchronously during render (not in useEffect) so the
-  // browser never paints the un-folded intermediate state — prevents the
-  // visible "jump" when loading a page with already-folded work sections.
-  if (message.id !== prevFoldKey.messageId || isFoldable !== prevFoldKey.isFoldable) {
-    const nextFolded = resolveAssistantMessageFoldedState({
-      messageId: message.id,
-      currentFolded: folded,
-      isFoldable,
-      previousMessageId: prevFoldKey.messageId,
-      previousIsFoldable: prevFoldKey.isFoldable,
-    });
-    setPrevFoldKey({ messageId: message.id, isFoldable });
-    if (nextFolded !== folded) {
-      setFolded(nextFolded);
+  // Derive fold state synchronously after render but before paint via
+  // useLayoutEffect so the browser never paints the un-folded intermediate
+  // state — prevents the visible "jump" when loading a page with already-
+  // folded work sections.  We use a ref (not state) for the previous key
+  // so that updating it never triggers another render.
+  useLayoutEffect(() => {
+    const prev = foldKeyRef.current;
+    if (message.id !== prev.messageId || isFoldable !== prev.isFoldable) {
+      const nextFolded = resolveAssistantMessageFoldedState({
+        messageId: message.id,
+        currentFolded: folded,
+        isFoldable,
+        previousMessageId: prev.messageId,
+        previousIsFoldable: prev.isFoldable,
+      });
+      foldKeyRef.current = { messageId: message.id, isFoldable };
+      if (nextFolded !== folded) {
+        setFolded(nextFolded);
+      }
     }
-  }
+  });
 
   const handleVote = async (
     vote: FeedbackVoteValue,

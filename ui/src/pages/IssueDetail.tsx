@@ -466,7 +466,7 @@ export function IssueDetail() {
     queryKey: queryKeys.issues.runs(issueId!),
     queryFn: () => activityApi.runsForIssue(issueId!),
     enabled: !!issueId,
-    refetchInterval: 5000,
+    refetchInterval: 15_000,
     placeholderData: keepPreviousData,
   });
 
