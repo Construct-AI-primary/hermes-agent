@@ -51,6 +51,8 @@ services:
       # This allows hermes user to write to /opt/data volume
       - key: HERMES_UID
         value: "10001"
+      - key: GITHUB_TOKEN
+        sync: false
 
     healthCheckPath: /health
     autoDeploy: true
