@@ -3311,38 +3311,10 @@ class HermesCLI:
             # Get tools for display
             tools = get_tool_definitions(enabled_toolsets=self.enabled_toolsets, quiet_mode=True)
             
-            
             if hasattr(self, 'agent') and self.agent and hasattr(self.agent, 'context_compressor'):
                 ctx_len = self.agent.context_compressor.context_length
             # Get terminal working directory (where commands will execute)
             cwd = os.getenv("TERMINAL_CWD", os.getcwd())
-            if hasattr(self, 'agent') and self.agent and hasattr(self.agent, 'context_compressor'):
-            
-            if hasattr(self, 'agent') and self.agent and hasattr(self.agent, 'context_compressor'):
-                ctx_len = self.agent.context_compressor.context_length
-            # Get terminal working directory (where commands will execute)
-            cwd = os.getenv("TERMINAL_CWD", os.getcwd())
-
-            if hasattr(self, 'agent') and self.agent and hasattr(self.agent, 'context_compressor'):
-                ctx_len = self.agent.context_compressor.context_length
-            # Get terminal working directory (where commands will execute)
-            cwd = os.getenv("TERMINAL_CWD", os.getcwd())
-            if hasattr(self, 'agent') and self.agent and hasattr(self.agent, 'context_compressor'):
-                ctx_len = self.agent.context_compressor.context_length
->>>>>>> 0d9ae7a9 (chore: update hermes_agent)
-            if hasattr(self, 'agent') and self.agent and hasattr(self.agent, 'context_compressor'):
-                ctx_len = self.agent.context_compressor.context_length
-            # Get terminal working directory (where commands will execute)
-            cwd = os.getenv("TERMINAL_CWD", os.getcwd())
-=======
-            
-            if hasattr(self, 'agent') and self.agent and hasattr(self.agent, 'context_compressor'):
-                ctx_len = self.agent.context_compressor.context_length
-            # Get terminal working directory (where commands will execute)
-            cwd = os.getenv("TERMINAL_CWD", os.getcwd())
-            if hasattr(self, 'agent') and self.agent and hasattr(self.agent, 'context_compressor'):
-                ctx_len = self.agent.context_compressor.context_length
->>>>>>> 0d9ae7a9 (chore: update hermes_agent)
             
             # Build and display the banner
             build_welcome_banner(
